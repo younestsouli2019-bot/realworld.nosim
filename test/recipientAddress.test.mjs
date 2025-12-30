@@ -72,8 +72,10 @@ test("payment routing optimization prefers bank wire when PayPal payouts disable
 
 test("createPayoutBatchesFromEarnings skips paypal batch when recipient not in allowlist", async () => {
   const prev = process.env.AUTONOMOUS_ALLOWED_PAYPAL_RECIPIENTS;
+  const prevOwner = process.env.OWNER_PAYPAL_EMAIL;
   try {
     process.env.AUTONOMOUS_ALLOWED_PAYPAL_RECIPIENTS = "owner@example.com";
+    process.env.OWNER_PAYPAL_EMAIL = "owner@example.com";
 
     const base44 = {
       asServiceRole: {
@@ -110,17 +112,21 @@ test("createPayoutBatchesFromEarnings skips paypal batch when recipient not in a
 
     assert.equal(out?.batches?.length, 1);
     assert.equal(out.batches[0].skipped, true);
-    assert.equal(out.batches[0].reason, "recipient_not_allowed");
+    assert.equal(out.batches[0].reason, "owner_sink_forbidden");
   } finally {
     if (prev == null) delete process.env.AUTONOMOUS_ALLOWED_PAYPAL_RECIPIENTS;
     else process.env.AUTONOMOUS_ALLOWED_PAYPAL_RECIPIENTS = prev;
+    if (prevOwner == null) delete process.env.OWNER_PAYPAL_EMAIL;
+    else process.env.OWNER_PAYPAL_EMAIL = prevOwner;
   }
 });
 
 test("createPayoutBatchesFromEarnings allows paypal batch when recipient in allowlist", async () => {
   const prev = process.env.AUTONOMOUS_ALLOWED_PAYPAL_RECIPIENTS;
+  const prevOwner = process.env.OWNER_PAYPAL_EMAIL;
   try {
     process.env.AUTONOMOUS_ALLOWED_PAYPAL_RECIPIENTS = "owner@example.com";
+    process.env.OWNER_PAYPAL_EMAIL = "owner@example.com";
 
     const base44 = {
       asServiceRole: {
@@ -161,5 +167,7 @@ test("createPayoutBatchesFromEarnings allows paypal batch when recipient in allo
   } finally {
     if (prev == null) delete process.env.AUTONOMOUS_ALLOWED_PAYPAL_RECIPIENTS;
     else process.env.AUTONOMOUS_ALLOWED_PAYPAL_RECIPIENTS = prev;
+    if (prevOwner == null) delete process.env.OWNER_PAYPAL_EMAIL;
+    else process.env.OWNER_PAYPAL_EMAIL = prevOwner;
   }
 });

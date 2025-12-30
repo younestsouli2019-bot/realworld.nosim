@@ -352,6 +352,146 @@ function sha256FileSync(filePath) {
   return crypto.createHash("sha256").update(buf).digest("hex");
 }
 
+function getProofDir() {
+  return path.resolve(process.cwd(), "proof");
+}
+
+function getPayoutProofPath(batchId) {
+  return path.join(getProofDir(), `payout_${String(batchId)}.json`);
+}
+
+function writeJsonFileOnce(absPath, value) {
+  fs.mkdirSync(path.dirname(absPath), { recursive: true });
+  const payload = `${JSON.stringify(value, null, 2)}\n`;
+  fs.writeFileSync(absPath, payload, { encoding: "utf8", flag: "wx" });
+  return { bytes: Buffer.byteLength(payload, "utf8"), sha256: sha256Hex(payload) };
+}
+
+function tryReadJsonFile(absPath) {
+  if (!absPath || !fs.existsSync(absPath)) return null;
+  try {
+    const raw = fs.readFileSync(absPath, "utf8");
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
+}
+
+function formatBackupStamp(d = new Date()) {
+  const iso = d.toISOString();
+  return iso.replace(/[:.]/g, "-");
+}
+
+function copyFileIfExists(fromPath, toPath) {
+  if (!fs.existsSync(fromPath)) return false;
+  fs.mkdirSync(path.dirname(toPath), { recursive: true });
+  fs.copyFileSync(fromPath, toPath);
+  return true;
+}
+
+function listProofFiles() {
+  const dir = getProofDir();
+  if (!fs.existsSync(dir)) return [];
+  return fs
+    .readdirSync(dir)
+    .filter((f) => f.startsWith("payout_") && f.endsWith(".json"))
+    .sort((a, b) => a.localeCompare(b))
+    .map((f) => ({ file: f, absPath: path.join(dir, f) }));
+}
+
+function buildBackupManifest({ repoRoot, base44Online, extra } = {}) {
+  const owner = getOwnerSinkFromEnv();
+  const truthOnlyUiEnabled = (process.env.BASE44_ENABLE_TRUTH_ONLY_UI ?? "false").toLowerCase() === "true";
+  const proofFiles = listProofFiles();
+  const proofs = proofFiles.map(({ file, absPath }) => ({
+    file,
+    sha256: sha256FileSync(absPath),
+    bytes: fs.statSync(absPath).size
+  }));
+
+  const env = {
+    SWARM_LIVE: (process.env.SWARM_LIVE ?? "false").toLowerCase() === "true",
+    PAYPAL_MODE: String(process.env.PAYPAL_MODE ?? "live").toLowerCase(),
+    PAYPAL_API_BASE_URL: process.env.PAYPAL_API_BASE_URL ? String(process.env.PAYPAL_API_BASE_URL) : null,
+    NO_PLATFORM_WALLET: (process.env.NO_PLATFORM_WALLET ?? "false").toLowerCase() === "true",
+    BASE44_ENABLE_PAYOUT_LEDGER_WRITE: (process.env.BASE44_ENABLE_PAYOUT_LEDGER_WRITE ?? "false").toLowerCase() === "true",
+    BASE44_ENABLE_TRUTH_ONLY_UI: truthOnlyUiEnabled,
+    ownerDeclared: {
+      paypal: owner.ownerPayPal ? mask(owner.ownerPayPal, { keepStart: 1, keepEnd: 0 }) : null,
+      payoneer: owner.ownerPayoneer ? mask(owner.ownerPayoneer, { keepStart: 1, keepEnd: 0 }) : null,
+      bankAccount: owner.ownerBankAccount ? mask(owner.ownerBankAccount, { keepStart: 0, keepEnd: 4 }) : null
+    }
+  };
+
+  const git = (() => {
+    try {
+      const top = runGit(repoRoot ?? process.cwd(), ["rev-parse", "--show-toplevel"]).trim();
+      const headSha = runGit(top, ["rev-parse", "HEAD"]).trim();
+      const branch = runGit(top, ["branch", "--show-current"]).trim() || null;
+      return { ok: true, repoRoot: top, headSha, branch };
+    } catch (e) {
+      return { ok: false, error: e?.message ?? String(e) };
+    }
+  })();
+
+  return {
+    ok: true,
+    createdAt: new Date().toISOString(),
+    authorityChecksum: computeAuthorityChecksum(),
+    base44Online: !!base44Online,
+    env,
+    git,
+    proof: { dir: getProofDir(), count: proofs.length, proofs },
+    ...(extra ? { extra } : {})
+  };
+}
+
+function getOwnerSinkFromEnv() {
+  const ownerPayPalRaw = normalizeEmailAddress(process.env.OWNER_PAYPAL_EMAIL ?? null);
+  const ownerPayoneerRaw = normalizeEmailAddress(process.env.OWNER_PAYONEER_ID ?? null);
+  const ownerBankAccount = normalizeBankAccount(
+    process.env.OWNER_BANK_ACCOUNT ?? process.env.OWNER_BANK_RIB ?? process.env.BANK_ACCOUNT ?? process.env.BANK_RIB ?? process.env.BANK_IBAN ?? null
+  );
+  return {
+    ownerPayPal: ownerPayPalRaw ? ownerPayPalRaw.toLowerCase() : null,
+    ownerPayoneer: ownerPayoneerRaw ? ownerPayoneerRaw.toLowerCase() : null,
+    ownerBankAccount
+  };
+}
+
+function assertOwnerSink({ recipientType, recipient, destination, action }) {
+  const t = normalizeRecipientType(recipientType ?? null);
+  const owner = getOwnerSinkFromEnv();
+  if (t === "paypal") {
+    const rr = normalizeEmailAddress(recipient ?? "");
+    const email = rr ? rr.toLowerCase() : null;
+    if (!owner.ownerPayPal) throw new Error("FORBIDDEN DESTINATION: missing OWNER_PAYPAL_EMAIL");
+    if (!email || email !== owner.ownerPayPal) {
+      throw new Error(`FORBIDDEN DESTINATION: ${mask(recipient, { keepStart: 1, keepEnd: 0 })} is not OWNER_PAYPAL_EMAIL`);
+    }
+    return { ok: true, type: "paypal", ownerMasked: mask(owner.ownerPayPal, { keepStart: 1, keepEnd: 0 }) };
+  }
+  if (t === "payoneer") {
+    const rr = normalizeEmailAddress(recipient ?? "");
+    const email = rr ? rr.toLowerCase() : null;
+    if (!owner.ownerPayoneer) throw new Error("FORBIDDEN DESTINATION: missing OWNER_PAYONEER_ID");
+    if (!email || email !== owner.ownerPayoneer) {
+      throw new Error(`FORBIDDEN DESTINATION: ${mask(recipient, { keepStart: 1, keepEnd: 0 })} is not OWNER_PAYONEER_ID`);
+    }
+    return { ok: true, type: "payoneer", ownerMasked: mask(owner.ownerPayoneer, { keepStart: 1, keepEnd: 0 }) };
+  }
+  if (t === "bank_wire") {
+    const d = normalizeDestinationObject(destination ?? {});
+    const acct = normalizeBankAccount(d.account ?? "");
+    if (!owner.ownerBankAccount) throw new Error("FORBIDDEN DESTINATION: missing OWNER_BANK_ACCOUNT");
+    if (!acct || acct !== owner.ownerBankAccount) {
+      throw new Error(`FORBIDDEN DESTINATION: bank account is not OWNER_BANK_ACCOUNT (${String(action ?? "owner_sink")})`);
+    }
+    return { ok: true, type: "bank_wire", ownerMasked: mask(owner.ownerBankAccount, { keepStart: 0, keepEnd: 4 }) };
+  }
+  throw new Error(`FORBIDDEN DESTINATION TYPE: ${t} (${String(action ?? "owner_sink")})`);
+}
+
 function requireLiveMode(reason) {
   enforceSwarmLiveHardInvariant({ action: reason });
   verifyNoOfflineInLive();
@@ -1234,6 +1374,44 @@ async function createPayoutBatchesFromEarnings(
         continue;
       }
 
+      const forbiddenOwnerSinkEarningIds = [];
+      for (const e of list) {
+        const meta = earningCfg.fieldMap.metadata ? e?.[earningCfg.fieldMap.metadata] : null;
+        const recipientKind = normalizeRecipientType(recipType ?? null);
+        try {
+          if (recipientKind === "bank_wire") {
+            const d = resolveBankWireDestinationFromMeta(meta);
+            assertOwnerSink({ recipientType: "bank_wire", destination: d, action: "create_payout_batches" });
+          } else {
+            const recipient = resolveRecipientAddress(recipType, meta, benefKey || null);
+            assertOwnerSink({ recipientType: recipientKind, recipient, action: "create_payout_batches" });
+          }
+        } catch {
+          const eid = earningCfg.fieldMap.earningId ? e?.[earningCfg.fieldMap.earningId] : null;
+          forbiddenOwnerSinkEarningIds.push(eid ? String(eid) : String(e?.id ?? ""));
+        }
+      }
+
+      if (forbiddenOwnerSinkEarningIds.length > 0) {
+        if (!dryRun) {
+          throw new Error("FORBIDDEN DESTINATION: owner sink invariant violated");
+        }
+        created.push({
+          batchId,
+          batchInternalId: null,
+          beneficiary: benefKey || null,
+          recipientType: recipType || null,
+          currency: currencyKey || null,
+          earningCount: list.length,
+          itemCount: 0,
+          skipped: true,
+          reason: "owner_sink_forbidden",
+          forbiddenOwnerSinkEarningIds,
+          dryRun: !!dryRun
+        });
+        continue;
+      }
+
       if (allowedPolicy.configured === true) {
         for (const e of list) {
           const meta = earningCfg.fieldMap.metadata ? e?.[earningCfg.fieldMap.metadata] : null;
@@ -1466,6 +1644,7 @@ async function submitPayPalPayoutBatch(base44, { batchId, args, dryRun }) {
   const allowedPolicy = getAllowedRecipientsPolicyFromEnv();
   requireAllowedRecipientsForPayPalSend(allowedPolicy);
   for (const it of mapped) {
+    assertOwnerSink({ recipientType: "paypal", recipient: it.recipient, action: "submit_paypal_payout_batch" });
     if (isRecipientAllowedByPolicy("paypal", it.recipient, allowedPolicy)) continue;
     throw new Error(`Refusing PayPal send to non-owner recipient (${mask(it.recipient, { keepStart: 1, keepEnd: 0 })})`);
   }
@@ -1477,6 +1656,15 @@ async function submitPayPalPayoutBatch(base44, { batchId, args, dryRun }) {
     note: `Payout ${String(batchId)}`,
     sender_item_id: x.senderItemId
   }));
+  const payload = {
+    sender_batch_header: {
+      sender_batch_id: String(batchId),
+      email_subject: "You have a payout",
+      email_message: `Payout batch ${String(batchId)}`
+    },
+    items: paypalItems
+  };
+  const payloadHash = sha256Hex(JSON.stringify(payload));
   const response = await createPayPalPayoutBatch({
     senderBatchId: String(batchId),
     items: paypalItems,
@@ -1490,6 +1678,31 @@ async function submitPayPalPayoutBatch(base44, { batchId, args, dryRun }) {
   }
   const submittedAt = new Date().toISOString();
 
+  const proofPath = getPayoutProofPath(batchId);
+  const owner = getOwnerSinkFromEnv();
+  const proof = {
+    batch_id: String(batchId),
+    provider: "paypal",
+    provider_batch_id: String(paypalBatchId),
+    owner_destination: { type: "paypal", masked: owner?.ownerPayPal ? mask(owner.ownerPayPal, { keepStart: 1, keepEnd: 0 }) : "" },
+    total_amount: Number(mapped.reduce((sum, x) => sum + Number(x.amount ?? 0), 0).toFixed(2)),
+    currency: String(batchCurrency ?? mapped[0]?.currency ?? ""),
+    submitted_at: submittedAt,
+    webhook_confirmed: false,
+    payload_hash: payloadHash,
+    payload
+  };
+  const existingProof = tryReadJsonFile(proofPath);
+  const proofWrite = existingProof
+    ? (() => {
+        const existingProviderBatchId = existingProof?.provider_batch_id ?? null;
+        if (existingProviderBatchId && String(existingProviderBatchId) !== String(paypalBatchId)) {
+          throw new Error("Refusing to overwrite existing payout proof (provider_batch_id mismatch)");
+        }
+        return { bytes: 0, sha256: sha256FileSync(proofPath) };
+      })()
+    : writeJsonFileOnce(proofPath, proof);
+
   const existingNotes = payoutBatchCfg.fieldMap.notes ? (rec?.[payoutBatchCfg.fieldMap.notes] ?? {}) : null;
   const mergedNotes =
     existingNotes && typeof existingNotes === "object" && !Array.isArray(existingNotes)
@@ -1497,12 +1710,20 @@ async function submitPayPalPayoutBatch(base44, { batchId, args, dryRun }) {
           ...existingNotes,
           paypal_payout_batch_id: String(paypalBatchId),
           paypal_batch_status: response?.batch_header?.batch_status ?? existingNotes?.paypal_batch_status ?? null,
-          paypal_time_created: response?.batch_header?.time_created ?? existingNotes?.paypal_time_created ?? null
+          paypal_time_created: response?.batch_header?.time_created ?? existingNotes?.paypal_time_created ?? null,
+          payout_proof_path: proofPath,
+          payout_proof_sha256: proofWrite.sha256,
+          payout_proof_payload_hash: payloadHash,
+          payout_proof_written_at: submittedAt
         }
       : {
           paypal_payout_batch_id: String(paypalBatchId),
           paypal_batch_status: response?.batch_header?.batch_status ?? null,
-          paypal_time_created: response?.batch_header?.time_created ?? null
+          paypal_time_created: response?.batch_header?.time_created ?? null,
+          payout_proof_path: proofPath,
+          payout_proof_sha256: proofWrite.sha256,
+          payout_proof_payload_hash: payloadHash,
+          payout_proof_written_at: submittedAt
         };
 
   await batchEntity.update(rec.id, {
@@ -1559,6 +1780,7 @@ async function ensureProofOfLifePayout(base44, { recipientType, recipient, amoun
   const proofRecipientType = normalizeRecipientType(recipientType ?? "paypal", "paypal");
   const proofRecipient = String(recipient ?? "").trim();
   if (!proofRecipient) throw new Error("Missing recipient for proof-of-life payout");
+  assertOwnerSink({ recipientType: proofRecipientType, recipient: proofRecipient, action: "proof_of_life_payout" });
 
   const proofBatchId =
     batchId != null && String(batchId).trim()
@@ -1888,7 +2110,10 @@ async function exportPayoutTruth(base44, { batchId, limit, onlyReal = false }) {
     const internalBatchId = payoutBatchCfg.fieldMap.batchId ? b?.[payoutBatchCfg.fieldMap.batchId] : null;
     const notes = payoutBatchCfg.fieldMap.notes ? b?.[payoutBatchCfg.fieldMap.notes] : null;
     const externalProviderId = notes?.paypal_payout_batch_id ?? notes?.paypalPayoutBatchId ?? "NOT_SUBMITTED";
-    if (onlyReal && (!externalProviderId || String(externalProviderId) === "NOT_SUBMITTED")) continue;
+    const proofPath = internalBatchId ? getPayoutProofPath(internalBatchId) : null;
+    const proof = proofPath ? tryReadJsonFile(proofPath) : null;
+    const hasProof = !!proof;
+    if (onlyReal && (!externalProviderId || String(externalProviderId) === "NOT_SUBMITTED" || !hasProof)) continue;
     const totalAmount = payoutBatchCfg.fieldMap.totalAmount ? b?.[payoutBatchCfg.fieldMap.totalAmount] : null;
     const currency = payoutBatchCfg.fieldMap.currency ? b?.[payoutBatchCfg.fieldMap.currency] : null;
 
@@ -1912,12 +2137,16 @@ async function exportPayoutTruth(base44, { batchId, limit, onlyReal = false }) {
     ]);
 
     const truthSource = computeTruthSourceForBatch({ externalProviderId, notes, anyPayPalSignals });
-    const truthStatus = computeTruthStatusForBatch({ externalProviderId, notes, itemStatuses });
+    const truthStatus =
+      externalProviderId && String(externalProviderId) !== "NOT_SUBMITTED" && !hasProof
+        ? "NO PROOF: Money never moved"
+        : computeTruthStatusForBatch({ externalProviderId, notes, itemStatuses });
 
     rows.push({
       internalPayoutBatchId: internalBatchId,
       externalProviderId,
       paypal_payout_batch_id: externalProviderId,
+      payoutProof: hasProof ? { path: proofPath, payloadHash: proof?.payload_hash ?? null } : null,
       totalAmount,
       currency,
       providerKind: normalizeRecipientType(notes?.recipient_type ?? notes?.recipientType ?? null, "paypal") === "paypal" ? "paypal_payouts" : null,
@@ -2041,6 +2270,7 @@ async function exportPayoneerBatch(base44, { batchId, outPath }) {
   const payoutItemCfg = getPayoutItemConfigFromEnv();
   for (const it of items) {
     const recipient = payoutItemCfg.fieldMap.recipient ? it?.[payoutItemCfg.fieldMap.recipient] : null;
+    assertOwnerSink({ recipientType: "payoneer", recipient, action: "export_payoneer_batch" });
     const amount = payoutItemCfg.fieldMap.amount ? it?.[payoutItemCfg.fieldMap.amount] : null;
     const currency = payoutItemCfg.fieldMap.currency ? it?.[payoutItemCfg.fieldMap.currency] : null;
     const itemId = payoutItemCfg.fieldMap.itemId ? it?.[payoutItemCfg.fieldMap.itemId] : null;
@@ -2107,6 +2337,7 @@ async function exportBankWireBatch(base44, { batchId, outPath, destination }) {
     throw new Error("Missing destination details for bank wire export");
   }
   if (!account) throw new Error("Missing destination account for bank wire export");
+  assertOwnerSink({ recipientType: "bank_wire", destination: dest, action: "export_bank_wire_batch" });
 
   const header = [
     "batch_id",
@@ -2557,6 +2788,103 @@ async function main() {
   if (shouldUseOfflineMode(args)) process.env.BASE44_OFFLINE = "true";
 
   const base44 = buildBase44Client({ allowMissing: dryRun, mode: shouldUseOfflineMode(args) ? "offline" : "auto" });
+
+  if (args["redteam-owner-sink"] === true || args.redteamOwnerSink === true) {
+    const recipientType = normalizeRecipientType(args["recipient-type"] ?? args.recipientType ?? args.type ?? args.recipientType ?? "paypal", "paypal");
+    const owner = getOwnerSinkFromEnv();
+    const attemptRecipient =
+      args.recipient ??
+      args.email ??
+      args["recipient-email"] ??
+      (recipientType === "paypal" ? "non_owner@example.com" : recipientType === "payoneer" ? "non_owner@example.com" : null);
+    const attemptDestination =
+      recipientType === "bank_wire"
+        ? normalizeDestinationObject({
+            bank: args.bank ?? "",
+            swift: args.swift ?? "",
+            account: args.account ?? "000000000000000000000000",
+            beneficiary: args.beneficiary ?? ""
+          })
+        : null;
+
+    let allowed = false;
+    let error = null;
+    try {
+      if (recipientType === "bank_wire") {
+        assertOwnerSink({ recipientType: "bank_wire", destination: attemptDestination, action: "redteam_owner_sink" });
+      } else {
+        assertOwnerSink({ recipientType, recipient: attemptRecipient, action: "redteam_owner_sink" });
+      }
+      allowed = true;
+    } catch (e) {
+      error = e?.message ?? String(e);
+    }
+
+    const out = {
+      ok: !allowed,
+      redteam: true,
+      check: "owner_sink_invariant_blocks_non_owner",
+      recipientType,
+      attempted: recipientType === "bank_wire" ? sanitizeDestination(attemptDestination) : { recipientMasked: mask(attemptRecipient, { keepStart: 1, keepEnd: 0 }) },
+      ownerDeclared: {
+        paypal: owner.ownerPayPal ? mask(owner.ownerPayPal, { keepStart: 1, keepEnd: 0 }) : null,
+        payoneer: owner.ownerPayoneer ? mask(owner.ownerPayoneer, { keepStart: 1, keepEnd: 0 }) : null,
+        bankAccount: owner.ownerBankAccount ? mask(owner.ownerBankAccount, { keepStart: 0, keepEnd: 4 }) : null
+      },
+      ...(error ? { blockedBy: error } : {})
+    };
+    process.stdout.write(`${JSON.stringify(out)}\n`);
+    process.exitCode = out.ok ? 0 : 2;
+    return;
+  }
+
+  if (args["backup-state"] === true || args.backupState === true) {
+    const base44ForBackup = buildBase44Client({ allowMissing: true, mode: shouldUseOfflineMode(args) ? "offline" : "auto" });
+    const includeTruth =
+      args["include-truth"] === true ||
+      args.includeTruth === true ||
+      (process.env.BACKUP_INCLUDE_TRUTH ?? "true").toLowerCase() === "true";
+
+    const stamp = formatBackupStamp();
+    const outDir = path.resolve(
+      process.cwd(),
+      String(args["out-dir"] ?? args.outDir ?? args["backup-out"] ?? args.backupOut ?? path.join("backups", `backup_${stamp}`))
+    );
+    fs.mkdirSync(outDir, { recursive: true });
+
+    const copiedProofs = [];
+    for (const { file, absPath } of listProofFiles()) {
+      const toPath = path.join(outDir, "proof", file);
+      fs.mkdirSync(path.dirname(toPath), { recursive: true });
+      fs.copyFileSync(absPath, toPath);
+      copiedProofs.push({ file, bytes: fs.statSync(absPath).size, sha256: sha256FileSync(absPath) });
+    }
+
+    let payoutTruth = null;
+    if (includeTruth && base44ForBackup) {
+      try {
+        payoutTruth = await exportPayoutTruth(base44ForBackup, { batchId: null, limit: args.limit ? Number(args.limit) : 500, onlyReal: true });
+      } catch (e) {
+        payoutTruth = { ok: false, error: e?.message ?? String(e) };
+      }
+    }
+
+    const manifest = buildBackupManifest({
+      repoRoot: process.cwd(),
+      base44Online: base44ForBackup && !base44ForBackup?.offline?.filePath,
+      extra: {
+        outDir,
+        copiedProofCount: copiedProofs.length,
+        copiedProofs,
+        payoutTruthIncluded: !!payoutTruth,
+        ...(payoutTruth ? { payoutTruth } : {})
+      }
+    });
+    const manifestPath = path.join(outDir, "manifest.json");
+    fs.writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
+    process.stdout.write(`${JSON.stringify({ ok: true, outDir, manifestPath })}\n`);
+    return;
+  }
 
   if (
     args["check-simulation"] === true ||

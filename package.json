@@ -25,6 +25,13 @@
     "deploy:all": "npm run deploy:permanent",
     "check:all-good": "node ./src/autonomous-daemon.mjs --all-good",
     "check:simulation": "node ./src/emit-revenue-events.mjs --check-simulation",
+    "prove:money-moved": "node ./src/prove-money-moved.mjs",
+    "migrate:audit": "node migrate/audit-tracked-revenue.mjs",
+    "migrate:create": "node migrate/create-migration-batches.mjs",
+    "migrate:approve": "node migrate/approve-migration-batches.mjs",
+    "migrate:execute": "node migrate/execute-migration.mjs",
+    "migrate:all": "node migrate/all-in-one.mjs",
+    "migrate:status": "type migrate\\migration-summary.md",
     "test": "node --test"
   },
   "dependencies": {

@@ -39,6 +39,23 @@ LATEST IMPLEMENTED CHANGES (2025-12-28)
 - SBDS allowlist enforcement at payout-batch creation:
   - payout batch creation validates recipients against configured allowlists for PayPal/Payoneer and bank-wire destinations; non-compliant earnings are skipped with reason recipient_not_allowed.
 
+LATEST IMPLEMENTED CHANGES (2025-12-30 - PART 2)
+- Revenue Repatriation / Migration Protocol (Unlock.txt):
+  - Added `migrate/audit-tracked-revenue.mjs` to audit unpaid revenue events.
+  - Added `migrate/create-migration-batches.mjs` to group unpaid revenue into migration batches.
+  - Added `migrate/approve-migration-batches.mjs` for batch approval (supports auto-approve or TOTP).
+  - Added `migrate/execute-migration.mjs` to execute approved batches via PayPal or generate Bank Wire CSV.
+  - Added `migrate/all-in-one.mjs` for one-shot migration execution.
+  - Configured via `migrate/.env.migration`.
+- Swarm Resilience & Circuit Breakers:
+  - Implemented `CircuitBreaker` pattern in `src/swarm/circuit-breakers.mjs` (5 failures, 60s reset).
+  - Integrated Circuit Breakers into `src/paypal-api.mjs` (API calls) and `src/base44-client.mjs` (ledger writes).
+  - Added `src/swarm/` module structure for Health Monitor, Task Manager, Shared Memory, Rail Optimizer.
+- Proof & Compliance:
+  - Added `src/prove-money-moved.mjs` for cryptographic verification of payout artifacts.
+  - Enforced append-only logic for proof artifacts in `src/emit-revenue-events.mjs`.
+  - Hardened Owner-Sink rule in `src/emit-revenue-events.mjs` and `src/paypal-api.mjs`.
+
 LATEST IMPLEMENTED CHANGES (2025-12-30)
 - Authority env is now fully wired by deploy-live:
   - deploy-live.ps1 sets NO_PLATFORM_WALLET=true (unless already set).
@@ -527,6 +544,7 @@ Immediate remediation actions:
 - npm run emit:revenue -- --report-transaction-logs
 - npm run paypal:webhook:check
 - npm run monitor:once
+- npm run prove:money-moved
 
 
 12) WORKSPACE CHANGELOG (CHRONOLOGICAL)
@@ -542,7 +560,14 @@ Changes (chronological, this workspace):
 
 3) Truth-only UI export contract:
    - emit-revenue-events: --export-payout-truth emits authoritative rows for UI (internal id, external id, provider status, sync timestamps, truthStatus).
-   - --only-real / --truth-only-ui (or BASE44_ENABLE_TRUTH_ONLY_UI=true) filters out batches missing notes.paypal_payout_batch_id.
+   - --only-real / --truth-only-ui (or BASE44_ENABLE_TRUTH_ONLY_UI=true) filters out batches missing notes.paypal_payout_batch_id OR missing proof/payout_<batch_id>.json.
+
+3.1) Append-only payout proof artifacts:
+   - On PayPal submission success, write proof/payout_<batch_id>.json (append-only, never overwritten).
+   - Export truth marks any batch with provider id but missing proof as: "NO PROOF: Money never moved".
+
+3.2) Owner sink invariant:
+   - Payout batch creation, PayPal submission, and payout exports enforce owner-only destinations.
 
 4) Repair safety net:
    - --repair-payout-truth rolls back submitted_to_paypal batches missing notes.paypal_payout_batch_id to approved and stamps notes.truth_enforced_*.
@@ -567,6 +592,10 @@ Changes (chronological, this workspace):
 9) "All Good" proof command:
    - npm run check:all-good returns a single JSON verdict, including readiness, mission health, simulation scan, payout truth export, and freeze state.
    - Exits non-zero if any proof-of-life requirement fails.
+
+10) Money movement proof command:
+   - npm run prove:money-moved verifies payout proof files and confirms completion via PayPal API.
+   - Exits non-zero if any proof is missing, tampered, or not completed.
 
 Verification:
 - npm test: PASS (84/84)

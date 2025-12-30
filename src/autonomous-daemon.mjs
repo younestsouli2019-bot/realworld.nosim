@@ -8,6 +8,11 @@ import { buildBase44ServiceClient } from "./base44-client.mjs";
 import { getPayPalAccessToken } from "./paypal-api.mjs";
 import { maybeSendAlert } from "./alerts.mjs";
 import { enforceAuthorityProtocol } from "./authority.mjs";
+import { AgentHealthMonitor } from "./swarm/health-monitor.mjs";
+import { ConfigManager } from "./swarm/config-manager.mjs";
+import { SwarmMemory } from "./swarm/shared-memory.mjs";
+import { RailOptimizer } from "./swarm/rail-optimizer.mjs";
+import { TaskManager } from "./swarm/task-manager.mjs";
 
 function parseArgs(argv) {
   const args = {};
@@ -1669,6 +1674,19 @@ async function main() {
   const loaded = await loadAutonomousConfig({ configPath: args.config ?? args["config"] ?? null });
   let cfg = resolveRuntimeConfig(args, loaded.config);
 
+  // Initialize Swarm components
+  const healthMonitor = new AgentHealthMonitor();
+  healthMonitor.registerAgent("autonomous-daemon");
+
+  const swarmMemory = new SwarmMemory();
+  const configManager = new ConfigManager();
+  
+  const agentsMap = new Map();
+  agentsMap.set("autonomous-daemon", { capabilities: ["payout_management", "health_monitoring", "system_admin"] });
+  const taskManager = new TaskManager(agentsMap);
+  
+  const railOptimizer = new RailOptimizer();
+
   if (isMoneyMovingTasks(cfg)) {
     enforceSwarmLiveHardInvariant({ component: "autonomous-daemon", action: "startup" });
     validateDaemonLiveModeOrThrow(cfg);
@@ -1801,7 +1819,27 @@ async function main() {
 
   do {
     try {
+      healthMonitor.heartbeat("autonomous-daemon");
+      healthMonitor.checkHealth();
+
       const out = await runTick(cfg, state);
+      
+      // Sync state to swarm memory (best effort)
+      swarmMemory.update("daemon-state", { ...state, lastTick: out }, "autonomous-daemon", "tick-update").catch(() => {});
+
+      // Feed feedback to RailOptimizer and persist stats
+      if (out.results?.autoSubmitPayPal) {
+          const res = out.results.autoSubmitPayPal;
+          if (res.ok) railOptimizer.recordResult("paypal", true, 1000);
+          else if (res.failures?.length > 0) railOptimizer.recordResult("paypal", false, 1000);
+      }
+      if (out.results?.autoExportPayoneer) {
+           const res = out.results.autoExportPayoneer;
+           if (res.ok) railOptimizer.recordResult("payoneer", true, 1000);
+           else if (res.failures?.length > 0) railOptimizer.recordResult("payoneer", false, 1000);
+      }
+      swarmMemory.update("rail-stats", railOptimizer.stats, "autonomous-daemon", "stats-update").catch(() => {});
+
       state.consecutiveFailures = out.ok ? 0 : state.consecutiveFailures + 1;
     } catch (e) {
       const msg = e?.message ?? String(e);

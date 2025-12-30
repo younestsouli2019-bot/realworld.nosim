@@ -1,8 +1,12 @@
+import { CircuitBreaker } from "./swarm/circuit-breakers.mjs";
+
 const PAYPAL_API_BASE =
   process.env.PAYPAL_API_BASE_URL ??
   ((process.env.PAYPAL_MODE ?? "live").toLowerCase() === "sandbox"
     ? "https://api-m.sandbox.paypal.com"
     : "https://api-m.paypal.com");
+
+const globalCircuitBreaker = new CircuitBreaker(5, 60000);
 
 function isPlaceholderValue(value) {
   if (value == null) return true;
@@ -73,32 +77,61 @@ export async function getPayPalAccessToken() {
 }
 
 export async function paypalRequest(path, { method = "GET", token, headers, body } = {}) {
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), getHttpTimeoutMs());
-  let res;
-  try {
-    res = await fetch(`${PAYPAL_API_BASE}${path}`, {
-      method,
-      headers: {
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        ...(body ? { "Content-Type": "application/json" } : {}),
-        ...(headers ?? {})
-      },
-      ...(body ? { body: JSON.stringify(body) } : {}),
-      signal: controller.signal
-    });
-  } finally {
-    clearTimeout(timeout);
-  }
+  return globalCircuitBreaker.call("paypal_api", async () => {
+    const maxAttempts = Math.max(1, Math.floor(Number(process.env.PAYPAL_HTTP_RETRY_ATTEMPTS ?? "3")));
+    const baseDelayMs = Math.max(50, Math.floor(Number(process.env.PAYPAL_HTTP_RETRY_BASE_DELAY_MS ?? "400")));
+    const retryable = new Set([429, 500, 502, 503, 504]);
 
-  if (!res.ok) {
-    const text = await res.text().catch(() => "");
-    throw new Error(`PayPal request failed (${res.status}) ${method} ${path}: ${text}`);
-  }
+    let lastErr = null;
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), getHttpTimeoutMs());
+      let res;
+      try {
+        res = await fetch(`${PAYPAL_API_BASE}${path}`, {
+          method,
+          headers: {
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+            ...(body ? { "Content-Type": "application/json" } : {}),
+            ...(headers ?? {})
+          },
+          ...(body ? { body: JSON.stringify(body) } : {}),
+          signal: controller.signal
+        });
+      } catch (e) {
+        lastErr = e;
+        if (attempt >= maxAttempts) throw e;
+        const delayMs = Math.floor(baseDelayMs * 2 ** (attempt - 1) + Math.random() * 200);
+        await new Promise((r) => setTimeout(r, delayMs));
+        continue;
+      } finally {
+        clearTimeout(timeout);
+      }
 
-  const contentType = res.headers.get("content-type") || "";
-  if (contentType.includes("application/json")) return res.json();
-  return res.text();
+      if (!res.ok) {
+        const status = Number(res.status);
+        const text = await res.text().catch(() => "");
+        const err = new Error(`PayPal request failed (${status}) ${method} ${path}: ${text}`);
+        lastErr = err;
+
+        const retryAfter = res.headers.get("retry-after");
+        const retryAfterMs = retryAfter && /^[0-9]+$/.test(String(retryAfter).trim()) ? Number(retryAfter) * 1000 : null;
+
+        if (attempt < maxAttempts && retryable.has(status)) {
+          const delayMs = retryAfterMs != null ? retryAfterMs : Math.floor(baseDelayMs * 2 ** (attempt - 1) + Math.random() * 200);
+          await new Promise((r) => setTimeout(r, delayMs));
+          continue;
+        }
+        throw err;
+      }
+
+      const contentType = res.headers.get("content-type") || "";
+      if (contentType.includes("application/json")) return res.json();
+      return res.text();
+    }
+
+    throw lastErr ?? new Error(`PayPal request failed: ${method} ${path}`);
+  });
 }
 
 export function extractPayPalWebhookHeaders(reqHeaders) {

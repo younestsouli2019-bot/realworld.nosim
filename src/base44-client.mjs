@@ -1,6 +1,9 @@
 import { createClient } from "@base44/sdk";
 import fs from "node:fs/promises";
 import path from "node:path";
+import { CircuitBreaker } from "./swarm/circuit-breakers.mjs";
+
+const globalCircuitBreaker = new CircuitBreaker(5, 60000);
 
 function getEnvOrThrow(name) {
   const v = process.env[name];
@@ -175,11 +178,44 @@ function createOnlineClient() {
   const { appId, serviceToken } = getOnlineAuth();
   const serverUrl = process.env.BASE44_SERVER_URL;
 
-  return createClient({
+  const client = createClient({
     ...(serverUrl ? { serverUrl } : {}),
     appId,
     serviceToken
   });
+
+  // Wrap entities to use circuit breaker for writes
+  const originalEntities = client.asServiceRole.entities;
+  const wrappedEntities = new Proxy(originalEntities, {
+    get(target, prop) {
+      const entity = target[prop];
+      if (!entity) return undefined;
+
+      return new Proxy(entity, {
+        get(ent, action) {
+          const method = ent[action];
+          if (typeof method !== "function") return method;
+
+          if (["create", "update", "delete"].includes(action)) {
+            return async (...args) => {
+              return globalCircuitBreaker.call("base44_write", async () => {
+                return method.apply(ent, args);
+              });
+            };
+          }
+          return method.bind(ent);
+        }
+      });
+    }
+  });
+
+  return {
+    ...client,
+    asServiceRole: {
+      ...client.asServiceRole,
+      entities: wrappedEntities
+    }
+  };
 }
 
 function decodeJwtPayload(token) {
