@@ -1,3 +1,4 @@
+import { globalRecorder } from './flight-recorder.mjs';
 
 export class CircuitBreaker {
   constructor(failureThreshold = 5, resetTimeout = 60000) {
@@ -15,6 +16,7 @@ export class CircuitBreaker {
       const failureData = this.failures.get(operationName);
       if (failureData && Date.now() - failureData.lastFailure > this.resetTimeout) {
         this.states.set(operationName, 'HALF_OPEN');
+        globalRecorder.info(`[CircuitBreaker] HALF_OPEN: ${operationName} (Probing...)`);
       } else {
         throw new Error(`Circuit breaker OPEN for ${operationName}`);
       }
@@ -27,6 +29,7 @@ export class CircuitBreaker {
       if (state === 'HALF_OPEN') {
         this.states.set(operationName, 'CLOSED');
         this.failures.delete(operationName);
+        globalRecorder.info(`[CircuitBreaker] CLOSED: ${operationName} (Recovered)`);
       }
       
       return result;
@@ -41,7 +44,10 @@ export class CircuitBreaker {
       
       // Open circuit if threshold reached
       if (failureCount >= this.failureThreshold) {
-        this.states.set(operationName, 'OPEN');
+        if (state !== 'OPEN') {
+           this.states.set(operationName, 'OPEN');
+           globalRecorder.warn(`[CircuitBreaker] OPEN: ${operationName} (Failures: ${failureCount})`, { error: error.message });
+        }
       }
       
       throw error;
