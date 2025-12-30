@@ -1630,6 +1630,14 @@ async function submitPayPalPayoutBatch(base44, { batchId, args, dryRun }) {
   }
   if (mapped.length === 0) throw new Error(`No valid payout items for batch: ${batchId}`);
 
+  // Safety: Agentic Guardrail against "Runaway Agent"
+  // Enforce a strict maximum amount per batch to prevent wallet draining if agent logic fails.
+  const MAX_BATCH_AMOUNT = Number(process.env.MAX_PAYOUT_BATCH_AMOUNT ?? "5000");
+  const totalBatchAmount = mapped.reduce((sum, item) => sum + item.amount, 0);
+  if (totalBatchAmount > MAX_BATCH_AMOUNT) {
+    throw new Error(`SAFETY: Payout batch amount ${totalBatchAmount} exceeds limit ${MAX_BATCH_AMOUNT} (MAX_PAYOUT_BATCH_AMOUNT)`);
+  }
+
   if (dryRun) {
     return { dryRun: true, batchId: String(batchId), itemCount: mapped.length };
   }

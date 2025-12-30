@@ -42,6 +42,10 @@ export class FlightRecorder {
   error(message, meta) { this.log('ERROR', message, meta); }
   fatal(message, meta) { this.log('FATAL', message, meta); }
 
+  recordDecision(context, rationale, outcome) {
+    this.info(`DECISION: ${context}`, { rationale, outcome });
+  }
+
   dump(reason = 'manual_trigger') {
     const dumpId = `crash_dump_${Date.now()}_${process.pid}`;
     const dumpPath = path.join(this.dumpDir, `${dumpId}.json`);
