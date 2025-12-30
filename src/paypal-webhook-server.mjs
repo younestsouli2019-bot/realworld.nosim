@@ -17,6 +17,7 @@ import {
 import { maybeSendAlert } from "./alerts.mjs";
 import { createDedupeStore } from "./dedupe-store.mjs";
 import { enforceAuthorityProtocol } from "./authority.mjs";
+import { addSecurityHeaders, validateRequest, validateAuth } from "./security-middleware.mjs";
 
 function parseArgs(argv) {
   const args = {};
@@ -939,7 +940,14 @@ if (args.check === true || args["config-check"] === true) {
   attachFlushOnSignals();
 
   const server = http.createServer(async (req, res) => {
-  const startMs = Date.now();
+    addSecurityHeaders(res);
+    const secErr = validateRequest(req);
+    if (secErr) {
+      json(res, secErr.status, { ok: false, error: secErr.error });
+      return;
+    }
+
+    const startMs = Date.now();
   try {
     const pathname = getPathname(req);
 
@@ -955,6 +963,11 @@ if (args.check === true || args["config-check"] === true) {
     }
 
     if (pathname === "/all-good") {
+      const validTokens = [process.env.BASE44_SERVICE_TOKEN, process.env.SWARM_SECRET_KEY].filter(Boolean);
+      if (!validateAuth(req, validTokens)) {
+        json(res, 401, { ok: false, error: "Unauthorized" });
+        return;
+      }
       if (req.method !== "GET") {
         json(res, 405, { ok: false, error: "Method not allowed" });
         return;
@@ -977,6 +990,11 @@ if (args.check === true || args["config-check"] === true) {
     }
 
     if (pathname === "/revenue/status") {
+      const validTokens = [process.env.BASE44_SERVICE_TOKEN, process.env.SWARM_SECRET_KEY].filter(Boolean);
+      if (!validateAuth(req, validTokens)) {
+        json(res, 401, { ok: false, error: "Unauthorized" });
+        return;
+      }
       if (req.method !== "GET") {
         json(res, 405, { ok: false, error: "Method not allowed" });
         return;

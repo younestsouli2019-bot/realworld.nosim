@@ -13,6 +13,7 @@ import { ConfigManager } from "./swarm/config-manager.mjs";
 import { SwarmMemory } from "./swarm/shared-memory.mjs";
 import { RailOptimizer } from "./swarm/rail-optimizer.mjs";
 import { TaskManager } from "./swarm/task-manager.mjs";
+import { globalRecorder } from "./swarm/flight-recorder.mjs";
 
 function parseArgs(argv) {
   const args = {};

@@ -323,7 +323,20 @@ function parseApiKeyValue(raw) {
 function getOnlineAuth() {
   const envAppId = normalizeAppIdInput(process.env.BASE44_APP_ID);
   const envServiceToken = coerceNonEmptyString(process.env.BASE44_SERVICE_TOKEN);
-  if (envAppId && envServiceToken) return { appId: envAppId, serviceToken: envServiceToken };
+  
+  // Strict Identity Check: Ensure token matches App ID if both provided
+  if (envAppId && envServiceToken) {
+    const decoded = decodeJwtPayload(envServiceToken);
+    if (decoded) {
+      const tokenAppId = normalizeAppIdInput(decoded.appId ?? decoded.app_id ?? decoded.applicationId);
+      if (tokenAppId && tokenAppId !== envAppId) {
+        // Mitigation for "Identifiers aren't Identities":
+        // Prevent using a token for one app with the ID of another.
+        throw new Error(`Security Mismatch: BASE44_APP_ID (${envAppId}) does not match token's app_id (${tokenAppId})`);
+      }
+    }
+    return { appId: envAppId, serviceToken: envServiceToken };
+  }
 
   const apiKeyRaw = process.env.BASE44_API_KEY ?? process.env.BASE44_API_TOKEN ?? process.env.BASE44_KEY ?? null;
   const parsed = parseApiKeyValue(apiKeyRaw);
@@ -333,6 +346,17 @@ function getOnlineAuth() {
 
   if (!appId) throw new Error("Missing required env var: BASE44_APP_ID");
   if (!serviceToken) throw new Error("Missing required env var: BASE44_SERVICE_TOKEN");
+
+  // Validate inferred match as well
+  if (serviceToken) {
+     const decoded = decodeJwtPayload(serviceToken);
+     if (decoded) {
+       const tokenAppId = normalizeAppIdInput(decoded.appId ?? decoded.app_id ?? decoded.applicationId);
+       if (tokenAppId && tokenAppId !== appId) {
+         throw new Error(`Security Mismatch: Inferred App ID (${appId}) does not match token's app_id (${tokenAppId})`);
+       }
+     }
+  }
 
   return { appId, serviceToken };
 }
