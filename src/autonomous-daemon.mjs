@@ -159,6 +159,34 @@ function validateDaemonLiveModeOrThrow(cfg) {
   }
 }
 
+function validatePermanentDeploymentEnvOrThrow(cfg) {
+  enforceSwarmLiveHardInvariant({ component: "permanent-deploy", action: "startup" });
+  if (cfg?.offline?.enabled === true) throw new Error("LIVE MODE NOT GUARANTEED (offline enabled)");
+  if (cfg?.payout?.dryRun === true) throw new Error("LIVE MODE NOT GUARANTEED (dry-run enabled)");
+  if (!envIsTrue(process.env.BASE44_ENABLE_PAYOUT_LEDGER_WRITE, "false")) {
+    throw new Error("LIVE MODE NOT GUARANTEED (BASE44_ENABLE_PAYOUT_LEDGER_WRITE not true)");
+  }
+  if (!envIsTrue(process.env.NO_PLATFORM_WALLET, "false")) {
+    throw new Error("LIVE MODE NOT GUARANTEED (NO_PLATFORM_WALLET not true)");
+  }
+  if (!envIsTrue(process.env.BASE44_ENABLE_TRUTH_ONLY_UI, "false")) {
+    throw new Error("LIVE MODE NOT GUARANTEED (BASE44_ENABLE_TRUTH_ONLY_UI not true)");
+  }
+  enforceAuthorityProtocol({ action: "permanent-deploy startup", requireLive: true });
+  requireRealEnv("BASE44_APP_ID");
+  requireRealEnv("BASE44_SERVICE_TOKEN");
+  requireRealEnv("PAYPAL_CLIENT_ID");
+  requireRealEnv("PAYPAL_CLIENT_SECRET");
+  requireRealEnv("PAYPAL_WEBHOOK_ID");
+  verifyNoSandboxPayPal();
+
+  const ownerPaypal = process.env.OWNER_PAYPAL_EMAIL;
+  const ownerBank = process.env.OWNER_BANK_ACCOUNT ?? process.env.BANK_ACCOUNT ?? process.env.BANK_RIB ?? null;
+  if (isPlaceholderValue(ownerPaypal) && isPlaceholderValue(ownerBank)) {
+    throw new Error("LIVE MODE NOT GUARANTEED (no owner payout destination configured)");
+  }
+}
+
 function normalizeIntervalMs(value, fallback) {
   const ms = Number(value);
   if (!ms || Number.isNaN(ms) || ms < 1000) return fallback;
@@ -1631,6 +1659,12 @@ async function runTick(cfg, state) {
 async function main() {
   const args = parseArgs(process.argv);
   const once = args.once === true;
+  const permanentDeploy =
+    args["permanent-deploy"] === true ||
+    args.permanentDeploy === true ||
+    args["deploy-permanent"] === true ||
+    args.deployPermanent === true ||
+    args.permanent === true;
 
   const loaded = await loadAutonomousConfig({ configPath: args.config ?? args["config"] ?? null });
   let cfg = resolveRuntimeConfig(args, loaded.config);
@@ -1705,15 +1739,65 @@ async function main() {
     return;
   }
 
-  process.stdout.write(`${JSON.stringify({ ok: true, daemon: true, once, configPath: loaded.configPath, cfg })}\n`);
+  const managed = new Map();
+  const stopManaged = () => {
+    for (const proc of managed.values()) {
+      try {
+        proc.kill("SIGTERM");
+      } catch {}
+    }
+    managed.clear();
+  };
 
   let stop = false;
+
+  const startManagedWebhookServer = () => {
+    const script = "./src/paypal-webhook-server.mjs";
+    const child = spawn(process.execPath, [script], {
+      cwd: process.cwd(),
+      env: { ...process.env, PERMANENT_DEPLOYMENT: "true" },
+      stdio: ["ignore", "pipe", "pipe"]
+    });
+    child.stdout.on("data", (d) => process.stdout.write(d));
+    child.stderr.on("data", (d) => process.stderr.write(d));
+    child.on("close", (code) => {
+      managed.delete("webhook");
+      if (stop) return;
+      const delay = normalizeIntervalMs(process.env.PERMANENT_RESTART_DELAY_MS ?? "5000", 5000);
+      process.stderr.write(`${JSON.stringify({ ok: false, at: nowIso(), error: "webhook_exit", code: Number(code ?? 0) })}\n`);
+      setTimeout(() => {
+        if (stop) return;
+        startManagedWebhookServer();
+      }, delay);
+    });
+    managed.set("webhook", child);
+  };
+
+  process.stdout.write(`${JSON.stringify({ ok: true, daemon: true, once, configPath: loaded.configPath, cfg })}\n`);
+
   process.on("SIGINT", () => {
     stop = true;
+    stopManaged();
   });
   process.on("SIGTERM", () => {
     stop = true;
+    stopManaged();
   });
+
+  if (permanentDeploy) {
+    validatePermanentDeploymentEnvOrThrow(cfg);
+    startManagedWebhookServer();
+    process.stdout.write(
+      `${JSON.stringify({
+        ok: true,
+        permanentDeploy: true,
+        at: nowIso(),
+        services: {
+          webhook: { local: "http://127.0.0.1:8787/paypal/webhook", health: "http://127.0.0.1:8787/health", revenue: "http://127.0.0.1:8787/revenue/live" }
+        }
+      })}\n`
+    );
+  }
 
   do {
     try {

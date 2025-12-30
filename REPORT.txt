@@ -109,12 +109,16 @@ Core components and loops:
 
 - Reconciliation / audit
   - Webhook server: src/paypal-webhook-server.mjs (updates ledger on PayPal payout-item webhooks)
+  - Live status endpoints (served by webhook server):
+    - /revenue/live (HTML)
+    - /revenue/status (JSON, based on all-good summary)
   - Optional PayPal batch sync: src/sync-paypal-payout-batch.mjs (stores PayPal batch details as a separate entity)
   - Ledger reports: src/emit-revenue-events.mjs (stuck payouts, transaction logs, etc.)
 
 Operational entry points (package.json):
 - npm run emit:revenue
 - npm run status:reality-check
+- npm run deploy:permanent (runs autonomous daemon + supervises webhook server)
 - npm run approve:batch (requires -- --batch-id <ID> [--totp <CODE>])
 - npm run rollback:batch (requires -- --batch-id <ID>)
 - npm run paypal:webhook

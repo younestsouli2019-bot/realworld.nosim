@@ -114,6 +114,15 @@ function json(res, status, data) {
   res.end(body);
 }
 
+function html(res, status, body) {
+  const text = String(body ?? "");
+  res.writeHead(status, {
+    "Content-Type": "text/html; charset=utf-8",
+    "Content-Length": Buffer.byteLength(text)
+  });
+  res.end(text);
+}
+
 function normalizeCurrency(value, fallback) {
   if (!value) return fallback;
   const v = String(value).trim().toUpperCase();
@@ -964,6 +973,76 @@ if (args.check === true || args["config-check"] === true) {
         return;
       }
       json(res, 200, { ok: true, exitCode: ran.exitCode ?? null, result: ran.result });
+      return;
+    }
+
+    if (pathname === "/revenue/status") {
+      if (req.method !== "GET") {
+        json(res, 405, { ok: false, error: "Method not allowed" });
+        return;
+      }
+      const timeoutMsRaw =
+        process.env.WEBHOOK_ALL_GOOD_TIMEOUT_MS ??
+        process.env.ALL_GOOD_TIMEOUT_MS ??
+        process.env.AUTONOMOUS_ALL_GOOD_TIMEOUT_MS ??
+        "45000";
+      const timeoutMsNum = Number(timeoutMsRaw);
+      const timeoutMs =
+        Number.isFinite(timeoutMsNum) && timeoutMsNum >= 1000 && timeoutMsNum <= 120000 ? timeoutMsNum : 45000;
+      const ran = await runAllGoodSummaryOnce({ timeoutMs });
+      if (!ran.ok) {
+        json(res, 503, { ok: false, error: ran.error ?? "revenue_status_failed", exitCode: ran.exitCode ?? null });
+        return;
+      }
+      json(res, 200, { ok: true, at: new Date().toISOString(), result: ran.result });
+      return;
+    }
+
+    if (pathname === "/revenue/live") {
+      if (req.method !== "GET") {
+        json(res, 405, { ok: false, error: "Method not allowed" });
+        return;
+      }
+      const page = `<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Revenue Status</title>
+  <style>
+    body { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; padding: 16px; }
+    pre { white-space: pre-wrap; word-break: break-word; padding: 12px; background: #0b1020; color: #e6edf3; border-radius: 8px; }
+    .ok { color: #2ea043; }
+    .bad { color: #f85149; }
+    a { color: #58a6ff; }
+  </style>
+</head>
+<body>
+  <h2>Swarm Revenue Status</h2>
+  <div>Endpoint: <a href="/revenue/status">/revenue/status</a> | <a href="/all-good">/all-good</a> | <a href="/health">/health</a></div>
+  <div id="meta"></div>
+  <pre id="out">Loading…</pre>
+  <script>
+    async function tick() {
+      const outEl = document.getElementById('out');
+      const metaEl = document.getElementById('meta');
+      try {
+        const res = await fetch('/revenue/status', { cache: 'no-store' });
+        const j = await res.json();
+        const ok = !!j && j.ok === true;
+        metaEl.innerHTML = 'Status: ' + (ok ? '<span class="ok">OK</span>' : '<span class="bad">NOT OK</span>') + ' | HTTP ' + res.status + ' | ' + new Date().toISOString();
+        outEl.textContent = JSON.stringify(j, null, 2);
+      } catch (e) {
+        metaEl.innerHTML = 'Status: <span class="bad">ERROR</span> | ' + new Date().toISOString();
+        outEl.textContent = String(e && e.message ? e.message : e);
+      }
+    }
+    tick();
+    setInterval(tick, 15000);
+  </script>
+</body>
+</html>`;
+      html(res, 200, page);
       return;
     }
 

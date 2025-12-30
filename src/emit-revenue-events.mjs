@@ -693,9 +693,15 @@ function getRoutingMadBankThreshold() {
   return v;
 }
 
+function getRoutingUsdBankThreshold() {
+  const v = Number(process.env.AUTONOMOUS_ROUTING_USD_BANK_THRESHOLD ?? "500");
+  if (!Number.isFinite(v) || v <= 0) return 500;
+  return v;
+}
+
 function getRoutingUsdPayPalThreshold() {
-  const v = Number(process.env.AUTONOMOUS_ROUTING_USD_PAYPAL_THRESHOLD ?? "5000");
-  if (!Number.isFinite(v) || v <= 0) return 5000;
+  const v = Number(process.env.AUTONOMOUS_ROUTING_USD_PAYPAL_THRESHOLD ?? "500");
+  if (!Number.isFinite(v) || v <= 0) return 500;
   return v;
 }
 
@@ -710,6 +716,12 @@ function chooseOptimizedRecipientType({ amount, currency, meta, beneficiary }) {
     : null;
 
   if (c === "MAD" && n >= getRoutingMadBankThreshold()) {
+    if (bankDest) return "bank_wire";
+    if (paypalEmail) return "paypal";
+    return "beneficiary";
+  }
+
+  if (c === "USD" && n >= getRoutingUsdBankThreshold()) {
     if (bankDest) return "bank_wire";
     if (paypalEmail) return "paypal";
     return "beneficiary";
