@@ -2,7 +2,13 @@ import http from "node:http";
 import crypto from "node:crypto";
 import { spawn } from "node:child_process";
 import { buildBase44ServiceClient } from "./base44-client.mjs";
-import { extractPayPalWebhookHeaders, verifyPayPalWebhookSignature, getPayPalAccessToken, paypalRequest } from "./paypal-api.mjs";
+import {
+  extractPayPalWebhookHeaders,
+  verifyPayPalWebhookSignature,
+  getPayPalAccessToken,
+  paypalRequest,
+  getPayPalOrderDetails
+} from "./paypal-api.mjs";
 import { mapPayPalWebhookToRevenueEvent } from "./paypal-event-mapper.mjs";
 import {
   createBase44RevenueEventIdempotent,
@@ -10,6 +16,7 @@ import {
 } from "./base44-revenue.mjs";
 import { maybeSendAlert } from "./alerts.mjs";
 import { createDedupeStore } from "./dedupe-store.mjs";
+import { enforceAuthorityProtocol } from "./authority.mjs";
 
 function parseArgs(argv) {
   const args = {};
@@ -53,6 +60,7 @@ function requireLiveMode(reason) {
   if (paypalMode === "sandbox" || paypalBase.includes("sandbox.paypal.com")) {
     throw new Error(`LIVE MODE NOT GUARANTEED (PayPal sandbox configured: ${reason})`);
   }
+  enforceAuthorityProtocol({ action: reason, requireLive: true });
 }
 
 function isPlaceholderValue(value) {
@@ -986,6 +994,64 @@ if (args.check === true || args["config-check"] === true) {
         },
         compliance: { sbds: "1.0", direct_settlement: true, no_intermediaries: true }
       });
+      return;
+    }
+
+    if (pathname.startsWith("/acp/v1/transactions/")) {
+      if (req.method !== "GET") {
+        json(res, 405, { ok: false, error: "Method not allowed" });
+        return;
+      }
+      const parts = pathname.split("/").filter(Boolean);
+      const id = parts.length > 0 ? parts[parts.length - 1] : null;
+      if (!id) {
+        json(res, 400, { ok: false, error: "Missing transaction id" });
+        return;
+      }
+      try {
+        requireLiveMode("get PayPal order");
+      } catch (e) {
+        json(res, 403, { ok: false, error: e?.message ?? String(e) });
+        return;
+      }
+      try {
+        const order = await getPayPalOrderDetails(id);
+        const purchaseUnits = Array.isArray(order?.purchase_units)
+          ? order.purchase_units.map((u) => {
+              const captures = Array.isArray(u?.payments?.captures)
+                ? u.payments.captures.map((c) => ({
+                    id: c?.id ?? null,
+                    status: c?.status ?? null,
+                    amount: c?.amount ?? null,
+                    final_capture: c?.final_capture ?? null,
+                    create_time: c?.create_time ?? null,
+                    update_time: c?.update_time ?? null
+                  }))
+                : [];
+              return {
+                reference_id: u?.reference_id ?? null,
+                amount: u?.amount ?? null,
+                payments: captures.length > 0 ? { captures } : null
+              };
+            })
+          : [];
+        json(res, 200, {
+          ok: true,
+          protocol: "ACP-1.0",
+          transaction_id: order?.id ?? id,
+          provider_status: order?.status ?? null,
+          order: {
+            id: order?.id ?? null,
+            intent: order?.intent ?? null,
+            status: order?.status ?? null,
+            create_time: order?.create_time ?? null,
+            update_time: order?.update_time ?? null,
+            purchase_units: purchaseUnits
+          }
+        });
+      } catch (e) {
+        json(res, 502, { ok: false, error: e?.message ?? String(e) });
+      }
       return;
     }
 

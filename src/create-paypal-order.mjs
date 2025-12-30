@@ -1,4 +1,5 @@
 import { getPayPalAccessToken, paypalRequest } from "./paypal-api.mjs";
+import { enforceAuthorityProtocol } from "./authority.mjs";
 
 function parseArgs(argv) {
   const args = {};
@@ -91,6 +92,7 @@ async function main() {
   if (!getEnvBool("SWARM_LIVE", "true")) {
     throw new Error("Refusing live operation without SWARM_LIVE=true (create PayPal order)");
   }
+  enforceAuthorityProtocol({ action: "create PayPal order", requireLive: true, requireOwnerOnlyAllowlists: false });
 
   const amount = Number(args.amount);
   if (!amount || Number.isNaN(amount) || amount <= 0) throw new Error("Invalid --amount");

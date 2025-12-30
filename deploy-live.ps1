@@ -295,6 +295,8 @@ $env:PAYPAL_MODE = "live"
 $env:SWARM_LIVE = "true"
 $env:BASE44_OFFLINE = "false"
 $env:BASE44_OFFLINE_MODE = "false"
+if (-not $env:NO_PLATFORM_WALLET) { $env:NO_PLATFORM_WALLET = "true" }
+if (-not $env:BASE44_ENABLE_TRUTH_ONLY_UI) { $env:BASE44_ENABLE_TRUTH_ONLY_UI = "true" }
 if (-not $env:BASE44_ENABLE_REVENUE_FROM_PAYPAL) { $env:BASE44_ENABLE_REVENUE_FROM_PAYPAL = "true" }
 if (-not $env:AUTONOMOUS_PAYOUT_LIVE) { $env:AUTONOMOUS_PAYOUT_LIVE = "true" }
 if (-not $env:BASE44_ENABLE_PAYOUT_LEDGER_WRITE) { $env:BASE44_ENABLE_PAYOUT_LEDGER_WRITE = "true" }
@@ -322,6 +324,20 @@ if ($beneficiaryName) { $env:BANK_BENEFICIARY_NAME = $beneficiaryName }
 if ($ribLine) {
   $env:BANK_RIB = $ribLine
   if (-not $env:BANK_ACCOUNT) { $env:BANK_ACCOUNT = $ribLine }
+}
+
+if (-not $env:OWNER_PAYPAL_EMAIL -and $paypalEmail) { $env:OWNER_PAYPAL_EMAIL = $paypalEmail }
+if (-not $env:OWNER_PAYONEER_ID -and $payoneerEmail) { $env:OWNER_PAYONEER_ID = $payoneerEmail }
+if (-not $env:OWNER_BANK_ACCOUNT -and $env:BANK_ACCOUNT) { $env:OWNER_BANK_ACCOUNT = $env:BANK_ACCOUNT }
+
+if (-not $env:AUTONOMOUS_ALLOWED_PAYPAL_RECIPIENTS -and $env:OWNER_PAYPAL_EMAIL) {
+  $env:AUTONOMOUS_ALLOWED_PAYPAL_RECIPIENTS = $env:OWNER_PAYPAL_EMAIL
+}
+if (-not $env:AUTONOMOUS_ALLOWED_PAYONEER_RECIPIENTS -and $env:OWNER_PAYONEER_ID) {
+  $env:AUTONOMOUS_ALLOWED_PAYONEER_RECIPIENTS = $env:OWNER_PAYONEER_ID
+}
+if (-not $env:AUTONOMOUS_ALLOWED_BANK_WIRE_ACCOUNTS -and $env:OWNER_BANK_ACCOUNT) {
+  $env:AUTONOMOUS_ALLOWED_BANK_WIRE_ACCOUNTS = $env:OWNER_BANK_ACCOUNT
 }
 
 if ($env:BANK_NAME -or $env:BANK_SWIFT -or $env:BANK_ACCOUNT -or $env:BANK_BENEFICIARY_NAME) {

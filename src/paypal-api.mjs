@@ -41,6 +41,9 @@ export async function getPayPalAccessToken() {
   if (live && (paypalMode === "sandbox" || paypalBase.includes("sandbox.paypal.com"))) {
     throw new Error("LIVE MODE NOT GUARANTEED (PayPal sandbox configured)");
   }
+  if (live && String(process.env.NO_PLATFORM_WALLET ?? "").toLowerCase() !== "true") {
+    throw new Error("LIVE MODE NOT GUARANTEED (NO_PLATFORM_WALLET not true)");
+  }
 
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), getHttpTimeoutMs());
@@ -166,4 +169,11 @@ export async function createPayPalPayoutBatch({ senderBatchId, items, emailSubje
     items: Array.isArray(items) ? items : []
   };
   return paypalRequest("/v1/payments/payouts", { method: "POST", token, body });
+}
+
+export async function getPayPalOrderDetails(orderId) {
+  const id = String(orderId ?? "").trim();
+  if (!id) throw new Error("Missing PayPal order id");
+  const token = await getPayPalAccessToken();
+  return paypalRequest(`/v2/checkout/orders/${encodeURIComponent(id)}`, { token });
 }

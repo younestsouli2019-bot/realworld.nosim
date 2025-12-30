@@ -10,6 +10,7 @@ import { createBase44RevenueEventIdempotent, getRevenueConfigFromEnv } from "./b
 import { createBase44EarningIdempotent, getEarningConfigFromEnv } from "./base44-earning.mjs";
 import { buildBase44Client } from "./base44-client.mjs";
 import { createPayPalPayoutBatch, getPayoutBatchDetails } from "./paypal-api.mjs";
+import { computeAuthorityChecksum, enforceAuthorityProtocol } from "./authority.mjs";
 
 function parseArgs(argv) {
   const args = {};
@@ -337,6 +338,7 @@ function buildLiveProofBase(action) {
     at: new Date().toISOString(),
     action: String(action),
     SWARM_LIVE: envIsTrue(process.env.SWARM_LIVE, "true"),
+    authorityChecksum: computeAuthorityChecksum(),
     endpoints: {
       paypalMode: String(process.env.PAYPAL_MODE ?? "live").toLowerCase(),
       paypalApiBaseUrl: process.env.PAYPAL_API_BASE_URL ? String(process.env.PAYPAL_API_BASE_URL) : "(default)",
@@ -354,6 +356,7 @@ function requireLiveMode(reason) {
   enforceSwarmLiveHardInvariant({ action: reason });
   verifyNoOfflineInLive();
   verifyNoSandboxPayPal();
+  enforceAuthorityProtocol({ action: reason, requireLive: true });
 }
 
 function getEnvBool(name, fallback = false) {

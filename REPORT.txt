@@ -39,6 +39,15 @@ LATEST IMPLEMENTED CHANGES (2025-12-28)
 - SBDS allowlist enforcement at payout-batch creation:
   - payout batch creation validates recipients against configured allowlists for PayPal/Payoneer and bank-wire destinations; non-compliant earnings are skipped with reason recipient_not_allowed.
 
+LATEST IMPLEMENTED CHANGES (2025-12-30)
+- Authority env is now fully wired by deploy-live:
+  - deploy-live.ps1 sets NO_PLATFORM_WALLET=true (unless already set).
+  - deploy-live.ps1 sets BASE44_ENABLE_TRUTH_ONLY_UI=true (unless already set).
+  - deploy-live.ps1 exports OWNER_* declarations (OWNER_PAYPAL_EMAIL / OWNER_PAYONEER_ID / OWNER_BANK_ACCOUNT) from CREDS-derived values.
+  - deploy-live.ps1 defaults AUTONOMOUS_ALLOWED_* allowlists to owner-only destinations (unless already set), making SBDS enforcement “on by default” for live windows.
+- PayPal token acquisition now has an extra hard gate:
+  - src/paypal-api.mjs refuses access-token requests in live mode unless NO_PLATFORM_WALLET=true.
+
 LATEST IMPLEMENTED CHANGES (2025-12-25)
 - deploy-live now supports: setup, readiness, webhook, daemon, once, shell, and all (setup → readiness → daemon).
 - CREDS parsing now ignores placeholder values like <YOUR_WEBHOOK_ID> and forces secure prompt instead.

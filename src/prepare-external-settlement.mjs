@@ -1,6 +1,7 @@
 import { buildBase44ServiceClient } from "./base44-client.mjs";
 import { getEarningConfigFromEnv, updateBase44EarningById } from "./base44-earning.mjs";
 import { getExternalSettlementConfigFromEnv, createBase44ExternalSettlementIdempotent } from "./base44-external-settlement.mjs";
+import { enforceAuthorityProtocol } from "./authority.mjs";
 
 function parseArgs(argv) {
   const args = {};
@@ -32,6 +33,7 @@ function requireLiveMode(reason) {
   if (getEnvBool("BASE44_OFFLINE", false) || getEnvBool("BASE44_OFFLINE_MODE", false)) {
     throw new Error(`LIVE MODE NOT GUARANTEED (offline mode enabled: ${reason})`);
   }
+  enforceAuthorityProtocol({ action: reason, requireLive: true });
 }
 
 function toIsoOrNull(value) {

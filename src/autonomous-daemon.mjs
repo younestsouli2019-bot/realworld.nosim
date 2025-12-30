@@ -7,6 +7,7 @@ import { fileURLToPath } from "node:url";
 import { buildBase44ServiceClient } from "./base44-client.mjs";
 import { getPayPalAccessToken } from "./paypal-api.mjs";
 import { maybeSendAlert } from "./alerts.mjs";
+import { enforceAuthorityProtocol } from "./authority.mjs";
 
 function parseArgs(argv) {
   const args = {};
@@ -124,6 +125,7 @@ function validateDaemonLiveModeOrThrow(cfg) {
   if (!envIsTrue(process.env.SWARM_LIVE, "false")) throw new Error("LIVE MODE NOT GUARANTEED (SWARM_LIVE not true)");
   if (cfg?.offline?.enabled === true) throw new Error("LIVE MODE NOT GUARANTEED (offline enabled)");
   if (cfg?.payout?.dryRun === true) throw new Error("LIVE MODE NOT GUARANTEED (dry-run enabled)");
+  enforceAuthorityProtocol({ action: "autonomous-daemon startup", requireLive: true });
   requireRealEnv("BASE44_APP_ID");
   requireRealEnv("BASE44_SERVICE_TOKEN");
 
