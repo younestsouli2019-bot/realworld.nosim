@@ -1,11 +1,35 @@
+import fs from 'fs';
+import path from 'path';
 
 export class RailOptimizer {
-  constructor() {
-    this.stats = {
-      paypal: { success: 0, failure: 0, avgTime: 0, lastUsed: 0 },
-      bank: { success: 0, failure: 0, avgTime: 0, lastUsed: 0 },
-      payoneer: { success: 0, failure: 0, avgTime: 0, lastUsed: 0 }
+  constructor(options = {}) {
+    this.statsPath = options.statsPath || path.join(process.cwd(), 'data', 'rail-stats.json');
+    this.stats = this.loadStats() || {
+      paypal: { success: 0, failure: 0, avgTime: 0, lastUsed: 0, consecutiveFailures: 0 },
+      bank: { success: 0, failure: 0, avgTime: 0, lastUsed: 0, consecutiveFailures: 0 },
+      payoneer: { success: 0, failure: 0, avgTime: 0, lastUsed: 0, consecutiveFailures: 0 }
     };
+  }
+
+  loadStats() {
+    try {
+      if (fs.existsSync(this.statsPath)) {
+        return JSON.parse(fs.readFileSync(this.statsPath, 'utf8'));
+      }
+    } catch (e) {
+      console.error('Failed to load rail stats:', e);
+    }
+    return null;
+  }
+
+  saveStats() {
+    try {
+      const dir = path.dirname(this.statsPath);
+      if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+      fs.writeFileSync(this.statsPath, JSON.stringify(this.stats, null, 2));
+    } catch (e) {
+      console.error('Failed to save rail stats:', e);
+    }
   }
   
   selectRail(amount, currency, country, recipientType) {
@@ -13,6 +37,13 @@ export class RailOptimizer {
     
     // Score each rail
     for (const [rail, data] of Object.entries(this.stats)) {
+      // Circuit Breaker Logic: Skip if too many consecutive failures (Adaptive Volatility)
+      if (data.consecutiveFailures >= 3) {
+         // Exponential backoff check could go here, for now just heavy penalty
+         candidates.push({ rail, score: -1 }); 
+         continue;
+      }
+
       let score = 0;
       
       // Success rate (60% weight)
@@ -37,12 +68,17 @@ export class RailOptimizer {
       candidates.push({ rail, score });
     }
     
-    // Return best rail, but randomize 10% to explore
-    if (Math.random() < 0.1) {
-      return candidates[Math.floor(Math.random() * candidates.length)].rail;
+    // Return best rail, but randomize 10% to explore (only among positive scores)
+    const validCandidates = candidates.filter(c => c.score > 0);
+    if (validCandidates.length > 0) {
+        if (Math.random() < 0.1) {
+            return validCandidates[Math.floor(Math.random() * validCandidates.length)].rail;
+        }
+        return validCandidates.sort((a, b) => b.score - a.score)[0].rail;
     }
     
-    return candidates.sort((a, b) => b.score - a.score)[0].rail;
+    // Fallback if all failing
+    return 'paypal';
   }
   
   estimateCost(rail, amount) {
@@ -57,12 +93,19 @@ export class RailOptimizer {
 
   recordResult(rail, success, processingTime) {
     const data = this.stats[rail];
-    if (success) data.success++;
-    else data.failure++;
+    if (success) {
+        data.success++;
+        data.consecutiveFailures = 0; // Reset on success
+    } else {
+        data.failure++;
+        data.consecutiveFailures = (data.consecutiveFailures || 0) + 1;
+    }
     
     // Update average time
     data.avgTime = (data.avgTime * (data.success + data.failure - 1) + processingTime) / 
                    (data.success + data.failure);
     data.lastUsed = Date.now();
+    
+    this.saveStats(); // Persist immediately (Agentic Memory)
   }
 }

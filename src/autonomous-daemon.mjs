@@ -1541,7 +1541,14 @@ async function runTick(cfg, state) {
         if (!batchId) continue;
         if (providerId) continue;
         if (recipientType && recipientType !== "paypal" && recipientType !== "paypal_email") continue;
+        
+        const start = Date.now();
         const res = await runEmitWithOfflineFallback(["--submit-payout-batch", "--batch-id", String(batchId)], cfg);
+        const duration = Date.now() - start;
+        
+        const success = effectiveOk(res);
+        railOptimizer.recordResult('paypal', success, duration);
+        
         attempts.push({ batchId, res });
       }
       const failures = attempts.filter((a) => !effectiveOk(a.res));
@@ -1676,7 +1683,23 @@ async function main() {
   let cfg = resolveRuntimeConfig(args, loaded.config);
 
   // Initialize Swarm components
-  const healthMonitor = new AgentHealthMonitor();
+  const healthMonitor = new AgentHealthMonitor(30000, {
+    onAlert: async (subject, body) => {
+      if (!cfg.alerts.enabled) return;
+      try {
+        const mode = cfg.offline.enabled ? "offline" : "auto";
+        await withTempEnv(
+          cfg.offline.enabled ? { BASE44_OFFLINE: "true", BASE44_OFFLINE_STORE_PATH: cfg.offline.storePath } : {},
+          async () => {
+             const base44 = buildBase44ServiceClient({ mode });
+             await maybeSendAlert(base44, { subject, body });
+          }
+        );
+      } catch (err) {
+        console.error("Failed to send health alert:", err);
+      }
+    }
+  });
   healthMonitor.registerAgent("autonomous-daemon");
 
   const swarmMemory = new SwarmMemory();
