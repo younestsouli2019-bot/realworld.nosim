@@ -14,6 +14,7 @@ import { SwarmMemory } from "./swarm/shared-memory.mjs";
 import { RailOptimizer } from "./swarm/rail-optimizer.mjs";
 import { TaskManager } from "./swarm/task-manager.mjs";
 import { globalRecorder } from "./swarm/flight-recorder.mjs";
+import { LearningAgent } from "./swarm/learning-agent.mjs";
 
 function parseArgs(argv) {
   const args = {};
@@ -1704,6 +1705,7 @@ async function main() {
 
   const swarmMemory = new SwarmMemory();
   const configManager = new ConfigManager();
+  const learningAgent = new LearningAgent(swarmMemory);
   
   const agentsMap = new Map();
   agentsMap.set("autonomous-daemon", { capabilities: ["payout_management", "health_monitoring", "system_admin"] });
@@ -1845,6 +1847,21 @@ async function main() {
     try {
       healthMonitor.heartbeat("autonomous-daemon");
       healthMonitor.checkHealth();
+
+      // 🧠 SELF-IMPROVEMENT & LEARNING CYCLE
+      // The "raison d'être" of the swarm: to learn from experience.
+      await learningAgent.learn();
+
+      // 🧠 APPLY LEARNED POLICIES (Autonomous Adaptation)
+      if (swarmMemory.get('policy:global:safe_mode')) {
+          console.warn("[Daemon] 🛡️ Applying SAFE MODE (Dry Run Enforced) due to learned instability.");
+          cfg.payout.dryRun = true;
+      }
+      
+      if (swarmMemory.get('policy:paypal:unstable')) {
+           console.warn("[Daemon] 🛡️ PayPal flagged unstable by Learning Agent. Suspending auto-submit.");
+           cfg.tasks.autoSubmitPayPalPayoutBatches = false;
+      }
 
       // 🧠 AGENTIC AI SECURITY ADAPTATION
       // Incorporating insights from:

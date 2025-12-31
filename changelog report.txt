@@ -7,6 +7,18 @@ Subject: Base44 App & Autonomous Agentic Swarm System Updates
   - **Efficiency Gain**: Verified **83.3%** reduction in mission overhead (from 6 missions to 1 cluster in tests).
   - **Logic**: Weighted similarity scoring, JSON-safe parameter merging, agent assignment alignment.
 
+## 🧠 Autonomous Self-Improvement (Learning)
+*Implementing the "raison d'être" of the agentic swarm: learning from experience.*
+
+- **New Agent**: `LearningAgent` (`src/swarm/learning-agent.mjs`)
+  - **Function**: Continuously analyzes system performance stats and logs.
+  - **Capability**: Autonomous policy generation based on observed patterns.
+  - **Persistence**: Enhanced `SwarmMemory` (`src/swarm/shared-memory.mjs`) to persist learned knowledge to disk (`data/swarm-memory.json`).
+- **Learning Loop**:
+  - **High Failure Rate Detection**: If a payment rail (e.g., PayPal) exceeds 20% failure rate, the Learning Agent autonomously flags it as "unstable" and proposes a policy update.
+  - **Automatic Mitigation**: The `autonomous-daemon` reads this policy and automatically suspends auto-submission for that rail until it recovers.
+  - **Global Safe Mode**: If consecutive system failures exceed 5, the agent enforces a global `dry-run` to protect assets.
+
 ## 🔐 Agentic AI Security & Treasury Management
 *Incorporating insights from recent industry news (Kearney, nCino, Security Boulevard, etc.)*
 
@@ -37,7 +49,7 @@ Subject: Base44 App & Autonomous Agentic Swarm System Updates
 
 ## 📋 Next Steps
 - Deploy updated `autonomous-daemon` to production environment.
-- Monitor `proofs.log` for successful verification chains.
+- Monitor `data/swarm-memory.json` to see learned policies evolving.
 - Enable `agenticAI` flag in production config to activate Defensive Mode.
 
 ---

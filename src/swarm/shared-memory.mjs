@@ -1,7 +1,9 @@
+import fs from 'fs';
+import path from 'path';
 
 class CRDTMap {
-  constructor() {
-    this.data = new Map();
+  constructor(initialData = []) {
+    this.data = new Map(initialData);
     this.tombstones = new Map();
   }
 
@@ -10,9 +12,7 @@ class CRDTMap {
   }
 
   set(key, value, timestamp = Date.now()) {
-    const existing = this.data.get(key);
     // Simple LWW (Last-Write-Wins) strategy
-    // In a real CRDT, we would track vector clocks or more complex state
     this.data.set(key, value);
   }
 
@@ -20,13 +20,39 @@ class CRDTMap {
     this.data.delete(key);
     this.tombstones.set(key, timestamp);
   }
+
+  toJSON() {
+    return Array.from(this.data.entries());
+  }
 }
 
 export class SwarmMemory {
-  constructor() {
-    this.state = new CRDTMap(); // Conflict-free replicated data type
+  constructor(options = {}) {
+    this.storePath = options.storePath || path.join(process.cwd(), 'data', 'swarm-memory.json');
+    this.state = new CRDTMap(this.loadState());
     this.version = 0;
     this.observers = [];
+  }
+
+  loadState() {
+    try {
+      if (fs.existsSync(this.storePath)) {
+        return JSON.parse(fs.readFileSync(this.storePath, 'utf8'));
+      }
+    } catch (e) {
+      console.error('[SwarmMemory] Failed to load state:', e);
+    }
+    return [];
+  }
+
+  saveState() {
+    try {
+      const dir = path.dirname(this.storePath);
+      if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+      fs.writeFileSync(this.storePath, JSON.stringify(this.state.toJSON(), null, 2));
+    } catch (e) {
+      console.error('[SwarmMemory] Failed to save state:', e);
+    }
   }
   
   async update(key, value, agentId, reason) {
@@ -44,13 +70,13 @@ export class SwarmMemory {
     const responses = await this.broadcastProposal(proposal);
     
     // Require at least 50% agreement for non-critical updates
-    // For now, we simulate agreement as we are running in a single process
     const agreementCount = responses.agree.length;
     const required = Math.ceil(this.observers.length / 2);
 
     if (agreementCount >= required || this.observers.length === 0) {
       this.state.set(key, value);
       this.version++;
+      this.saveState(); // Persist immediately
       this.logUpdate(proposal);
       return true;
     }
@@ -78,10 +104,14 @@ export class SwarmMemory {
   }
 
   logUpdate(proposal) {
-      console.log(`[SwarmMemory] Update applied: ${proposal.key} = ${JSON.stringify(proposal.value)} by ${proposal.agentId}`);
+      // console.log(`[SwarmMemory] Update applied: ${proposal.key} = ${JSON.stringify(proposal.value)} by ${proposal.agentId}`);
   }
 
   addObserver(observer) {
       this.observers.push(observer);
+  }
+  
+  get(key) {
+      return this.state.get(key);
   }
 }

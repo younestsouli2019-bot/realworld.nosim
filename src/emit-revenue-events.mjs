@@ -2780,8 +2780,34 @@ async function emitFromMissionsCsv(base44, cfg, earningCfg, csvPath, { dryRun, l
   return { processedCount, createdCount };
 }
 
+import { syncPayPalBatchToLedger } from "./providers/paypal/ledger-sync.mjs";
+
 async function main() {
   const args = parseArgs(process.argv);
+  
+  // Initialize configuration
+  const loaded = await loadAutonomousConfig({ configPath: args.config ?? args["config"] ?? null });
+  let cfg = resolveRuntimeConfig(args, loaded.config);
+
+  if (args["sync-paypal-ledger-batch"]) {
+    // 🧠 INTEGRATING LEDGER SYNC WITH PROOF
+    const batchId = args["batch-id"] || null;
+    const limit = args["limit"] || 25;
+    
+    // In a real CLI invocation we would build the client here
+    const base44 = buildBase44ServiceClient({ mode: cfg.offline.enabled ? "offline" : "auto" });
+    
+    console.log(`[LedgerSync] Syncing batch ${batchId}...`);
+    const result = await syncPayPalBatchToLedger(base44, { 
+        batchId, 
+        dryRun: args["dry-run"] === true 
+    });
+    
+    process.stdout.write(JSON.stringify(result, null, 2) + "\n");
+    return;
+  }
+
+  // ... rest of main ...
   const positional = process.argv.slice(2).filter((v) => !String(v).startsWith("--"));
   const dryRun =
     args["dry-run"] === true ||
