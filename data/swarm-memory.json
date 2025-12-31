@@ -4,24 +4,25 @@
     {
       "lastAlertAt": 0,
       "lastApprovalAlertAt": 0,
-      "lastDeadmanAt": 1767202781774,
-      "consecutiveFailures": 4,
+      "lastDeadmanAt": 1767221205349,
+      "consecutiveFailures": 0,
       "freeze": {
         "active": false
       },
       "exportedPayoneerBatches": {},
       "lastTick": {
         "ok": true,
-        "at": "2025-12-31T17:39:41.774Z",
+        "at": "2025-12-31T22:48:49.580Z",
         "mode": "auto",
         "results": {
           "deadman": {
             "ok": true,
             "skipped": true,
-            "reason": "not_live"
+            "reason": "interval",
+            "nextInMs": 175769
           },
           "health": {
-            "at": "2025-12-31T17:39:41.776Z",
+            "at": "2025-12-31T22:48:49.581Z",
             "ok": true,
             "paypalOk": true,
             "base44Ok": true,
@@ -67,16 +68,6 @@
             },
             "fallbackAttempted": true,
             "primaryError": "Missing required env var: BASE44_APP_ID"
-          },
-          "revenueSwarm": {
-            "ok": true,
-            "marketDataSummary": {
-              "trendsTracked": 4,
-              "demandSamples": 4
-            },
-            "selectedProductsCount": 4,
-            "topProduct": "FNTCASE iPhone 17 Case",
-            "reportPath": "C:\\Users\\Dell\\Downloads\\Nouveau dossier (3)\\data\\revenue-report-latest.json"
           }
         },
         "meta": {

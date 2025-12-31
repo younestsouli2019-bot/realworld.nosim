@@ -131,6 +131,17 @@ export async function createMigrationBatches() {
     };
     
     const payoutItem = await itemEntity.create(payoutItemData);
+
+    // CRITICAL: Update RevenueEvents to link to this batch so they aren't picked up again
+    const revenueEntity = client.asServiceRole.entities['RevenueEvent'];
+    console.log(`🔗 Linking ${events.length} revenue events to batch ${batchId}...`);
+    
+    for (const event of events) {
+      await revenueEntity.update(event.id, {
+        payout_batch_id: batchId,
+        status: 'processing'
+      });
+    }
     
     batches.push({
       batchId,

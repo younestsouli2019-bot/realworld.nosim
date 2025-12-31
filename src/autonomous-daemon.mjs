@@ -1,3 +1,4 @@
+import "./load-env.mjs";
 import fs from "node:fs/promises";
 import path from "node:path";
 import os from "node:os";
@@ -1312,6 +1313,60 @@ async function runTick(cfg, state) {
 
       const failures = attempts.filter((a) => !effectiveOk(a.res));
       out.results.autoExportPayoneer = {
+        ok: failures.length === 0,
+        attemptedCount: attempts.length,
+        failedCount: failures.length,
+        failures,
+        attempts
+      };
+    }
+    }
+  }
+
+  if (cfg.tasks.autoExportBankWirePayoutBatches) {
+    if (isFreezeActive(state)) {
+      out.results.autoExportBankWire = freezeSkip(state, "freeze_active");
+    } else {
+    const windowOk = isWithinWindowUtc(cfg.payout?.windowUtc ?? { startHourUtc: 0, endHourUtc: 0 });
+    if (!windowOk) {
+      out.results.autoExportBankWire = { ok: true, skipped: true, reason: "outside_payout_window_utc", windowUtc: cfg.payout?.windowUtc ?? null };
+    } else {
+      const approvedRes = await runEmitWithOfflineFallback(["--report-approved-batches"], cfg);
+      out.results.approvedBatchesForBankWire = approvedRes;
+      const batches = effectiveOk(approvedRes) ? (approvedRes.result?.batches ?? []) : [];
+      const attempts = [];
+      const outDir = cfg.payout?.export?.bankWireOutDir ? String(cfg.payout.export.bankWireOutDir) : "out/bank-wire";
+      const absOutDir = path.resolve(process.cwd(), outDir);
+      await fs.mkdir(absOutDir, { recursive: true });
+      const exported = state.exportedBankWireBatches && typeof state.exportedBankWireBatches === "object" ? state.exportedBankWireBatches : {};
+      state.exportedBankWireBatches = exported;
+
+      for (const b of Array.isArray(batches) ? batches : []) {
+        const batchId = getBatchId(b);
+        const notesRaw = b?.notes ?? b?.Notes ?? null;
+        const notes = parseJsonMaybe(notesRaw) ?? notesRaw;
+        const recipientType = String(notes?.recipient_type ?? notes?.recipientType ?? "").toLowerCase();
+        if (!batchId) continue;
+        if (recipientType !== "bank_wire" && recipientType !== "bank") continue;
+
+        const outPath = path.join(absOutDir, `bank_wire_payout_${String(batchId)}.csv`);
+        
+        const already = exported[String(batchId)]?.outPath ? String(exported[String(batchId)].outPath) : null;
+        if (already && (await fileExists(already))) continue;
+        if (!already && (await fileExists(outPath))) {
+          exported[String(batchId)] = { outPath, exportedAt: nowIso() };
+          continue;
+        }
+
+        const res = await runEmitWithOfflineFallback(["--export-bank-wire-batch", "--batch-id", String(batchId), "--out", outPath], cfg);
+        attempts.push({ batchId, outPath, res });
+        if (effectiveOk(res)) {
+          exported[String(batchId)] = { outPath, exportedAt: nowIso() };
+        }
+      }
+
+      const failures = attempts.filter((a) => !effectiveOk(a.res));
+      out.results.autoExportBankWire = {
         ok: failures.length === 0,
         attemptedCount: attempts.length,
         failedCount: failures.length,
