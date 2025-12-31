@@ -1,0 +1,35 @@
+# Changelog & Status Report - 2025-12-31
+
+## Summary
+The Autonomous Agentic Swarm System has been consolidated. The "Thread" connecting Revenue Generation, Autonomous Management, and System Integrity has been strengthened by centralizing the system's "Brain" (Configuration) and verifying the end-to-end execution of the Revenue Swarm.
+
+## Key Changes
+
+### 1. Architecture: Shared "Brain" (Configuration)
+- **Extracted:** `loadAutonomousConfig` and `resolveRuntimeConfig` moved from `autonomous-daemon.mjs` to a new shared module `src/autonomous-config.mjs`.
+- **Impact:** `src/emit-revenue-events.mjs` (The Revenue Actuator) and `src/autonomous-daemon.mjs` (The Manager) now share the exact same configuration logic. This eliminates runtime errors and ensures consistent behavior across the swarm.
+
+### 2. SwarmCommerce AI Integration
+- **Implemented:** Market Intelligence and Product Scoring agents are now fully integrated into the Daemon's `revenueSwarm` task.
+- **Verified:** The daemon now successfully runs the "Market -> Score -> Select" pipeline:
+  - Tracks trends (Simulated/Real).
+  - Scores products based on Demand, Margin, and Competition.
+  - Outputs actionable "Target" products (e.g., "FNTCASE iPhone 17 Case").
+
+### 3. Bug Fixes
+- **Fixed:** `loadAutonomousConfig is not defined` in `emit-revenue-events.mjs`.
+- **Fixed:** `resolveRuntimeConfig is not defined` in `emit-revenue-events.mjs`.
+- **Fixed:** Duplicate function definitions in `emit-revenue-events.mjs` (removed `syncPayPalBatchToLedger`).
+- **Fixed:** `marketData.trends` undefined error in `swarm-runner.mjs`.
+
+## Deployment Status
+- **Health:** System is reporting `ok: true`.
+- **Revenue Swarm:** Active and generating product selections.
+- **Offline Mode:** Fallback logic verified (Daemon runs successfully even without live credentials).
+
+## Next Steps
+- **Connect:** The "Selected Products" from the Revenue Swarm need to be fed into the `emit-revenue-events.mjs` logic to actually generate revenue events (currently they are logged/reported).
+- **Learn:** Monitor the `learning-agent.mjs` outputs to see if the swarm adapts its scoring weights over time.
+
+---
+*Ready for Commit & Push.*

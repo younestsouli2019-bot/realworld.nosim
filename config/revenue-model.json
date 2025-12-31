@@ -1,0 +1,12 @@
+{
+  "target_margin": 0.35,
+  "daily_budget_limit": 1000,
+  "min_roas": 2.0,
+  "platforms": ["amazon", "etsy", "shopify"],
+  "supplier_count_per_category": 3,
+  "reorder_safety_multiplier": 1.5,
+  "max_stock_age_days": 180,
+  "seasonal_products_launch_lead_days": 90,
+  "learning_mode": true,
+  "defensive_mode_threshold": 0.15
+}

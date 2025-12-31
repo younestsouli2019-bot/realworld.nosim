@@ -11,6 +11,8 @@ import { createBase44EarningIdempotent, getEarningConfigFromEnv } from "./base44
 import { buildBase44Client } from "./base44-client.mjs";
 import { createPayPalPayoutBatch, getPayoutBatchDetails } from "./paypal-api.mjs";
 import { syncPayPalBatchToLedger } from "./providers/paypal/ledger-sync.mjs";
+import { loadAutonomousConfig, resolveRuntimeConfig } from "./autonomous-config.mjs";
+
 import { computeAuthorityChecksum, enforceAuthorityProtocol } from "./authority.mjs";
 
 function parseArgs(argv) {
@@ -1905,154 +1907,7 @@ async function findPayoutBatchByPayPalBatchId(base44, paypalBatchId) {
   return null;
 }
 
-async function syncPayPalBatchToLedger(base44, { batchId, paypalBatchId, dryRun }) {
-  const payoutBatchCfg = getPayoutBatchConfigFromEnv();
-  const payoutItemCfg = getPayoutItemConfigFromEnv();
-  const revenueCfg = getRevenueConfigFromEnv();
 
-  const batchEntity = base44.asServiceRole.entities[payoutBatchCfg.entityName];
-  const itemEntity = base44.asServiceRole.entities[payoutItemCfg.entityName];
-  const revenueEntity = base44.asServiceRole.entities[revenueCfg.entityName];
-
-  const batch =
-    batchId != null
-      ? await findPayoutBatchByBatchId(base44, batchId)
-      : paypalBatchId != null
-        ? await findPayoutBatchByPayPalBatchId(base44, paypalBatchId)
-        : null;
-  if (!batch?.id) throw new Error("PayoutBatch not found");
-
-  const notes = payoutBatchCfg.fieldMap.notes ? batch?.[payoutBatchCfg.fieldMap.notes] : null;
-  const recipientType = notes?.recipient_type ?? notes?.recipientType ?? null;
-  if (normalizeRecipientType(recipientType, "paypal") !== "paypal") {
-    throw new Error(`Refusing PayPal sync for non-paypal batch (recipient_type=${String(recipientType ?? "")})`);
-  }
-
-  const paypalId = notes?.paypal_payout_batch_id ?? notes?.paypalPayoutBatchId ?? null;
-  if (!paypalId) {
-    return { ok: true, synced: false, reason: "missing_paypal_payout_batch_id", batchId: batch?.[payoutBatchCfg.fieldMap.batchId] ?? null };
-  }
-
-  const details = await getPayoutBatchDetails(String(paypalId));
-  const respItems = Array.isArray(details?.items) ? details.items : [];
-
-  const items = await getPayoutItemsForBatch(base44, batch?.[payoutBatchCfg.fieldMap.batchId] ?? batchId);
-  const bySenderItemId = new Map();
-  for (const it of items) {
-    const sid = payoutItemCfg.fieldMap.itemId ? it?.[payoutItemCfg.fieldMap.itemId] : null;
-    if (!sid || !it?.id) continue;
-    bySenderItemId.set(String(sid), it);
-  }
-
-  const updates = [];
-  const revenueUpdates = [];
-  for (const ri of respItems) {
-    const payoutItemId = ri?.payout_item_id ?? ri?.payout_item?.payout_item_id ?? null;
-    const senderItemId = ri?.payout_item?.sender_item_id ?? null;
-    const transactionStatus = ri?.transaction_status ?? ri?.payout_item?.transaction_status ?? null;
-    const transactionId = ri?.transaction_id ?? ri?.payout_item?.transaction_id ?? null;
-    const timeProcessed = ri?.time_processed ?? ri?.time_completed ?? details?.batch_header?.time_completed ?? null;
-
-    if (!senderItemId) continue;
-    const internal = bySenderItemId.get(String(senderItemId));
-    if (!internal?.id) continue;
-
-    const ledgerStatus = mapPayPalTransactionStatusToLedgerStatus(transactionStatus);
-
-    const patch = {
-      ...(payoutItemCfg.fieldMap.status && ledgerStatus ? { [payoutItemCfg.fieldMap.status]: ledgerStatus } : {}),
-      ...(payoutItemCfg.fieldMap.paypalStatus && transactionStatus ? { [payoutItemCfg.fieldMap.paypalStatus]: String(transactionStatus) } : {}),
-      ...(payoutItemCfg.fieldMap.paypalTransactionId && transactionId ? { [payoutItemCfg.fieldMap.paypalTransactionId]: String(transactionId) } : {}),
-      ...(payoutItemCfg.fieldMap.paypalItemId && payoutItemId ? { [payoutItemCfg.fieldMap.paypalItemId]: String(payoutItemId) } : {}),
-      ...(payoutItemCfg.fieldMap.processedAt && timeProcessed ? { [payoutItemCfg.fieldMap.processedAt]: String(timeProcessed) } : {})
-    };
-
-    updates.push({ senderItemId: String(senderItemId), internalId: String(internal.id), patch });
-
-    if (ledgerStatus === "success" && payoutItemCfg.fieldMap.revenueEventId && revenueCfg.fieldMap.status && transactionId) {
-      const revenueEventId = internal?.[payoutItemCfg.fieldMap.revenueEventId] ?? null;
-      if (revenueEventId) {
-        revenueUpdates.push({
-          revenueEventId: String(revenueEventId),
-          patch: {
-            [revenueCfg.fieldMap.status]: "paid_out",
-            ...(revenueCfg.fieldMap.payoutBatchId
-              ? { [revenueCfg.fieldMap.payoutBatchId]: batch?.[payoutBatchCfg.fieldMap.batchId] ?? null }
-              : {})
-          }
-        });
-      }
-    }
-  }
-
-  const batchStatus = details?.batch_header?.batch_status ?? null;
-  const timeCompleted = details?.batch_header?.time_completed ?? null;
-  const existingNotes = payoutBatchCfg.fieldMap.notes ? (batch?.[payoutBatchCfg.fieldMap.notes] ?? {}) : null;
-  const mergedNotes =
-    existingNotes && typeof existingNotes === "object" && !Array.isArray(existingNotes)
-      ? {
-          ...existingNotes,
-          paypal_batch_status: batchStatus,
-          paypal_time_completed: timeCompleted,
-          paypal_synced_at: new Date().toISOString()
-        }
-      : { paypal_batch_status: batchStatus, paypal_time_completed: timeCompleted, paypal_synced_at: new Date().toISOString() };
-
-  const batchPatch = {
-    ...(payoutBatchCfg.fieldMap.notes ? { [payoutBatchCfg.fieldMap.notes]: mergedNotes } : {})
-  };
-
-  if (!dryRun) {
-    if (!shouldWritePayPalPayoutStatus()) throw new Error("Refusing PayPal sync without BASE44_ENABLE_PAYPAL_PAYOUT_STATUS_WRITE=true");
-    if (!shouldWritePayoutLedger()) throw new Error("Refusing PayPal sync without BASE44_ENABLE_PAYOUT_LEDGER_WRITE=true");
-    requireLiveMode("sync PayPal payout batch to ledger");
-
-    for (const u of updates) {
-      if (!u.internalId) continue;
-      await itemEntity.update(u.internalId, u.patch).catch(() => null);
-    }
-
-    for (const r of revenueUpdates) {
-      await revenueEntity.update(r.revenueEventId, r.patch).catch(() => null);
-    }
-
-    if (payoutBatchCfg.fieldMap.notes && batch?.id) {
-      await batchEntity.update(batch.id, batchPatch).catch(() => null);
-    }
-
-    if (batchStatus && String(batchStatus).toUpperCase().includes("SUCCESS")) {
-      const updatedItems = await getPayoutItemsForBatch(base44, batch?.[payoutBatchCfg.fieldMap.batchId] ?? batchId);
-      const allFinal = Array.isArray(updatedItems) && updatedItems.length > 0
-        ? updatedItems.every((it) => {
-            const st = payoutItemCfg.fieldMap.status ? it?.[payoutItemCfg.fieldMap.status] : null;
-            return st === "success" || st === "failed" || st === "refunded" || st === "unclaimed" || st === "cancelled";
-          })
-        : false;
-      const allSuccess = Array.isArray(updatedItems) && updatedItems.length > 0
-        ? updatedItems.every((it) => (payoutItemCfg.fieldMap.status ? it?.[payoutItemCfg.fieldMap.status] : null) === "success")
-        : false;
-      if (allFinal && payoutBatchCfg.fieldMap.status && batch?.id) {
-        const completedAt = new Date().toISOString();
-        await batchEntity.update(batch.id, {
-          [payoutBatchCfg.fieldMap.status]: allSuccess ? "completed" : "failed",
-          ...(payoutBatchCfg.fieldMap.completedAt ? { [payoutBatchCfg.fieldMap.completedAt]: completedAt } : {})
-        }).catch(() => null);
-      }
-    }
-  }
-
-  return {
-    ok: true,
-    synced: !dryRun,
-    dryRun: !!dryRun,
-    internalBatchId: batch?.[payoutBatchCfg.fieldMap.batchId] ?? null,
-    paypalBatchId: String(paypalId),
-    paypalBatchStatus: batchStatus,
-    payoutItemCount: items.length,
-    paypalItemCount: respItems.length,
-    matchedCount: updates.length
-  };
-}
 
 function coalesceIsoTimestamp(values) {
   let bestMs = null;
@@ -2685,7 +2540,7 @@ async function reportTransactionLogs(base44, { fromIso = null, toIso = null, typ
   return logs;
 }
 
-async function emitFromMissionsCsv(base44, cfg, earningCfg, csvPath, { dryRun, limit, createEarnings, beneficiary }) {
+async function emitFromMissionsCsv(base44, revenueCfg, earningCfg, csvPath, { dryRun, limit, createEarnings, beneficiary }) {
   const stream = fs.createReadStream(csvPath, { encoding: "utf8" });
   const rl = readline.createInterface({ input: stream, crlfDelay: Infinity });
 
@@ -2712,7 +2567,7 @@ async function emitFromMissionsCsv(base44, cfg, earningCfg, csvPath, { dryRun, l
       continue;
     }
 
-    if (!cfg.allowNonPositiveAmounts && revenue <= 0) {
+    if (!revenueCfg.allowNonPositiveAmounts && revenue <= 0) {
       continue;
     }
 
@@ -2721,7 +2576,7 @@ async function emitFromMissionsCsv(base44, cfg, earningCfg, csvPath, { dryRun, l
 
     const event = {
       amount: revenue,
-      currency: cfg.defaultCurrency,
+      currency: revenueCfg.defaultCurrency,
       occurredAt,
       source: "mission",
       externalId: row.id,
@@ -2735,7 +2590,7 @@ async function emitFromMissionsCsv(base44, cfg, earningCfg, csvPath, { dryRun, l
       }
     };
 
-    const created = await createBase44RevenueEventIdempotent(base44, cfg, event, { dryRun });
+    const created = await createBase44RevenueEventIdempotent(base44, revenueCfg, event, { dryRun });
     createdCount++;
 
     const createdId = created?.id ?? null;
@@ -2780,7 +2635,7 @@ async function emitFromMissionsCsv(base44, cfg, earningCfg, csvPath, { dryRun, l
   return { processedCount, createdCount };
 }
 
-import { syncPayPalBatchToLedger } from "./providers/paypal/ledger-sync.mjs";
+
 
 async function main() {
   const args = parseArgs(process.argv);
@@ -3301,7 +3156,7 @@ async function main() {
     requireLiveMode("emit revenue events");
   }
 
-  const cfg = getRevenueConfig();
+  const revenueCfg = getRevenueConfig();
   const createEarnings = shouldCreateEarnings(args);
   const beneficiary = getEarningBeneficiary(args);
   const earningCfg = createEarnings ? getEarningConfigFromEnv() : null;
@@ -3313,7 +3168,7 @@ async function main() {
 
   if (args.csv) {
     const csvPath = args.csv;
-    const result = await emitFromMissionsCsv(base44, cfg, earningCfg, csvPath, {
+    const result = await emitFromMissionsCsv(base44, revenueCfg, earningCfg, csvPath, {
       dryRun,
       limit,
       createEarnings,
@@ -3331,7 +3186,7 @@ async function main() {
   const amountRaw = args.amount ?? getEnvFirst(["npm_config_amount", "NPM_CONFIG_AMOUNT"]) ?? positional[0] ?? null;
   const amount = amountRaw ? Number(amountRaw) : null;
   const currencyRaw =
-    args.currency ?? getEnvFirst(["npm_config_currency", "NPM_CONFIG_CURRENCY"]) ?? positional[1] ?? cfg.defaultCurrency;
+    args.currency ?? getEnvFirst(["npm_config_currency", "NPM_CONFIG_CURRENCY"]) ?? positional[1] ?? revenueCfg.defaultCurrency;
   const currency = String(currencyRaw);
   const externalIdRaw =
     args.externalId ??

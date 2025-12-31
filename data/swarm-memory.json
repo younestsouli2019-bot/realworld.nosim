@@ -1,0 +1,122 @@
+[
+  [
+    "daemon-state",
+    {
+      "lastAlertAt": 0,
+      "lastApprovalAlertAt": 0,
+      "lastDeadmanAt": 1767202781774,
+      "consecutiveFailures": 4,
+      "freeze": {
+        "active": false
+      },
+      "exportedPayoneerBatches": {},
+      "lastTick": {
+        "ok": true,
+        "at": "2025-12-31T17:39:41.774Z",
+        "mode": "auto",
+        "results": {
+          "deadman": {
+            "ok": true,
+            "skipped": true,
+            "reason": "not_live"
+          },
+          "health": {
+            "at": "2025-12-31T17:39:41.776Z",
+            "ok": true,
+            "paypalOk": true,
+            "base44Ok": true,
+            "details": {
+              "paypal": "ok",
+              "base44": "ok",
+              "base44Mode": "offline"
+            }
+          },
+          "availableBalance": {
+            "mode": "offline",
+            "ok": true,
+            "result": {
+              "ok": true,
+              "totalConfirmedRevenue": 0,
+              "totalPaidOut": 0,
+              "totalCommittedToPayouts": 0,
+              "availableBalance": 0
+            },
+            "fallbackAttempted": true,
+            "primaryError": "Missing required env var: BASE44_APP_ID"
+          },
+          "pendingApproval": {
+            "mode": "offline",
+            "ok": true,
+            "result": {
+              "ok": true,
+              "count": 0,
+              "batches": []
+            },
+            "fallbackAttempted": true,
+            "primaryError": "Missing required env var: BASE44_APP_ID"
+          },
+          "stuckPayouts": {
+            "mode": "offline",
+            "ok": true,
+            "result": {
+              "ok": true,
+              "stuckBatchCount": 0,
+              "stuckItemCount": 0,
+              "stuckBatches": [],
+              "stuckItems": []
+            },
+            "fallbackAttempted": true,
+            "primaryError": "Missing required env var: BASE44_APP_ID"
+          },
+          "revenueSwarm": {
+            "ok": true,
+            "marketDataSummary": {
+              "trendsTracked": 4,
+              "demandSamples": 4
+            },
+            "selectedProductsCount": 4,
+            "topProduct": "FNTCASE iPhone 17 Case",
+            "reportPath": "C:\\Users\\Dell\\Downloads\\Nouveau dossier (3)\\data\\revenue-report-latest.json"
+          }
+        },
+        "meta": {
+          "policy": {
+            "truthOnlyUiEnabled": false,
+            "allowlists": {
+              "paypalConfigured": false
+            }
+          },
+          "freeze": {
+            "active": false
+          }
+        }
+      }
+    }
+  ],
+  [
+    "rail-stats",
+    {
+      "paypal": {
+        "success": 0,
+        "failure": 0,
+        "avgTime": 0,
+        "lastUsed": 0,
+        "consecutiveFailures": 0
+      },
+      "bank": {
+        "success": 0,
+        "failure": 0,
+        "avgTime": 0,
+        "lastUsed": 0,
+        "consecutiveFailures": 0
+      },
+      "payoneer": {
+        "success": 0,
+        "failure": 0,
+        "avgTime": 0,
+        "lastUsed": 0,
+        "consecutiveFailures": 0
+      }
+    }
+  ]
+]

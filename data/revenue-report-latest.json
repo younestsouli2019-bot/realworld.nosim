@@ -1,0 +1,66 @@
+[
+  {
+    "id": "p4",
+    "name": "FNTCASE iPhone 17 Case",
+    "category": "Electronics",
+    "metrics": {
+      "trend": 1.484242964273513,
+      "seasonality": 1.5,
+      "sentiment": 0.8749846936625699
+    },
+    "demandScore": 1.948034813123527,
+    "timestamp": "2025-12-31T17:39:44.146Z",
+    "estimatedMargin": 0.34454691060856035,
+    "competitionIndex": 0.11477908804935932,
+    "selectionScore": 1.1711000896270432,
+    "verdict": "TARGET (High Margin/High Demand)"
+  },
+  {
+    "id": "p2",
+    "name": "Monogram Ceramic Coffee Mug",
+    "category": "Home",
+    "metrics": {
+      "trend": 1.1708336253301865,
+      "seasonality": 1.5,
+      "sentiment": 0.9773033379414201
+    },
+    "demandScore": 1.716389415313868,
+    "timestamp": "2025-12-31T17:39:44.145Z",
+    "estimatedMargin": 0.2934533877726606,
+    "competitionIndex": 0.7165095942090636,
+    "selectionScore": 1.0029408230364392,
+    "verdict": "Volume (Low Margin/High Demand)"
+  },
+  {
+    "id": "p3",
+    "name": "Customizable Phone Case",
+    "category": "Electronics",
+    "metrics": {
+      "trend": 1.1863884325535614,
+      "seasonality": 1.5,
+      "sentiment": 0.73054087514775
+    },
+    "demandScore": 1.3000578656742692,
+    "timestamp": "2025-12-31T17:39:44.145Z",
+    "estimatedMargin": 0.2872980605823126,
+    "competitionIndex": 0.6271572548989715,
+    "selectionScore": 0.8434968389545043,
+    "verdict": "Volume (Low Margin/High Demand)"
+  },
+  {
+    "id": "p1",
+    "name": "Customizable Canvas Tote Bag",
+    "category": "Accessories",
+    "metrics": {
+      "trend": 1.295611931973622,
+      "seasonality": 1.5,
+      "sentiment": 0.6274803376508925
+    },
+    "demandScore": 1.219456518809,
+    "timestamp": "2025-12-31T17:39:44.145Z",
+    "estimatedMargin": 0.41169992481423767,
+    "competitionIndex": 0.8979604163829282,
+    "selectionScore": 0.8214965433295786,
+    "verdict": "TARGET (High Margin/High Demand)"
+  }
+]
