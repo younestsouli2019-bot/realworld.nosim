@@ -10,6 +10,7 @@ import { createBase44RevenueEventIdempotent, getRevenueConfigFromEnv } from "./b
 import { createBase44EarningIdempotent, getEarningConfigFromEnv } from "./base44-earning.mjs";
 import { buildBase44Client } from "./base44-client.mjs";
 import { createPayPalPayoutBatch, getPayoutBatchDetails } from "./paypal-api.mjs";
+import { syncPayPalBatchToLedger } from "./providers/paypal/ledger-sync.mjs";
 import { computeAuthorityChecksum, enforceAuthorityProtocol } from "./authority.mjs";
 
 function parseArgs(argv) {
