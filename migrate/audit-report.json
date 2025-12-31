@@ -1,0 +1,11 @@
+{
+  "auditDate": "2025-12-31T23:50:47.347Z",
+  "totalRevenueEvents": 0,
+  "totalTrackedAmount": 0,
+  "byStatus": {},
+  "unpaidRevenue": {
+    "count": 0,
+    "total": 0,
+    "events": []
+  }
+}

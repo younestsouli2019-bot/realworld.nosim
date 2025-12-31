@@ -181,7 +181,9 @@ function createOnlineClient() {
   const client = createClient({
     ...(serverUrl ? { serverUrl } : {}),
     appId,
-    serviceToken
+    serviceToken,
+    // Pass serviceToken as token to authenticate the socket connection for private apps
+    token: serviceToken
   });
 
   // Wrap entities to use circuit breaker for writes

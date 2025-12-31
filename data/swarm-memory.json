@@ -4,7 +4,7 @@
     {
       "lastAlertAt": 0,
       "lastApprovalAlertAt": 0,
-      "lastDeadmanAt": 1767221205349,
+      "lastDeadmanAt": 1767224308875,
       "consecutiveFailures": 0,
       "freeze": {
         "active": false
@@ -12,17 +12,17 @@
       "exportedPayoneerBatches": {},
       "lastTick": {
         "ok": true,
-        "at": "2025-12-31T22:48:49.580Z",
+        "at": "2025-12-31T23:39:30.757Z",
         "mode": "auto",
         "results": {
           "deadman": {
             "ok": true,
             "skipped": true,
             "reason": "interval",
-            "nextInMs": 175769
+            "nextInMs": 238118
           },
           "health": {
-            "at": "2025-12-31T22:48:49.581Z",
+            "at": "2025-12-31T23:39:30.758Z",
             "ok": true,
             "paypalOk": true,
             "base44Ok": true,
