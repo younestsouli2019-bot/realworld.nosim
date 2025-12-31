@@ -1475,6 +1475,7 @@ async function main() {
         autoApprovePayoutBatches: false,
         autoSubmitPayPalPayoutBatches: false,
         autoExportPayoneerPayoutBatches: false,
+        autoExportBankWirePayoutBatches: false,
         syncPayPalLedgerBatches: false,
         health: true,
         missionHealth: true,
@@ -1495,6 +1496,7 @@ async function main() {
       consecutiveFailures: state.consecutiveFailures,
       freeze: state.freeze,
       exportedPayoneerBatches: state.exportedPayoneerBatches,
+      exportedBankWireBatches: state.exportedBankWireBatches,
       updatedAt: nowIso()
     }).catch(() => {});
     return;
@@ -1614,6 +1616,11 @@ async function main() {
            if (res.ok) railOptimizer.recordResult("payoneer", true, 1000);
            else if (res.failures?.length > 0) railOptimizer.recordResult("payoneer", false, 1000);
       }
+      if (out.results?.autoExportBankWire) {
+           const res = out.results.autoExportBankWire;
+           if (res.ok) railOptimizer.recordResult("bank_wire", true, 1000);
+           else if (res.failures?.length > 0) railOptimizer.recordResult("bank_wire", false, 1000);
+      }
       swarmMemory.update("rail-stats", railOptimizer.stats, "autonomous-daemon", "stats-update").catch(() => {});
 
       state.consecutiveFailures = out.ok ? 0 : state.consecutiveFailures + 1;
@@ -1634,6 +1641,7 @@ async function main() {
       consecutiveFailures: state.consecutiveFailures,
       freeze: state.freeze,
       exportedPayoneerBatches: state.exportedPayoneerBatches,
+      exportedBankWireBatches: state.exportedBankWireBatches,
       updatedAt: nowIso()
     }).catch(() => {});
     if (once) break;

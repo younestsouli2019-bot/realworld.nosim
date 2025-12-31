@@ -156,6 +156,13 @@ export function resolveRuntimeConfig(args, fileCfg) {
     cfg.payout?.export?.payoneerOutDir ??
     "out/payoneer";
 
+  const bankWireOutDir =
+    args["bank-wire-out-dir"] ??
+    args.bankWireOutDir ??
+    process.env.AUTONOMOUS_BANK_WIRE_OUT_DIR ??
+    cfg.payout?.export?.bankWireOutDir ??
+    "out/bank-wire";
+
   const payoutDryRun =
     args["payout-live"] === true
       ? false
@@ -225,6 +232,11 @@ export function resolveRuntimeConfig(args, fileCfg) {
     args["auto-export-payoneer-payouts"] === true ||
     getEnvBool("AUTONOMOUS_AUTO_EXPORT_PAYONEER_PAYOUTS", false) ||
     cfg.tasks?.autoExportPayoneerPayoutBatches === true;
+
+  const autoExportBankWirePayoutBatchesEnabled =
+    args["auto-export-bank-wire-payouts"] === true ||
+    getEnvBool("AUTONOMOUS_AUTO_EXPORT_BANK_WIRE_PAYOUTS", false) ||
+    cfg.tasks?.autoExportBankWirePayoutBatches === true;
 
   const healthEnabled =
     args.health !== false &&
@@ -309,7 +321,10 @@ export function resolveRuntimeConfig(args, fileCfg) {
       windowUtc: { startHourUtc, endHourUtc },
       syncPayPalLimit: Number(syncPayPalLimit ?? 25),
       syncPayPalMinAgeMinutes: Number(syncPayPalMinAgeMinutes ?? 10),
-      export: { payoneerOutDir: String(payoneerOutDir) },
+      export: { 
+        payoneerOutDir: String(payoneerOutDir),
+        bankWireOutDir: String(bankWireOutDir)
+      },
       autoApprove: {
         enabled: autoApproveEnabled === true,
         pendingAgeMinutes: Number(pendingAgeMinutes ?? 120),
@@ -333,6 +348,7 @@ export function resolveRuntimeConfig(args, fileCfg) {
       autoSubmitPayPalPayoutBatches: autoSubmitPayPalPayoutBatchesEnabled === true,
       syncPayPalLedgerBatches: syncPayPalLedgerEnabled === true,
       autoExportPayoneerPayoutBatches: autoExportPayoneerPayoutBatchesEnabled === true,
+      autoExportBankWirePayoutBatches: autoExportBankWirePayoutBatchesEnabled === true,
       revenueSwarm: revenueSwarmEnabled === true
     },
     alerts: { enabled: alertsEnabled, cooldownMs: alertCooldownMs },
