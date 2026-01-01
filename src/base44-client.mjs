@@ -178,10 +178,14 @@ function createOnlineClient() {
   const { appId, serviceToken } = getOnlineAuth();
   const serverUrl = process.env.BASE44_SERVER_URL;
 
+  // DEBUG: Log auth usage (redacted)
+  console.log(`[Base44Client] Connecting with AppID: ${appId}, Token: ${serviceToken.slice(0, 5)}...`);
+
   const client = createClient({
     ...(serverUrl ? { serverUrl } : {}),
     appId,
     serviceToken,
+    apiKey: serviceToken, // Explicitly pass as apiKey in case SDK expects it
     // Pass serviceToken as token to authenticate the socket connection for private apps
     token: serviceToken
   });

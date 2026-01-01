@@ -1,0 +1,11 @@
+{
+  "timestamp": "2026-01-01T00-11-12-382Z",
+  "counts": {
+    "RevenueEvent": 0,
+    "PayoutBatch": 0,
+    "PayoutItem": 0,
+    "PayPalWebhookEvent": 0,
+    "PayPalMetric": 0,
+    "TransactionLog": 0
+  }
+}
