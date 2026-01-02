@@ -1,5 +1,6 @@
 import { getPayPalAccessToken, paypalRequest } from "./paypal-api.mjs";
 import { enforceAuthorityProtocol } from "./authority.mjs";
+import { threatMonitor } from "./security/threat-monitor.mjs";
 
 function parseArgs(argv) {
   const args = {};
@@ -84,6 +85,10 @@ async function createPayPalOrder({
 
 async function main() {
   const args = parseArgs(process.argv);
+
+  if (threatMonitor.isBunkerMode()) {
+    throw new Error("⛔ PAYMENT BLOCKED: Bunker Mode is active. Refusing new funds to prevent asset freezing.");
+  }
 
   if (!getEnvBool("PAYPAL_ENABLE_ORDER_CREATE")) {
     throw new Error("Refusing to create live PayPal orders without PAYPAL_ENABLE_ORDER_CREATE=true");

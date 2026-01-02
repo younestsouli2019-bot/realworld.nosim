@@ -99,6 +99,7 @@ export async function auditTrackedRevenue() {
 }
 
 // Run audit
-if (import.meta.url === `file://${process.argv[1]}`) {
+import { fileURLToPath } from 'url';
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
   auditTrackedRevenue().catch(console.error);
 }

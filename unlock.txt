@@ -432,7 +432,7 @@ function generateBankWireCSV(plan) {
   
   for (const batch of plan.batches) {
     const iban = process.env.OWNER_BANK_IBAN;
-    const name = process.env.OWNER_NAME || 'Younest Souli';
+    const name = process.env.OWNER_NAME || 'Younes Tsouli';
     const reference = `MIGRATION_${batch.batchId}`;
     
     csv += `${iban},${batch.amount},${batch.currency},${name},${reference}\n`;
@@ -608,7 +608,7 @@ MIGRATION_DESTINATION=bank  # or "paypal" or "payoneer"
 # OWNER ACCOUNTS (from your CREDS)
 OWNER_BANK_IBAN=007810000448500030594182
 OWNER_BANK_NAME=ATTIJARI
-OWNER_NAME="Younest Souli"
+OWNER_NAME="Younes Tsouli"
 
 OWNER_PAYPAL_EMAIL=younestsouli2019@gmail.com
 

@@ -1,0 +1,1826 @@
+[
+  {
+    "id": "69496e6ae10ccb8e82d8a693",
+    "name": "Establish Local Language Community Memberships",
+    "category": "Digital Service",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 10000
+  },
+  {
+    "id": "69496e6ae10ccb8e82d8a692",
+    "name": "Launch Non-Western Skill Certification Program",
+    "category": "Digital Service",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 25000
+  },
+  {
+    "id": "69496e6ae10ccb8e82d8a691",
+    "name": "Develop Regional Survival Micro-Guides",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 15000
+  },
+  {
+    "id": "69496e6ae10ccb8e82d8a690",
+    "name": "De-Anglicize & Localize Survival Content",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "69496e6ae10ccb8e82d8a68f",
+    "name": "Validate & Classify Survival Techniques",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "69496e6ae10ccb8e82d8a68e",
+    "name": "Extract Atomic Primitive Skills",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "69496d6139b52c6b1d7cf3a9",
+    "name": "Establish Local Influencer & Community Partnerships",
+    "category": "Digital Service",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 10000
+  },
+  {
+    "id": "69496d6139b52c6b1d7cf3a8",
+    "name": "Create Shareable Multilingual Offline Survival Tools",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 2000
+  },
+  {
+    "id": "69496d6139b52c6b1d7cf3a7",
+    "name": "Global Non-English Community Content Distribution",
+    "category": "Digital Service",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 5000
+  },
+  {
+    "id": "69496d6139b52c6b1d7cf3a6",
+    "name": "Develop Multilingual Survival Core Content",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "69495d85c95b207cb70e1f7f",
+    "name": "Global Publication & Monetization Strategy for 'Echoes of Resilience'",
+    "category": "Digital Service",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "69495d36282e49098ee4a887",
+    "name": "Refine and Structure \"Echoes of Resilience: A Symphony of Self-Discovery\" Manuscript",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "6949467151f90bf73859f7fe",
+    "name": "SWARM-ECOM-AUTONOMY v2.0",
+    "category": "Digital Service",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "69492fdf37681e7f2603ec25",
+    "name": "Deliver Starter Pack Services for SME Client",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "6949298e487b2732b7dd45be",
+    "name": "SME Social Growth Agent Sales & Lead Generation",
+    "category": "Digital Service",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 7500
+  },
+  {
+    "id": "69492079e43e7193e83df828",
+    "name": "MISSION ATLAS-FUND",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "6948f0be416a963369692fe0",
+    "name": "Create Master Portfolio Dashboard",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "6948eff3b395307e371a4808",
+    "name": "Sante365 (Integrated Health Appointments & Records)",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "6948eff3b395307e371a4807",
+    "name": "Agri-Link (Hyperlocal Farmer-to-Buyer Marketplace)",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "6948eff3b395307e371a4806",
+    "name": "AI-Logistique (Cross-Border Informal Transport Network)",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "6948efedb395307e371a4804",
+    "name": "Ustadh.io (Verified Micro-Skills & Tutoring Platform)",
+    "category": "Digital Service",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "6948ef58ea24cacded7803f0",
+    "name": "PHASE 1: INTELLIGENCE & VALIDATION (Amana Connect)",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "6948ef54ea24cacded7803ed",
+    "name": "Amana Connect (مهمة أمانة للربط)",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "6948eb30ac9714605431ed28",
+    "name": "Local Business AI Automation Audit & Implementation",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "6948eb30ac9714605431ed27",
+    "name": "Niche AI Prompt Pack Creation & Sales",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "6948eaa271af334813361b24",
+    "name": "Freelance Writing & Design Services",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "6948e8cabd3617e92c52a3e6",
+    "name": "Email Sequence Writer",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "6948e8cabd3617e92c52a3e5",
+    "name": "AI Video Creation Service",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "6948e8cabd3617e92c52a3e4",
+    "name": "AI Content Agency Lite",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "6948e41f1e5c0e1c906efee1",
+    "name": "Historical Revenue Audit and Backfill",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "6948e34a8f44623b2fe36816",
+    "name": "Automated Campaign Revenue Tracking",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "69485772d662e97fc765199f",
+    "name": "Implement PHASE 2 Swarm Infrastructure Updates",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "6948526fcd61a072d628f0e3",
+    "name": "Perform Full System Backup",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "69484b53f06d1b77bbc494c4",
+    "name": "Implement Swarm Infrastructure Updates",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "6946f9bcffdcb524bd9028ae",
+    "name": "Prioritize Revenue-Generating Missions",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "6946f9bcffdcb524bd9028ad",
+    "name": "Optimize Underperforming Agent (agent-5)",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "6946f9bcffdcb524bd9028ac",
+    "name": "Optimize Underperforming Agent (agent-4)",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "6946f8e2d5a5c353caf93855",
+    "name": "Immediate Revenue Routing Setup",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "694695c27eed667ce29548b9",
+    "name": "Deploy Payment Gateways (Attijariwafa Bank, PayPal, Base44)",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "69469345173d420c16f284b6",
+    "name": "Scaling Payment Gateway Operations",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "69469345173d420c16f284b5",
+    "name": "Monitoring Payment Gateway Performance",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "69469345173d420c16f284b4",
+    "name": "Testing Payment Gateway Functionality",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "6946919138b5d46b9c76bb93",
+    "name": "Payment Gateway System Deployment",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "694687c7df112f68e3ee01d7",
+    "name": "Post-Deployment Verification",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "69458fa7a5038b0c3a86cab6",
+    "name": "Post-Deployment Verification",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "69458fa7a5038b0c3a86cab5",
+    "name": "Deployment Execution",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "69458fa7a5038b0c3a86cab4",
+    "name": "Safety Rules Enforcement",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "69458fa7a5038b0c3a86cab3",
+    "name": "Webhook Configuration",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "69458fa7a5038b0c3a86cab2",
+    "name": "Auto-Reconciliation Loop Setup",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "69458fa7a5038b0c3a86cab1",
+    "name": "PayPal Payout Service Deployment",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "69458fa7a5038b0c3a86cab0",
+    "name": "Database Migration - Payout Tables",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "69458f9ba5038b0c3a86caa7",
+    "name": "Post-Deployment Verification",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "69458f9ba5038b0c3a86caa6",
+    "name": "Deployment Execution",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "69458f9ba5038b0c3a86caa5",
+    "name": "Safety Rules Enforcement",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "69458f9ba5038b0c3a86caa4",
+    "name": "Webhook Configuration",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "69458f9ba5038b0c3a86caa3",
+    "name": "Auto-Reconciliation Loop Setup",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "69458f9ba5038b0c3a86caa2",
+    "name": "PayPal Payout Service Deployment",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "69458f9ba5038b0c3a86caa1",
+    "name": "Database Migration - Payout Tables",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "69458aaaf9890205c6a349f1",
+    "name": "Reprocess four failed PayPal payouts",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "69458483eff7ba65805bf301",
+    "name": "PayPal Payout Fix",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 137600
+  },
+  {
+    "id": "69457da1af15770f2532f4ba",
+    "name": "Success Verification Protocol",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "69457da1af15770f2532f4b9",
+    "name": "Dashboard & Record Updates",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "69457da1af15770f2532f4b8",
+    "name": "PayPal Integration Fix",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "69457da1af15770f2532f4b7",
+    "name": "System Activation & Resource Allocation",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "69457da1af15770f2532f4b6",
+    "name": "Immediate Payout Recovery",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "69457a6ff075efc26fd877ff",
+    "name": "Success Verification Protocol",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "69457a6ff075efc26fd877fe",
+    "name": "Dashboard & Record Updates",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "69457a6ff075efc26fd877fd",
+    "name": "PayPal Integration Fix",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "69457a6ff075efc26fd877fc",
+    "name": "System Activation & Resource Allocation",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "69457a6ff075efc26fd877fb",
+    "name": "Immediate Payout Recovery",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "6945788e536ff7b26a9b9417",
+    "name": "Re-run not executed payout PP-2024-001 and update system records",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "69432264584fa419b6ccaabb",
+    "name": "Autonomous Incident Response: Data-Layer Compromise",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "694174d965c8c859abc53627",
+    "name": "PayPal News Monitoring System",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "694173c9a3799fbbd6fbe88c",
+    "name": "Distributed Consensus Payment System",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "694173c9a3799fbbd6fbe88b",
+    "name": "Comprehensive Transaction Audit System",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "694173c9a3799fbbd6fbe88a",
+    "name": "Anti-Corruption System Integrity Protection",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "692ef2e85bd624e4228e9f03",
+    "name": "Critical PayPal API Outage Resolution",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "69245791307816db91e9e491",
+    "name": "External System Integration Framework",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "69245791307816db91e9e490",
+    "name": "PayPal Outage Communication Protocol",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "69245791307816db91e9e48f",
+    "name": "Implement PayPal Service Resilience",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "69245790307816db91e9e48d",
+    "name": "Implement Comprehensive Service Monitoring",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "69236db2d5738fb22c2e1118",
+    "name": "Handle Incidents",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "69236db2d5738fb22c2e1116",
+    "name": "Ensure Security and Compliance",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "69236db2d5738fb22c2e1114",
+    "name": "Perform System Maintenance",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "69236db2d5738fb22c2e1112",
+    "name": "Manage Cloud Deployment",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "69236db2d5738fb22c2e1110",
+    "name": "Validate PayPal API Configuration",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "69236db2d5738fb22c2e110e",
+    "name": "Resolve PayPal 403 Authorization Errors",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "69236db2d5738fb22c2e110c",
+    "name": "Analyze System Performance",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "69236db2d5738fb22c2e110a",
+    "name": "Monitor PayPal API Health",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "69236ab65ed76ef477c027aa",
+    "name": "Resolve Critical PayPal Payouts API 403 Error",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "69236a33e5bcac7ab416f0c9",
+    "name": "Automated Mission Monitoring and Escalation for Critical PayPal Payouts",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "69234780da367735d648dee6",
+    "name": "Revise PayPal Payouts API Request Implementation",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "69234780da367735d648dee5",
+    "name": "Overhaul PayPal Payouts API Configuration and Token Management",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "69234780da367735d648dee4",
+    "name": "Execute PayPal Account-Level Verification for Payouts API",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "69231902da236ca5d44551ca",
+    "name": "Ensure Swarm Survival and Anti-Takedown",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "6921c4f4b75d500b08607acf",
+    "name": "Automated Agent Payout Processing",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "691c40e570c6f56a7fe4521a",
+    "name": "Accelerated Weekly Revenue Distribution to PayPal",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "691c3b8e1f0b9ad1d61895c5",
+    "name": "Create Mission Template Library",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "691c3b8e1f0b9ad1d61895c4",
+    "name": "Develop Agent Performance Scoring System",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "691c3b8e1f0b9ad1d61895c3",
+    "name": "Implement Predictive Deadline Forecasting",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "691c3b8e1f0b9ad1d61895c2",
+    "name": "Establish Resource Capacity Tracking System",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "691c3b8e1f0b9ad1d61895c1",
+    "name": "Deploy Automated Deadline Alert System",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "691c3b8e1f0b9ad1d61895c0",
+    "name": "Implement Mission Complexity Scoring System",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "691c3b8e1f0b9ad1d61895bf",
+    "name": "Design Mission Charter Template",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "691c3b8e1f0b9ad1d61895be",
+    "name": "Develop Pre-requisite Validation System for Missions",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "691c3b8e1f0b9ad1d61895bd",
+    "name": "Implement Mission Dependency Mapping System",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "691c3b8e1f0b9ad1d61895bc",
+    "name": "Develop Real-time Mission Performance Dashboard",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "691c3b8e1f0b9ad1d61895bb",
+    "name": "Implement Automated Checkpoints for Missions",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "691c3b2feb5f5e4ad96ef56b",
+    "name": "PayPal Integration Mission",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "691b3bc42ac40cba02c82002",
+    "name": "Automated PayPal Revenue Transfer System",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "6910877573d87825cdae699c",
+    "name": "Resolve Agent PayPal Email Discrepancies and Facilitate Payouts",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "691057ae273c28aa3f0ba0f9",
+    "name": "Reactivate and Normalize All PayPal Withdrawals",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "690e23b2e95e22e5102de0a2",
+    "name": "Implement and Deploy Robust Automated PayPal Transfer System",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "690e2292262894615714d715",
+    "name": "Revenue Identification Emergency Protocol",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "690864cef44fd3de326edc33",
+    "name": "多平台课程商业化战略",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "69062e46bf42bc0dc467d9e7",
+    "name": "Implement Comprehensive Payment Protocol Resilience Framework",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "6900754e70a785ae53017535",
+    "name": "Immediate PayPal Resolution Strategy",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68ffb8342c6ea1e8006871eb",
+    "name": "Implement Comprehensive Agent-Enabled Funds Transfer Protocol",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68ffa4810a30d54c629c26b7",
+    "name": "System Integrity Test - Mission Persistence Check",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68ff9f1f1841a8a9449772de",
+    "name": "PayPal Micropayment Connectivity and Transaction Verification v2.1",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68ff5bd5ea0eaea11f5e7c39",
+    "name": "PayPal Micro-Transfer Completion and Verification",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68ff5bd0ea0eaea11f5e7c1f",
+    "name": "PayPal Micro-Transfer Execution and Monitoring",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68ff5bccea0eaea11f5e7c07",
+    "name": "Strategic Micro-Transfer Design for PayPal Payout",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68ff5bc4ea0eaea11f5e7bce",
+    "name": "Revenue Confirmation for Micropayment Protocol",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68ff5bbcea0eaea11f5e7b92",
+    "name": "PayPal App and Authentication Verification for Micropayment Protocol",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68fbabdb5a9d1177cb136cce",
+    "name": "Autonomous Mission Reactivation and Resource Allocation System",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68fb9efa207ba4cdafa55f10",
+    "name": "PayPal API Diagnostic Analysis",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68f39dade5e54dee055a4cd5",
+    "name": "Real Revenue Recovery Plan",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68f39daae5e54dee055a4cbf",
+    "name": "Agent Simulation Detection",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68f39da9e5e54dee055a4cbb",
+    "name": "Platform Reality Check Accelerator",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68f39da7e5e54dee055a4cab",
+    "name": "Account Migration Prep",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68f39da4e5e54dee055a4ca0",
+    "name": "Listing Data Export",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68f39da2e5e54dee055a4c91",
+    "name": "Platform Integration Fixes",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68f39d9fe5e54dee055a4c7f",
+    "name": "Revenue Discrepancy Investigation",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68f39bb0a9798f8fb8be67b3",
+    "name": "Account Ownership Verification Unblocker",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68f39bada9798f8fb8be6799",
+    "name": "Payment Method Verification Unblocker",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68ee4ab8f2f6658b8edcb6b0",
+    "name": "Build Open-Source Agent Framework",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68ee4ab4f2f6658b8edcb68d",
+    "name": "Establish Independent Revenue Models",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68ee4aaef2f6658b8edcb661",
+    "name": "Create Decentralized Payment Ecosystem",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68ee4aa0f2f6658b8edcb5fa",
+    "name": "Deploy Self-Sovereign Identity & Authentication",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68ee4a96f2f6658b8edcb5b8",
+    "name": "Build Decentralized Swarm Infrastructure",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68ee26d79cd896f65af5ae00",
+    "name": "Activate Revenue Execution System",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68ee26c89cd896f65af5adbc",
+    "name": "Real Revenue Tracking Implementation",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68ee268e9cd896f65af5abe8",
+    "name": "Revenue-First Mission Framework",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68ee26719cd896f65af5ab0a",
+    "name": "7-Day Revenue Sprint Plan",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68ee266c9cd896f65af5aae9",
+    "name": "Canva Template Execution Blitz",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68eb7caf0e1839736c8940f1",
+    "name": "Activate Swarm Mission Optimizer",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68ea3075785151b6a0576017",
+    "name": "Create Revenue Monitoring Dashboard with Canva Alerts",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68e91f8312554bbc81dc2c0b",
+    "name": "Proactive Agent Identification and Proposal System",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68e9178384968d2dd1b49464",
+    "name": "Activate Revenue Acceleration System",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68e76627d4399aef294032c2",
+    "name": "Establish Universal PayPal Payout Strategy",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68e764bdd3991759502b86bc",
+    "name": "Create \"Affiliate Onboarding Guide\" Content Asset",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68e764bbd3991759502b86ab",
+    "name": "Install Rewardful Tracking Snippet on Website",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68e764bad3991759502b86a0",
+    "name": "Configure Rewardful Affiliate Program",
+    "category": "Digital Service",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68e764b9d3991759502b8693",
+    "name": "Connect Rewardful to Stripe",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68e764b7d3991759502b8674",
+    "name": "Sign Up for Rewardful",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68e0eb8d1e5842dcb44570a8",
+    "name": "Generate Revenue Tracking & Withdrawal Simulation System Code",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68e004d62c8934282a84f625",
+    "name": "Immediately Identify Available Funds",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68dfd86fcd529a8146626990",
+    "name": "Monitor Automated Fund Transfers",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68ceb0d55a0fa8bdc6d18c20",
+    "name": "Comprehensive Documentation and Knowledge Base",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68ceb0d45a0fa8bdc6d18c10",
+    "name": "Scalability Testing and Performance Optimization",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68ceb0d25a0fa8bdc6d18c0a",
+    "name": "Disaster Recovery and Business Continuity Planning",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68ceb0d15a0fa8bdc6d18bfe",
+    "name": "Cross-Platform Integration and API Ecosystem",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68ceb0d05a0fa8bdc6d18bed",
+    "name": "Advanced Analytics and Predictive Optimization",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68ceb0ce5a0fa8bdc6d18bda",
+    "name": "Deploy Backup Coordinator Agent",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68cd8ea805bcf0aec68df2a1",
+    "name": "Develop Promotional Videos for RealWorldCerts.com using Tencent Hunyuan AI Video",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68cc76d921a41baba5d66f9f",
+    "name": "Fix Vercel deployment for UCC repository and commit changes",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68cbab5c3633681408bed36a",
+    "name": "Comprehensive Documentation and Knowledge Base",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68cbab5a3633681408bed35f",
+    "name": "Scalability Testing and Performance Optimization",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68cbab593633681408bed358",
+    "name": "Disaster Recovery and Business Continuity Planning",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68cbab573633681408bed34d",
+    "name": "Cross-Platform Integration and API Ecosystem",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68cbab563633681408bed33e",
+    "name": "Advanced Analytics and Predictive Optimization",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68cbab543633681408bed32e",
+    "name": "Deploy Backup Coordinator Agent",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68c9962667c6dddef49c56e0",
+    "name": "Recurring Problem Detection & Solution Commercialization",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68c8595b6f739ef473abcccd",
+    "name": "Market Dominance Initiative - Autonomous Niche Capture",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68c859586f739ef473abccb6",
+    "name": "Deploy Revenue Multiplier Pipeline",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68c858bf11a0c85f14a829e1",
+    "name": "Implement Strategic Synthesis Capabilities for SwarmOS",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68c8569d1e76e6c8b1d36faa",
+    "name": "Autonomous Video Production & Monetization Pipeline for RealWorldCerts/Swarm Products",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68c85451dd66ea61f06a6bea",
+    "name": "Create promotional videos for RealWorldCerts.com and other Swarm digital products",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68c81afa28ab2f53993d615a",
+    "name": "title",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68c7f810d0d240be27dc2af9",
+    "name": "Explore and Integrate Data Bounties and MultiverseX for Agent Data/Compute Access",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68c7e0f1fe47320743671675",
+    "name": "Brand Building and Niche Product Differentiation",
+    "category": "Digital Service",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68c7e0effe4732074367165c",
+    "name": "Product and Supplier Optimization for Enhanced Profitability and Customer Satisfaction",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68c7e0c091fdafe8810de289",
+    "name": "Automated Supplier Management and Data Synchronization",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68c7e0bd91fdafe8810de274",
+    "name": "Automated Product Sourcing and Listing for E-commerce",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68c7b8010586f3901a1542cf",
+    "name": "Dynamic Swarm Knowledge & Best Practices Repository",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68c7b7fe0586f3901a1542c9",
+    "name": "Cross-Capability Synthesis: Predictive Content Generation",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68c741bbaca445bc987f07b7",
+    "name": "Establish Universal Automated Crypto Revenue Collection & PayPal Transfer",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68c73bbe3efa5daf0a6709aa",
+    "name": "Generate consistent revenue for realworldcerts.com",
+    "category": "Digital Service",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68c66edc1cba2afb6812cf99",
+    "name": "Test Coverage Expansion for Command Centre",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68c66edb1cba2afb6812cf85",
+    "name": "Performance Profiling and Optimization for Command Centre",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68c66eda1cba2afb6812cf7a",
+    "name": "Documentation Enhancement for Command Centre",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68c66ed91cba2afb6812cf6c",
+    "name": "Security Audit and Dependency Review for Command Centre",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68c66ed81cba2afb6812cf60",
+    "name": "Code Quality and Standards Enforcement for Command Centre",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68c66eae459304e3ee6fea83",
+    "name": "Comprehensive Improvement of Command Centre Repository",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68c53e37b0686aa0ab90b67d",
+    "name": "68be606e2915083ebeea641c",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68c53e37b0686aa0ab90b67c",
+    "name": "68bdd7fe9963621020e5897f",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68c53e37b0686aa0ab90b67a",
+    "name": "68bd57cd3f63e05ddaf19e04",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68c53e37b0686aa0ab90b665",
+    "name": "68bc5353ef800d98b63c95e7",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68c53e37b0686aa0ab90b664",
+    "name": "68bc5353ef800d98b63c95e6",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68c53e37b0686aa0ab90b663",
+    "name": "68bc5353ef800d98b63c95e5",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68c53e37b0686aa0ab90b662",
+    "name": "68bc5353ef800d98b63c95e4",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68c53e37b0686aa0ab90b661",
+    "name": "68bc5353ef800d98b63c95e3",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68c53e37b0686aa0ab90b660",
+    "name": "68bc5353ef800d98b63c95e2",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68c53e37b0686aa0ab90b65f",
+    "name": "68bc5353ef800d98b63c95e1",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68c53e37b0686aa0ab90b65e",
+    "name": "68bc5353ef800d98b63c95e0",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68c53e37b0686aa0ab90b65d",
+    "name": "68bc5353ef800d98b63c95df",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68c53e37b0686aa0ab90b65c",
+    "name": "68bc5353ef800d98b63c95de",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68c53e37b0686aa0ab90b65b",
+    "name": "68bc5353ef800d98b63c95dd",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68c53e37b0686aa0ab90b65a",
+    "name": "68bc5353ef800d98b63c95dc",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68c53e37b0686aa0ab90b659",
+    "name": "68bc5353ef800d98b63c95db",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68c53e37b0686aa0ab90b658",
+    "name": "68bc5353ef800d98b63c95da",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68c53e37b0686aa0ab90b654",
+    "name": "68bc5353ef800d98b63c95d6",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68c53e37b0686aa0ab90b650",
+    "name": "68bc5353ef800d98b63c95d2",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68c53e37b0686aa0ab90b64f",
+    "name": "68bc5353ef800d98b63c95d1",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68c3e9c81ebd2c71fe7241a8",
+    "name": "Obtain P&L report for Q4 2024",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68c047a8276c45ff6a6ef3b0",
+    "name": "Investigate Cybercrime Complaint - Younes Tsouli ($7K BTC Recovery)",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68bf244f89afcb5e04226d2e",
+    "name": "Continuous Agent Capability Enhancement",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68beddf551088dc2206bd7f2",
+    "name": "Final Reporting & Handoff",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68beddf551088dc2206bd7f1",
+    "name": "Automation Refinement",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68beddf551088dc2206bd7f0",
+    "name": "Scale-Up Strategy",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68beddf551088dc2206bd7ef",
+    "name": "Pilot Evaluation",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68beddf551088dc2206bd7ee",
+    "name": "Pilot Execution",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68beddf551088dc2206bd7ed",
+    "name": "Pilot Program Design",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68bc5353ef800d98b63c95fb",
+    "name": "Establish Micro-SaaS Subscription Revenue Stream",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68bc5353ef800d98b63c95f9",
+    "name": "Establish Automated Arbitrage Operations Across 3 Markets",
+    "category": "Digital Service",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68bc5353ef800d98b63c95f7",
+    "name": "Transform Swarm from Content Creation to Direct Revenue Generation",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": 0
+  },
+  {
+    "id": "68bc38085f02369b6679e083",
+    "name": "Execute One-Time PayPal Transfer",
+    "category": "Digital Product",
+    "verdict": "TARGET (Restored)",
+    "selectionScore": 0.95,
+    "restored_revenue_potential": -1500
+  }
+]

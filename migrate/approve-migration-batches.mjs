@@ -91,29 +91,60 @@ export async function approveMigrationBatches() {
   }
   
   // Approve each batch
-  for (const batch of plan.batches) {
-    console.log(`\n🔓 Approving batch ${batch.batchId}`);
-    console.log(`   Amount: ${batch.amount} ${batch.currency}`);
-    console.log(`   Events: ${batch.eventCount}`);
+  for (const batchInfo of plan.batches) {
+    console.log(`\n🔓 Approving batch ${batchInfo.batchId}`);
+    console.log(`   Amount: ${batchInfo.amount} ${batchInfo.currency}`);
+    console.log(`   Events: ${batchInfo.eventCount}`);
     
-    // Update batch status
-    await batchEntity.update(batch.batchEntityId, {
+    const updateData = {
       [batchCfg.fieldMap.status]: 'approved',
       [batchCfg.fieldMap.approvedAt]: new Date().toISOString(),
       [batchCfg.fieldMap.notes]: {
-        ...batch.notes,
-        approved_by: 'migration_system',
-        approved_at: new Date().toISOString(),
-        approval_method: needsTOTP ? 'totp' : 'auto'
+        ...batchInfo.notes,
+        approved_by: 'autonomous_migration_agent',
+        approval_method: needsTOTP ? 'totp_verified' : 'auto_threshold'
       }
-    });
+    };
     
-    // Update item status
-    await itemEntity.update(batch.itemEntityId, {
-      [itemCfg.fieldMap.status]: 'approved'
-    });
-    
-    console.log(`✅ Batch ${batch.batchId} approved`);
+    if (batchInfo.local) {
+      console.log(`   [Offline] Approving local batch file...`);
+      const localPath = path.join('migrate', 'batches', `${batchInfo.batchId}.json`);
+      if (fs.existsSync(localPath)) {
+        const fileData = JSON.parse(fs.readFileSync(localPath, 'utf8'));
+        const updated = { ...fileData, ...updateData, status: 'approved' };
+        
+        // Move to approved folder
+        const approvedDir = path.join('migrate', 'approved');
+        if (!fs.existsSync(approvedDir)) fs.mkdirSync(approvedDir, { recursive: true });
+        
+        const approvedPath = path.join(approvedDir, `${batchInfo.batchId}.json`);
+        fs.writeFileSync(approvedPath, JSON.stringify(updated, null, 2));
+        
+        // Optionally delete from batches or keep as archive? 
+        // Usually move.
+        try { fs.unlinkSync(localPath); } catch {}
+        
+        console.log(`✅ Batch approved and moved to: ${approvedPath}`);
+      } else {
+        console.error(`❌ Local batch file not found: ${localPath}`);
+      }
+    } else {
+      try {
+        // Update batch status on server
+        await batchEntity.update(batchInfo.batchEntityId, updateData);
+        
+        // Also update items?
+        // Usually items follow batch status or need explicit update.
+        // Assuming batch update triggers logic or we update items manually.
+        const items = await itemEntity.filter({ [itemCfg.fieldMap.batchId]: batchInfo.batchId });
+        for (const item of items) {
+          await itemEntity.update(item.id, { [itemCfg.fieldMap.status]: 'approved' });
+        }
+        console.log(`✅ Batch approved on server: ${batchInfo.batchEntityId}`);
+      } catch (err) {
+        console.error(`❌ Failed to approve batch on server: ${err.message}`);
+      }
+    }
   }
   
   // Update plan

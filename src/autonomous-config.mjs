@@ -52,6 +52,9 @@ export function defaultConfig() {
     health: {
       requirePayPal: false
     },
+    real: {
+      executionLoop: true
+    },
     payout: {
       settlementId: null,
       beneficiary: null,

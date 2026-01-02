@@ -2,6 +2,7 @@ import { createClient } from "@base44/sdk";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { CircuitBreaker } from "./swarm/circuit-breakers.mjs";
+import { threatMonitor } from "./security/threat-monitor.mjs";
 
 const globalCircuitBreaker = new CircuitBreaker(5, 60000);
 
@@ -176,18 +177,26 @@ function createOfflineClient({ filePath }) {
 
 function createOnlineClient() {
   const { appId, serviceToken } = getOnlineAuth();
-  const serverUrl = process.env.BASE44_SERVER_URL;
+  const serverUrl = process.env.BASE44_SERVER_URL || "https://agent-flow-ai-9855ea98.base44.app";
 
   // DEBUG: Log auth usage (redacted)
   console.log(`[Base44Client] Connecting with AppID: ${appId}, Token: ${serviceToken.slice(0, 5)}...`);
+  console.log(`[Base44Client] Server URL: ${serverUrl}`);
 
   const client = createClient({
-    ...(serverUrl ? { serverUrl } : {}),
+    serverUrl,
     appId,
     serviceToken,
     apiKey: serviceToken, // Explicitly pass as apiKey in case SDK expects it
+    key: serviceToken,
+    secret: serviceToken,
     // Pass serviceToken as token to authenticate the socket connection for private apps
-    token: serviceToken
+    token: serviceToken,
+    headers: {
+      "Authorization": `Bearer ${serviceToken}`,
+      "X-Service-Token": serviceToken,
+      "X-Api-Key": serviceToken
+    }
   });
 
   // Wrap entities to use circuit breaker for writes
@@ -277,7 +286,7 @@ function normalizeAppIdInput(value) {
     const fromPath = coerceNonEmptyString(parts[appsIdx + 1]);
     if (fromPath) return fromPath;
   }
-  if (host.endsWith(".base44.app")) return host.slice(0, -".base44.app".length);
+  if (host.endsWith(".base44.app")) return host; // Return full subdomain hostname instead of app ID
   return host;
 }
 
@@ -368,6 +377,12 @@ function getOnlineAuth() {
 }
 
 export function buildBase44Client({ allowMissing = false, mode = "auto" } = {}) {
+  // 1. Check Threat Monitor for Bunker Mode (High Priority)
+  if (threatMonitor.isBunkerMode()) {
+    console.warn("☢️ BUNKER MODE ACTIVE: Forcing Offline Client ☢️");
+    return createOfflineClient({ filePath: getOfflineStorePath() });
+  }
+
   const wantOffline =
     mode === "offline" ||
     (mode === "auto" && (getEnvBool("BASE44_OFFLINE", false) || getEnvBool("BASE44_OFFLINE_MODE", false)));

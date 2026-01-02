@@ -15,12 +15,19 @@ export class MarketIntelligenceAgent {
         this.id = 'market-intelligence-agent';
         this.config = this._loadConfig(configPath);
         
-        // Initial test products for Phase 1
+        // Initial test products for Phase 1 (including Digital Products from preserved instructions)
         this.monitoredProducts = [
+            // Physical Products
             { id: 'p1', name: 'Customizable Canvas Tote Bag', category: 'Accessories' },
             { id: 'p2', name: 'Monogram Ceramic Coffee Mug', category: 'Home' },
             { id: 'p3', name: 'Customizable Phone Case', category: 'Electronics' },
-            { id: 'p4', name: 'FNTCASE iPhone 17 Case', category: 'Electronics' }
+            { id: 'p4', name: 'FNTCASE iPhone 17 Case', category: 'Electronics' },
+            
+            // Digital Products (Recovered from Agentic Commerce Protocol)
+            { id: 'dig_001', name: 'Business Starter Kit (Templates)', category: 'Digital', type: 'digital_download' },
+            { id: 'dig_002', name: 'AI Prompt Library (High Value)', category: 'Digital', type: 'digital_download' },
+            { id: 'dig_art_01', name: 'Abstract AI Art Pack (50pcs)', category: 'Digital Art', type: 'digital_download' },
+            { id: 'dig_ebook_01', name: '30-Day Mindfulness Challenge E-Book', category: 'Digital Books', type: 'digital_download' }
         ];
     }
 

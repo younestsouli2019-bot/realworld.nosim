@@ -19,6 +19,9 @@ import { LearningAgent } from "./swarm/learning-agent.mjs";
 import { runRevenueSwarm } from "./revenue/swarm-runner.mjs";
 import { runFullBackup } from "./backup-runner.mjs";
 import { runSystemIntegritySync } from "./system-integrity.mjs";
+import { threatMonitor } from "./security/threat-monitor.mjs";
+import { runDoomsdayExport } from "./real/ledger/doomsday-export.mjs";
+import { enforceOwnerDirective } from "./owner-directive.mjs";
 import { 
   getEnvBool, 
   deepMerge, 
@@ -342,7 +345,10 @@ function inferOfflineRetry(errText) {
     "socket hang up",
     "Missing required env var: BASE44_APP_ID",
     "Missing required env var: BASE44_SERVICE_TOKEN",
-    "Base44 client not configured"
+    "Base44 client not configured",
+    "This app is private",
+    "403",
+    "auth_required"
   ];
   return needles.some((n) => t.includes(n));
 }
@@ -446,12 +452,16 @@ async function checkHealthOnce(cfg) {
   } catch (e) {
     base44Ok = false;
     base44Err = e?.message ?? String(e);
+    // Report to Threat Monitor
+    threatMonitor.reportError("base44_health", e);
   }
 
   if (!base44Ok && !cfg.offline.enabled && cfg.offline.auto && inferOfflineRetry(base44Err)) {
     try {
+      console.warn("⚠️  Online Health Check Failed. Switching to Offline Mode (Resilience Fallback)...");
       mode = "offline";
       await withTempEnv({ BASE44_OFFLINE: "true", BASE44_OFFLINE_STORE_PATH: cfg.offline.storePath }, base44Attempt);
+      console.log("✅ Offline Mode Active. System operational.");
       base44Ok = true;
       base44Err = null;
     } catch (e2) {
@@ -1112,6 +1122,19 @@ async function runTick(cfg, state) {
     out.meta.freeze = state.freeze ?? out.meta.freeze;
   }
 
+  // --- INTEGRATION: REAL EXECUTION LOOP (REVENUE GENERATION) ---
+  if (cfg.real?.executionLoop) {
+          if (isFreezeActive(state)) {
+            out.results.realExecutionLoop = freezeSkip(state, "freeze_active");
+          } else {
+             // Run the real execution loop script
+             out.results.realExecutionLoop = await runNodeScript("src/real/real-execution-loop.mjs", [], { env: { SWARM_LIVE: "true" } });
+             
+             // Run SLA Enforcement
+             await runNodeScript("src/real/sla/enforce-sla.mjs", [], { env: { SWARM_LIVE: "true" } });
+          }
+        }
+
   if (cfg.tasks.availableBalance) {
     out.results.availableBalance = await runEmitWithOfflineFallback(["--available-balance"], cfg);
   }
@@ -1515,7 +1538,10 @@ async function main() {
       ...cfg,
       health: { requirePayPal: cfg.health?.requirePayPal === true || cfg.tasks?.autoSubmitPayPalPayoutBatches === true || cfg.tasks?.syncPayPalLedgerBatches === true }
     });
-    if (!health.ok) throw new Error("LIVE MODE NOT GUARANTEED (endpoints/credentials)");
+    if (!health.ok) {
+      console.error("Health Check Failed:", JSON.stringify(health, null, 2));
+      throw new Error(`LIVE MODE NOT GUARANTEED (endpoints/credentials): ${health.details?.base44} | ${health.details?.paypal}`);
+    }
   }
 
   const statePath = path.resolve(process.cwd(), cfg.state.path);

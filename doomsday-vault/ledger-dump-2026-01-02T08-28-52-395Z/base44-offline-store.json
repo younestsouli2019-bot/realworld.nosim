@@ -1,0 +1,22 @@
+{
+  "entities": {
+    "PayoutBatch": {
+      "records": []
+    },
+    "PayoutItem": {
+      "records": []
+    },
+    "PayPalMetric": {
+      "records": []
+    },
+    "PayPalWebhookEvent": {
+      "records": []
+    },
+    "RevenueEvent": {
+      "records": []
+    },
+    "TransactionLog": {
+      "records": []
+    }
+  }
+}

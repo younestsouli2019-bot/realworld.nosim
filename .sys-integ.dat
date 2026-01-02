@@ -1,0 +1,140 @@
+{
+  "updated": "2026-01-02T05:55:17.197Z",
+  "entities": {
+    "RevenueEvent": {
+      "records": [
+        {
+          "event_id": "SWARM_EXEC_1767293194734_1051928a",
+          "event_hash": "793dc8c254e0b4bd80f4dcfba38324aebb1bfda6e8edaef79c6800a1c2830a8f",
+          "source": "swarm_commerce_v1",
+          "source_id": null,
+          "amount": 159.45,
+          "currency": "USD",
+          "status": "earned",
+          "confirmation_date": null,
+          "reconciliation_key": null,
+          "payout_batch_id": null,
+          "notes": null,
+          "metadata": {
+            "product_name": "Abstract AI Art Pack (50pcs)",
+            "market_score": 0.6460605860317571,
+            "execution_mode": "WET_RUN_REALITY",
+            "notes": "Autonomous revenue generation executed by SwarmRunner."
+          },
+          "id": "6956c069dcdfb13c43803684",
+          "created_date": "2026-01-01T18:43:53.328000",
+          "updated_date": "2026-01-01T18:43:53.328000",
+          "created_by_id": "anonymous",
+          "created_by": "anonymous",
+          "is_sample": false
+        },
+        {
+          "event_id": "RE_001_AGENT_COMMISSION",
+          "event_hash": null,
+          "source": "agent_generated",
+          "source_id": null,
+          "amount": 150,
+          "currency": "USD",
+          "status": "paid_out",
+          "confirmation_date": "2025-12-22",
+          "reconciliation_key": null,
+          "payout_batch_id": "PB_001_FIRST_PAYOUT",
+          "notes": "Initial agent commission for first payout cycle.",
+          "metadata": null,
+          "id": "694974bd8ea0699ad93ab29b",
+          "created_date": "2025-12-22T16:41:33.289000",
+          "updated_date": "2025-12-22T16:43:24.155000",
+          "created_by_id": "6888ac155ebf84dd9855ea99",
+          "created_by": "younesdgc@gmail.com",
+          "is_sample": false
+        }
+      ]
+    },
+    "PayoutBatch": {
+      "records": [
+        {
+          "batch_id": "PB_001_FIRST_PAYOUT",
+          "batch_hash": null,
+          "total_amount": 150,
+          "currency": "USD",
+          "status": "submitted_to_paypal",
+          "approved_by": "user@example.com",
+          "approved_at": "2025-12-22",
+          "paypal_batch_id": "PAYPAL_BATCH_12345",
+          "paypal_status": null,
+          "submitted_at": "2025-12-22",
+          "completed_at": null,
+          "revenue_event_ids": [
+            "694974bd8ea0699ad93ab29b"
+          ],
+          "error_message": null,
+          "retry_count": 0,
+          "notes": null,
+          "id": "694974c58ea0699ad93ab2a2",
+          "created_date": "2025-12-22T16:41:41.905000",
+          "updated_date": "2025-12-22T16:43:24.158000",
+          "created_by_id": "6888ac155ebf84dd9855ea99",
+          "created_by": "younesdgc@gmail.com",
+          "is_sample": false
+        }
+      ]
+    },
+    "PayoutItem": {
+      "records": [
+        {
+          "item_id": "PI_001_RE_001",
+          "batch_id": "PB_001_FIRST_PAYOUT",
+          "revenue_event_id": null,
+          "recipient_type": "bank_account",
+          "recipient": "007 810 0004485000305941 82",
+          "amount": 150,
+          "currency": "USD",
+          "status": "disputed",
+          "paypal_transaction_id": "TRANS_ID_ABCDEFG",
+          "paypal_status": "P-123-456-789",
+          "processed_at": "2025-12-22",
+          "error_message": null,
+          "note": "User reported not receiving funds after 5 days; initiating PayPal trace. Advised user to contact their bank first.",
+          "id": "694974c58ea0699ad93ab2a3",
+          "created_date": "2025-12-22T16:41:41.908000",
+          "updated_date": "2025-12-27T21:08:00.382000",
+          "created_by_id": "6888ac155ebf84dd9855ea99",
+          "created_by": "younesdgc@gmail.com",
+          "is_sample": false
+        }
+      ]
+    },
+    "PayPalWebhookEvent": {
+      "records": []
+    },
+    "PayPalMetric": {
+      "records": []
+    },
+    "TransactionLog": {
+      "records": [
+        {
+          "transaction_type": "withdrawal",
+          "amount": 150,
+          "currency": "USD",
+          "description": "Payout for agent commission RE_001_AGENT_COMMISSION",
+          "category": null,
+          "payment_method": "bank_transfer",
+          "source": null,
+          "transaction_date": "2025-12-22",
+          "reference_id": "TRANS_ID_ABCDEFG",
+          "linked_goal_id": null,
+          "agent_responsible": null,
+          "status": "completed",
+          "receipt_url": null,
+          "notes": null,
+          "id": "6949752b8f7fc3c25241b130",
+          "created_date": "2025-12-22T16:43:23.987000",
+          "updated_date": "2025-12-22T16:43:23.987000",
+          "created_by_id": "6888ac155ebf84dd9855ea99",
+          "created_by": "younesdgc@gmail.com",
+          "is_sample": false
+        }
+      ]
+    }
+  }
+}

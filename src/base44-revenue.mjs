@@ -21,7 +21,7 @@ export function getRevenueConfigFromEnv() {
     currency: "currency",
     occurredAt: "occurred_at",
     source: "source",
-    externalId: "external_id",
+    externalId: "event_id", // Mapped to event_id as per Base44 schema requirement
     status: "status",
     payoutBatchId: "payout_batch_id",
     eventHash: "event_hash",

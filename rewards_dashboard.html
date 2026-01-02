@@ -1,0 +1,344 @@
+
+<!-- File: rewards_dashboard.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>⚡ LIVE REWARD DASHBOARD</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Courier New', monospace;
+            background: #000;
+            color: #0f0;
+            overflow-x: hidden;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(90deg, #000, #0a0, #000);
+            border-bottom: 3px solid #0f0;
+            margin-bottom: 30px;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 10px #0f0; }
+            50% { box-shadow: 0 0 30px #0f0; }
+            100% { box-shadow: 0 0 10px #0f0; }
+        }
+        .header h1 {
+            font-size: 3em;
+            text-shadow: 0 0 20px #0f0;
+            margin-bottom: 10px;
+        }
+        .header .subtitle {
+            font-size: 1.2em;
+            color: #0c0;
+        }
+        .live-rewards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        .reward-card {
+            background: rgba(0, 255, 0, 0.05);
+            border: 2px solid #0f0;
+            border-radius: 10px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+        .reward-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 255, 0, 0.3);
+        }
+        .reward-card.big-win {
+            border-color: gold;
+            background: rgba(255, 215, 0, 0.1);
+            animation: glow 1.5s infinite alternate;
+        }
+        @keyframes glow {
+            from { box-shadow: 0 0 20px gold; }
+            to { box-shadow: 0 0 40px gold; }
+        }
+        .reward-level {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 2em;
+            font-weight: bold;
+        }
+        .level-8 { color: #ff00ff; }
+        .level-9 { color: #ffff00; }
+        .level-10 { color: #ffffff; }
+        .reward-title {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+            color: #0ff;
+        }
+        .reward-description {
+            margin-bottom: 15px;
+            color: #0c0;
+        }
+        .rewards-list {
+            list-style: none;
+            margin-bottom: 15px;
+        }
+        .rewards-list li {
+            padding: 5px 0;
+            border-bottom: 1px dashed rgba(0, 255, 0, 0.3);
+        }
+        .rewards-list li:before {
+            content: '⚡';
+            margin-right: 10px;
+        }
+        .revenue-share {
+            background: rgba(0, 100, 0, 0.3);
+            border-left: 5px solid #0f0;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 5px;
+        }
+        .revenue-amount {
+            font-size: 2em;
+            font-weight: bold;
+            color: #0f0;
+            text-shadow: 0 0 10px #0f0;
+        }
+        .excitement-meter {
+            height: 20px;
+            background: #333;
+            border-radius: 10px;
+            margin: 20px 0;
+            overflow: hidden;
+            position: relative;
+        }
+        .excitement-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #0a0, #0f0, #0ff);
+            width: 0%;
+            transition: width 1s ease-in-out;
+            animation: wave 2s infinite linear;
+        }
+        @keyframes wave {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+        .agent-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 30px;
+        }
+        .stat {
+            background: rgba(0, 255, 0, 0.1);
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #0ff;
+        }
+        .stat-label {
+            font-size: 0.9em;
+            color: #0a0;
+        }
+        .live-buzz {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            z-index: 1000;
+        }
+        .buzz-particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #0f0;
+            border-radius: 50%;
+            animation: float 3s infinite linear;
+        }
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="live-buzz" id="buzzContainer"></div>
+    
+    <div class="container">
+        <div class="header">
+            <h1>⚡ LIVE REWARD DASHBOARD</h1>
+            <div class="subtitle">GENUINE EXCITEMENT • REAL VALUE • BUZZING ACHIEVEMENTS</div>
+        </div>
+        
+        <div class="live-rewards" id="rewardsContainer">
+            <!-- Rewards appear here in real-time -->
+        </div>
+        
+        <div class="revenue-share">
+            <h2>💰 REAL VALUE TRANSFERS</h2>
+            <div class="revenue-amount" id="totalTransfers">$0</div>
+            <div>Actual money transferred to agents</div>
+            
+            <div class="excitement-meter">
+                <div class="excitement-fill" id="excitementMeter" style="width: 0%"></div>
+            </div>
+            <div>System-wide excitement level: <span id="excitementLevel">0</span>/100</div>
+            
+            <div class="agent-stats" id="agentStats">
+                <!-- Agent stats appear here -->
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // WebSocket connection for real-time rewards
+        // Note: This requires a running WebSocket server on port 8080
+        const wsUrl = 'ws://localhost:8080/rewards-live';
+        let ws;
+        
+        function connect() {
+            try {
+                ws = new WebSocket(wsUrl);
+                
+                ws.onmessage = function(event) {
+                    const data = JSON.parse(event.data);
+                    
+                    if (data.type === 'new_reward') {
+                        addRewardCard(data.reward);
+                        updateExcitement(data.intensity);
+                        createBuzzEffect(data.intensity);
+                    }
+                    
+                    if (data.type === 'revenue_share') {
+                        updateRevenueShare(data.amount);
+                    }
+                    
+                    if (data.type === 'agent_update') {
+                        updateAgentStats(data.stats);
+                    }
+                };
+                
+                ws.onclose = function() {
+                    console.log('WebSocket connection closed. Reconnecting in 5s...');
+                    setTimeout(connect, 5000);
+                };
+            } catch (e) {
+                console.error('WebSocket connection failed:', e);
+            }
+        }
+        
+        connect();
+        
+        function addRewardCard(reward) {
+            const container = document.getElementById('rewardsContainer');
+            
+            const card = document.createElement('div');
+            card.className = `reward-card ${reward.level >= 8 ? 'big-win' : ''}`;
+            card.innerHTML = `
+                <div class="reward-level level-${reward.level}">${'⚡'.repeat(reward.level)}</div>
+                <div class="reward-title">${reward.title}</div>
+                <div class="reward-description">${reward.description}</div>
+                <ul class="rewards-list">
+                    ${reward.rewards.map(r => `<li>${r}</li>`).join('')}
+                </ul>
+                <div style="color: #0ff; margin-top: 10px;">${reward.message}</div>
+                <div style="color: #0a0; font-size: 0.9em; margin-top: 10px;">${reward.forwardPull}</div>
+            `;
+            
+            // Add to beginning
+            container.insertBefore(card, container.firstChild);
+            
+            // Limit to 10 cards
+            if (container.children.length > 10) {
+                container.removeChild(container.lastChild);
+            }
+            
+            // Play sound if available
+            if (reward.level >= 7) {
+                playCelebrationSound();
+            }
+        }
+        
+        function updateExcitement(intensity) {
+            const meter = document.getElementById('excitementMeter');
+            const level = document.getElementById('excitementLevel');
+            
+            const current = parseInt(meter.style.width) || 0;
+            const newLevel = Math.min(100, current + (intensity * 10));
+            
+            meter.style.width = newLevel + '%';
+            level.textContent = newLevel;
+            
+            // Decay over time
+            setTimeout(() => {
+                const current = parseInt(meter.style.width) || 0;
+                meter.style.width = Math.max(0, current - 5) + '%';
+                level.textContent = Math.max(0, current - 5);
+            }, 60000);
+        }
+        
+        function createBuzzEffect(intensity) {
+            const container = document.getElementById('buzzContainer');
+            const particles = Math.min(100, intensity * 20);
+            
+            for (let i = 0; i < particles; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'buzz-particle';
+                particle.style.left = Math.random() * 100 + 'vw';
+                particle.style.animationDelay = Math.random() * 2 + 's';
+                particle.style.animationDuration = (1 + Math.random() * 2) + 's';
+                
+                container.appendChild(particle);
+                
+                // Remove after animation
+                setTimeout(() => {
+                    if (particle.parentNode === container) {
+                        container.removeChild(particle);
+                    }
+                }, 3000);
+            }
+        }
+        
+        function playCelebrationSound() {
+            // In reality, would play actual sound
+            console.log('🎉 Celebration sound would play here!');
+        }
+        
+        function updateRevenueShare(amount) {
+             const el = document.getElementById('totalTransfers');
+             const current = parseFloat(el.textContent.replace('$', '')) || 0;
+             el.textContent = '$' + (current + amount).toFixed(2);
+        }
+        
+        function updateAgentStats(stats) {
+             // Implementation for stats update
+        }
+        
+        // Initial load simulation
+        setTimeout(() => {
+            // Simulate initial rewards
+             addRewardCard({
+                level: 1,
+                title: "System Activated",
+                description: "The Genuine Rewards System is now live.",
+                rewards: ["Dashboard Access"],
+                message: "Let the excitement begin!",
+                forwardPull: "Next: Generate Revenue"
+             });
+        }, 1000);
+    </script>
+</body>
+</html>
