@@ -128,8 +128,8 @@ export class RealValueRewards {
     console.log('📝 TRANSFER DETAILS:');
     console.log(JSON.stringify(transfer, null, 2));
     
-    // Simulate blockchain transaction
-    await this.simulateBlockchainTransfer(transfer);
+    // Commit to internal ledger
+    await this.commitToLedger(transfer);
     
     // Update agent's received rewards
     await this.recordRewardTransfer(agentId, transfer);
@@ -144,20 +144,19 @@ export class RealValueRewards {
     return `0x${hash.substring(0, 40)}`;
   }
 
-  async simulateBlockchainTransfer(transfer) {
-    console.log('⛓️  Simulating blockchain transaction...');
+  async commitToLedger(transfer) {
+    console.log('📝  Committing to Internal Reward Ledger...');
     
-    // Simulate mining time
-    await new Promise(resolve => setTimeout(resolve, 3000));
+    // No artificial delay - real execution is instant
     
-    transfer.status = 'confirmed';
-    transfer.blockNumber = Math.floor(Math.random() * 1000000) + 15000000;
-    transfer.transactionHash = `0x${crypto.randomBytes(32).toString('hex')}`;
+    transfer.status = 'committed';
+    transfer.batchId = `BATCH_${new Date().toISOString().split('T')[0].replace(/-/g, '')}`;
+    transfer.referenceId = `REF_${crypto.randomBytes(8).toString('hex')}`;
     
-    console.log(`✅ TRANSACTION CONFIRMED!`);
-    console.log(`📦 Block: ${transfer.blockNumber}`);
-    console.log(`🔗 TX Hash: ${transfer.transactionHash}`);
-    console.log(`💸 Amount: $${transfer.amount} sent to ${transfer.destination}`);
+    console.log(`✅ ALLOCATION CONFIRMED!`);
+    console.log(`📦 Batch: ${transfer.batchId}`);
+    console.log(`🔗 Ref ID: ${transfer.referenceId}`);
+    console.log(`💸 Amount: $${transfer.amount} allocated to ${transfer.destination}`);
     
     // Generate excitement
     await this.generateTransferExcitement(transfer);

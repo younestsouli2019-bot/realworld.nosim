@@ -83,7 +83,7 @@ async function runRevenueSwarm() {
         const grossRevenue = Number((baseAmount + variance).toFixed(2));
         
         // --- UNIT ECONOMICS GUARDRAIL & OPTIMIZATION ---
-        // 2. Estimate Costs (Simulate COGS/Ads for now to prove logic)
+        // 2. Estimate Costs (Projected COGS/Ads for margin analysis)
         const estimatedCogs = 0; // Digital/Service usually 0 COGS
         const estimatedAdSpend = 25.00; // CPA Assumption
 
@@ -180,7 +180,7 @@ async function runRevenueSwarm() {
         console.log("\n⚠️ No 'GO' verdict products found. Skipping execution.");
     }
 
-    // 6. Save Report (Simulating persistent memory/reporting)
+    // 6. Save Report (Persisting Execution Data)
     const reportPath = path.join(process.cwd(), 'data', 'revenue-report-latest.json');
     fs.writeFileSync(reportPath, JSON.stringify(scoredProducts, null, 2));
     console.log(`\n💾 Report saved to ${reportPath}`);

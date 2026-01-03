@@ -2,6 +2,8 @@ import { getPayoutBatchDetails, paypalRequest, getPayPalAccessToken } from "../.
 import { getPayoutBatchConfigFromEnv, getPayoutItemConfigFromEnv } from "../../base44-payout.mjs";
 import { getRevenueConfigFromEnv } from "../../base44-revenue.mjs";
 import { proveMoneyMoved } from "../../proofs/prove-money-moved.mjs";
+import { EvidenceIntegrityChain } from "../../real/evidence-integrity.mjs";
+import { MoneyMovedGate } from "../../real/money-moved-gate.mjs";
 
 async function findOneBy(entity, filter) {
   const res = await entity.filter(filter, "-created_date", 1, 0);
@@ -126,15 +128,43 @@ export async function syncPayPalBatchToLedger(base44, { batchId, paypalBatchId, 
       const revId = itemRec[itemCfg.fieldMap.revenueEventId];
       if (revId) {
         let revStatus = null;
+        let proofData = null;
+
         if (itemStatus === "completed") {
           revStatus = "paid_out"; // Money moved!
           
           if (!dryRun) {
              // 🔐 AGENTIC AI SECURITY: PROVE MONEY MOVED
              // We verify the movement against the provider before considering it "done" in our ledger.
-             // This enforces the "Identifiers are not Identities" mitigation by checking the actual destination.
              try {
                  const extId = ppItem.transaction_id || itemRec[itemCfg.fieldMap.transactionId];
+                 
+                 // 1. Construct Proof
+                 proofData = {
+                     type: 'paypal_payout_item',
+                     psp_id: extId,
+                     amount: Number(itemRec[itemCfg.fieldMap.amount]),
+                     currency: itemRec[itemCfg.fieldMap.currency],
+                     timestamp: ppItem.time_processed || new Date().toISOString(),
+                     recipient: ppItem.payout_item.receiver
+                 };
+
+                 // 2. Add to Evidence Integrity Chain
+                 await EvidenceIntegrityChain.addBlock(revId, proofData);
+
+                 // 3. Fetch Revenue Event for Gate Check
+                 const revRecForGate = await findOneBy(revEntity, { id: revId });
+                 if (!revRecForGate) throw new Error(`RevenueEvent ${revId} not found during gate check`);
+
+                 // 4. Assert Money Moved (Hard Gate)
+                 const eventForGate = {
+                     ...revRecForGate,
+                     verification_proof: proofData,
+                     settled: false // We are asserting BEFORE settlement/payout marking
+                 };
+                 await MoneyMovedGate.assertMoneyMoved(eventForGate);
+
+                 // 5. Legacy Proof (Optional, for redundancy)
                  if (extId) {
                      await proveMoneyMoved({
                          ledgerEntry: {
@@ -148,13 +178,15 @@ export async function syncPayPalBatchToLedger(base44, { batchId, paypalBatchId, 
                              address: ppItem.payout_item.receiver
                          }
                      });
-                 } else {
-                     console.warn(`[LedgerSync] Missing transaction ID for item ${itemRec.id}, cannot prove money moved yet.`);
                  }
+                 
+                 console.log(`✅ [MoneyMovedGate] PASSED for RevenueEvent ${revId}`);
+
              } catch (proofErr) {
-                 console.error(`[LedgerSync] 🚨 PROOF FAILED for item ${itemRec.id}:`, proofErr);
-                 // We do NOT stop the sync, but we log strictly. 
-                 // In a stricter mode, we might throw here.
+                 console.error(`[LedgerSync] 🚨 PROOF/GATE FAILED for item ${itemRec.id}:`, proofErr);
+                 // CRITICAL: If Gate fails, we MUST NOT mark as paid_out.
+                 revStatus = "payout_failed"; // Or keep as processing?
+                 // We revert status to failed/processing to prevent false settlement.
              }
           }
         }
@@ -165,7 +197,20 @@ export async function syncPayPalBatchToLedger(base44, { batchId, paypalBatchId, 
           if (revRec && revRec[revCfg.fieldMap.status] !== revStatus) {
              updates.revenues.push({ id: revId, status: revStatus });
              if (!dryRun) {
-               await revEntity.update(revId, { [revCfg.fieldMap.status]: revStatus });
+               const updatePayload = { [revCfg.fieldMap.status]: revStatus };
+               
+               // Attach proof metadata if available and successful
+               if (revStatus === "paid_out" && proofData) {
+                   const existingMeta = revRec[revCfg.fieldMap.metadata] || {};
+                   updatePayload[revCfg.fieldMap.metadata] = {
+                       ...existingMeta,
+                       verification_proof: proofData,
+                       money_moved_gate_passed: true,
+                       gate_passed_at: new Date().toISOString()
+                   };
+               }
+               
+               await revEntity.update(revId, updatePayload);
              }
           }
         }

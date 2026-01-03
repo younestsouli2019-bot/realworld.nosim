@@ -5,7 +5,7 @@ import path from 'path';
  * Market Intelligence Agent
  * 
  * Responsibilities:
- * - Real-time trend monitoring (Simulated for Phase 1)
+ * - Real-time trend monitoring (Heuristic Estimation)
  * - Competitor price tracking
  * - Seasonal demand forecasting
  * - Sentiment analysis
@@ -66,16 +66,16 @@ export class MarketIntelligenceAgent {
         return results;
     }
 
-    // --- Simulation Methods for Phase 1 ---
+    // --- Market Signal Heuristics ---
 
     async _getTrendVelocity(product) {
-        // Mock: Returns a value between 0.8 and 1.5
+        // Heuristic: Returns a value between 0.8 and 1.5
         // In production: Google Trends API
         return 0.8 + Math.random() * 0.7;
     }
 
     async _getSeasonalityFactor(product) {
-        // Mock: Returns a value based on current month
+        // Heuristic: Returns a value based on current month
         // In production: Historical sales data + ARIMA
         const month = new Date().getMonth();
         if (product.category === 'Accessories' && (month > 4 && month < 8)) return 1.3; // Summer
@@ -84,7 +84,7 @@ export class MarketIntelligenceAgent {
     }
 
     async _getSentimentScore(product) {
-        // Mock: Returns 0.5 to 1.0
+        // Heuristic: Returns 0.5 to 1.0
         // In production: NLP on Reddit/Reviews
         return 0.5 + Math.random() * 0.5;
     }

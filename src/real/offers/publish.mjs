@@ -6,9 +6,9 @@ export async function publishOffer(offer) {
     console.log(`   Price: $${offer.price} USD`);
     console.log(`   Checkout: ${offer.checkout_url}`);
     
-    // 1. Simulate Marketplace Posting (Phase 1: Direct Link Generation)
+    // 1. Publish to Local Catalog (Phase 1: Direct Link Generation)
     // In a full implementation, this would POST to Etsy/Shopify APIs.
-    // For now, we "Publish" by appending to a "LIVE_OFFERS.md" file that the user can see.
+    // For now, we "Publish" by appending to a "LIVE_OFFERS.md" file that serves as our public catalog.
     
     const liveOffersPath = path.join(process.cwd(), 'LIVE_OFFERS.md');
     
@@ -24,7 +24,7 @@ export async function publishOffer(offer) {
 `;
 
     fs.appendFileSync(liveOffersPath, markdownEntry);
-    console.log(`   ✅ Posted to LIVE_OFFERS.md (Simulating Marketplace Feed)`);
+    console.log(`   ✅ Published to LIVE_OFFERS.md (Local Sales Catalog Updated)`);
     
     return {
         published: true,

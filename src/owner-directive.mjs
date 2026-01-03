@@ -23,6 +23,64 @@ const ALLOWED_PAYONEER_DIRS = [
     "out/bank-wire"
 ];
 
+export const OWNER_ACCOUNTS = {
+  paypal: {
+    type: 'PAYPAL',
+    email: "younestsouli2019@gmail.com",
+    enabled: true,
+    priority: 1
+  },
+  bank: {
+    type: 'BANK_WIRE',
+    rib: "007810000448500030594182",
+    enabled: true,
+    priority: 2
+  },
+  payoneer: {
+    type: 'PAYONEER',
+    accountId: process.env.OWNER_PAYONEER_ID || "PENDING_ID",
+    enabled: true,
+    priority: 3
+  }
+};
+
+export function selectOptimalOwnerAccount(amount, currency) {
+  // Logic to select best account based on fees/speed
+  // For now, default to PayPal for small amounts, Bank for large
+  if (amount > 5000) return OWNER_ACCOUNTS.bank;
+  return OWNER_ACCOUNTS.paypal;
+}
+
+export function generateOwnerPayoutConfig(amount, currency) {
+  const account = selectOptimalOwnerAccount(amount, currency);
+  return {
+    recipient: account.email || account.rib || account.accountId,
+    recipient_type: account.type === 'PAYPAL' ? 'EMAIL' : 'BANK_ACCOUNT',
+    amount: amount,
+    currency: currency,
+    note: "Owner Settlement"
+  };
+}
+
+export function validateOwnerDirectiveSetup() {
+  // Check env vars
+  if (!process.env.OWNER_PAYONEER_ID) {
+    console.warn("⚠️ OWNER_PAYONEER_ID not set. Payoneer settlement may fail.");
+  }
+  // Check constants
+  if (!OWNER_ACCOUNTS.paypal.email || !OWNER_ACCOUNTS.bank.rib) {
+      throw new Error("Critical Owner Accounts missing configuration");
+  }
+}
+
+export async function preExecutionOwnerCheck({ batch }) {
+    // Validate batch against owner directive
+    if (!batch) return;
+    for (const item of batch.items) {
+        enforceOwnerDirective({ payout: { beneficiary: item.receiver || item.recipient } });
+    }
+}
+
 export function enforceOwnerDirective(cfg) {
   // 1. Check Payout Beneficiary
   const beneficiary = cfg.payout?.beneficiary;

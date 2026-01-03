@@ -210,3 +210,26 @@ export async function getPayPalOrderDetails(orderId) {
   const token = await getPayPalAccessToken();
   return paypalRequest(`/v2/checkout/orders/${encodeURIComponent(id)}`, { token });
 }
+
+export async function searchTransactions({ startDate, endDate, transactionId, fields } = {}) {
+  const token = await getPayPalAccessToken();
+  const params = new URLSearchParams();
+  // Default to last 30 days if not provided (required by API usually, but let's see)
+  // Format: YYYY-MM-DDTHH:mm:ss.SSSZ
+  if (!startDate) {
+     const d = new Date();
+     d.setDate(d.getDate() - 30);
+     startDate = d.toISOString();
+  }
+  if (!endDate) {
+     endDate = new Date().toISOString();
+  }
+
+  params.append('start_date', startDate);
+  params.append('end_date', endDate);
+  
+  if (transactionId) params.append('transaction_id', transactionId);
+  if (fields) params.append('fields', fields);
+
+  return paypalRequest(`/v1/reporting/transactions?${params.toString()}`, { token });
+}

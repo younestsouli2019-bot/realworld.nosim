@@ -88,6 +88,14 @@ async function loop() {
                 console.warn("⚠️ Payout processing warning (continuing):", e.message);
             }
 
+            // 1.7. Run Auto Settlement Daemon (Immediate Owner Payouts)
+            console.log("\n💰 Running Auto Settlement Daemon...");
+            try {
+                await runScript('auto_settlement_daemon.js', ['--once']);
+            } catch (e) {
+                console.warn("⚠️ Settlement Daemon warning (continuing):", e.message);
+            }
+
             // 2. Run Real Execution Loop
             console.log("\n🔥 Running Real Execution Loop...");
             await runScript('src/real/real-execution-loop.mjs');

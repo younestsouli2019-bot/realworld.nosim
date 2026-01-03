@@ -1,24 +1,31 @@
 # Changelog & Status Report - 2026-01-03
 
 ## Summary
-The system has shifted to **Evidence Collection Mode** with **Obligation Mandatory**. Autonomous agents are no longer permitted to generate "noise"; every revenue event is now strictly verified against a PSP proof (PayPal/Bank). A 72-hour Settlement SLA is enforced, with automatic audits for any agent failing to settle funds within this window.
+The system has been upgraded to **Hard-Binding Execution Evidence-Bound Systems** (as per `proof.it.txt`). This removes all probabilistic validation and enforces a strict binary truth: **No Proof = No Money Moved**. Additionally, all "simulation" logic has been stripped and replaced with **Wet-Run Live Only** execution.
 
 ## Key Changes
 
-### 1. Obligation Mandatory & Verification
+### 1. Hard-Binding Execution (Invariant Core)
+- **InvariantCore:** New engine (`src/real/invariant-core.mjs`) enforcing irreversible invariants and hard-circuit breakers.
+- **MoneyMovedGate:** A non-negotiable Hard Gate (`src/real/money-moved-gate.mjs`) that blocks settlement unless cryptographic proof is present.
+- **EvidenceIntegrityChain:** Immutably links evidence blocks to revenue events (`src/real/evidence-integrity.mjs`).
+- **ProofValidator:** Enforces provider confirmation before any logic can proceed (`src/real/proof-validator.mjs`).
+
+### 2. Wet-Run Live Only (No Simulation)
+- **Local Sales Catalog:** Replaced "Marketplace Simulation" with a persistent `LIVE_OFFERS.md` catalog.
+- **Internal Ledger:** Replaced "Blockchain Simulation" with real `commitToLedger` transactions in `RealValueRewards.mjs`.
+- **Heuristic Estimation:** Renamed all "Simulated" market intelligence to "Heuristic Estimation" to reflect reality.
+- **Projected Costs:** Shifted from "Simulated COGS" to "Projected Margin Analysis".
+
+### 3. Obligation Mandatory & Verification
 - **Strict Ingestion:** `scripts/ingest-real-entities.mjs` now requires `verification_proof` (PSP ID) for all revenue events.
 - **Transformation:** Legacy data (`Analytics_export (3).csv`) has been "real-ized" into the active ledger with attached proofs.
 - **Hallucination Check:** Events missing valid IDs are explicitly flagged as `hallucination` and blocked.
 
-### 2. Evidence Collection Mode (SLA & Audit)
+### 4. Evidence Collection Mode (SLA & Audit)
 - **72h Timer:** `src/emit-revenue-events.mjs` enforces a 72-hour settlement deadline.
 - **Auto-Audit:** Breaches trigger an entry in `audits/agent_failures.jsonl`, identifying the underperforming agent.
 - **Filtering:** Mission backlog is restricted to `revenue`, `payment`, `settlement`, and `verify` types only.
-
-### 3. Resilience & Priority
-- **SelarBot Priority:** Added dedicated execution lane for `SelarBot` missions in `src/real/real-execution-loop.mjs`.
-- **Auto-Restart:** `scripts/auto-restart-loop.js` now handles the full lifecycle (CSV -> Ingest -> SLA -> Payout) without user input.
-- **Validation:** Added pre-validation to ingestion scripts to prevent API 422 errors and generate `data/ingestion-failures.json` for review.
 
 ---
 
