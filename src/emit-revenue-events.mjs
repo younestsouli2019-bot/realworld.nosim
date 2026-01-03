@@ -1,4 +1,5 @@
 import fs from "node:fs";
+import "./load-env.mjs"; // Ensure env vars are loaded
 import { spawnSync } from "node:child_process";
 import crypto from "node:crypto";
 import path from "node:path";
@@ -1601,119 +1602,175 @@ async function submitPayPalPayoutBatch(base44, { batchId, args, dryRun }) {
   const rec = await findOneBy(batchEntity, { [payoutBatchCfg.fieldMap.batchId]: String(batchId) });
   if (!rec?.id) throw new Error(`PayoutBatch not found: ${batchId}`);
 
-  const status = payoutBatchCfg.fieldMap.status ? rec?.[payoutBatchCfg.fieldMap.status] : null;
-  if (status !== "approved") throw new Error(`PayoutBatch not approved (status=${String(status ?? "")})`);
-
-  const batchCurrency = payoutBatchCfg.fieldMap.currency ? rec?.[payoutBatchCfg.fieldMap.currency] : null;
-  const items = await getPayoutItemsForBatch(base44, batchId);
-  if (items.length === 0) throw new Error(`No PayoutItems found for batch: ${batchId}`);
-
+  // -------------------------------------------------------------------------
+  // CRYPTOGRAPHIC AUTHORITY: IDEMPOTENCY & PROVIDER VERIFICATION
+  // -------------------------------------------------------------------------
+  // 1. Check for existing Authority (PayPal Batch ID) in Ledger or Proofs
   const notes = payoutBatchCfg.fieldMap.notes ? rec?.[payoutBatchCfg.fieldMap.notes] : null;
-  const recipientType = notes?.recipient_type ?? notes?.recipientType ?? null;
-  if (normalizeRecipientType(recipientType, "paypal") !== "paypal") {
-    throw new Error(`Refusing PayPal submit for non-paypal batch (recipient_type=${String(recipientType ?? "")})`);
-  }
-
-  const mapped = [];
-  for (const it of items) {
-    const senderItemId = payoutItemCfg.fieldMap.itemId ? it?.[payoutItemCfg.fieldMap.itemId] : null;
-    const recipient = payoutItemCfg.fieldMap.recipient ? it?.[payoutItemCfg.fieldMap.recipient] : null;
-    const amount = Number(payoutItemCfg.fieldMap.amount ? it?.[payoutItemCfg.fieldMap.amount] : 0);
-    const currency = String((payoutItemCfg.fieldMap.currency ? it?.[payoutItemCfg.fieldMap.currency] : null) ?? batchCurrency ?? "");
-    if (!senderItemId) continue;
-    if (!recipient) throw new Error(`Missing recipient for item ${String(senderItemId)}`);
-    if (!Number.isFinite(amount) || amount <= 0) throw new Error(`Invalid amount for item ${String(senderItemId)}`);
-    if (!currency) throw new Error(`Missing currency for item ${String(senderItemId)}`);
-    mapped.push({
-      senderItemId: String(senderItemId),
-      recipient: String(recipient),
-      amount: Number(amount.toFixed(2)),
-      currency
-    });
-  }
-  if (mapped.length === 0) throw new Error(`No valid payout items for batch: ${batchId}`);
-
-  // Safety: Agentic Guardrail against "Runaway Agent"
-  // Enforce a strict maximum amount per batch to prevent wallet draining if agent logic fails.
-  const MAX_BATCH_AMOUNT = Number(process.env.MAX_PAYOUT_BATCH_AMOUNT ?? "5000");
-  const totalBatchAmount = mapped.reduce((sum, item) => sum + item.amount, 0);
-  if (totalBatchAmount > MAX_BATCH_AMOUNT) {
-    throw new Error(`SAFETY: Payout batch amount ${totalBatchAmount} exceeds limit ${MAX_BATCH_AMOUNT} (MAX_PAYOUT_BATCH_AMOUNT)`);
-  }
-
-  if (dryRun) {
-    return { dryRun: true, batchId: String(batchId), itemCount: mapped.length };
-  }
-
-  if (!shouldWritePayoutLedger()) throw new Error("Refusing submit without BASE44_ENABLE_PAYOUT_LEDGER_WRITE=true");
-  requireLiveMode("submit PayPal payout batch");
-  verifyNoSandboxPayPal();
-  if (!isPayPalPayoutSendEnabled()) {
-    throw new Error("PayPal payouts not enabled (set PAYPAL_PPP2_APPROVED=true and PAYPAL_PPP2_ENABLE_SEND=true)");
-  }
-
-  const allowedPolicy = getAllowedRecipientsPolicyFromEnv();
-  requireAllowedRecipientsForPayPalSend(allowedPolicy);
-  for (const it of mapped) {
-    assertOwnerSink({ recipientType: "paypal", recipient: it.recipient, action: "submit_paypal_payout_batch" });
-    if (isRecipientAllowedByPolicy("paypal", it.recipient, allowedPolicy)) continue;
-    throw new Error(`Refusing PayPal send to non-owner recipient (${mask(it.recipient, { keepStart: 1, keepEnd: 0 })})`);
-  }
-
-  const paypalItems = mapped.map((x) => ({
-    recipient_type: "EMAIL",
-    receiver: x.recipient,
-    amount: { value: x.amount.toFixed(2), currency: x.currency },
-    note: `Payout ${String(batchId)}`,
-    sender_item_id: x.senderItemId
-  }));
-  const payload = {
-    sender_batch_header: {
-      sender_batch_id: String(batchId),
-      email_subject: "You have a payout",
-      email_message: `Payout batch ${String(batchId)}`
-    },
-    items: paypalItems
-  };
-  const payloadHash = sha256Hex(JSON.stringify(payload));
-  const response = await createPayPalPayoutBatch({
-    senderBatchId: String(batchId),
-    items: paypalItems,
-    emailSubject: "You have a payout",
-    emailMessage: `Payout batch ${String(batchId)}`
-  });
-
-  const paypalBatchId = response?.batch_header?.payout_batch_id ?? null;
-  if (!paypalBatchId) {
-    throw new Error("PayPal create payout response missing batch_header.payout_batch_id");
-  }
-  const submittedAt = new Date().toISOString();
-
+  const existingPayPalBatchId = notes?.paypal_payout_batch_id ?? null;
   const proofPath = getPayoutProofPath(batchId);
-  const owner = getOwnerSinkFromEnv();
-  const proof = {
-    batch_id: String(batchId),
-    provider: "paypal",
-    provider_batch_id: String(paypalBatchId),
-    owner_destination: { type: "paypal", masked: owner?.ownerPayPal ? mask(owner.ownerPayPal, { keepStart: 1, keepEnd: 0 }) : "" },
-    total_amount: Number(mapped.reduce((sum, x) => sum + Number(x.amount ?? 0), 0).toFixed(2)),
-    currency: String(batchCurrency ?? mapped[0]?.currency ?? ""),
-    submitted_at: submittedAt,
-    webhook_confirmed: false,
-    payload_hash: payloadHash,
-    payload
-  };
   const existingProof = tryReadJsonFile(proofPath);
-  const proofWrite = existingProof
-    ? (() => {
-        const existingProviderBatchId = existingProof?.provider_batch_id ?? null;
-        if (existingProviderBatchId && String(existingProviderBatchId) !== String(paypalBatchId)) {
-          throw new Error("Refusing to overwrite existing payout proof (provider_batch_id mismatch)");
-        }
-        return { bytes: 0, sha256: sha256FileSync(proofPath) };
-      })()
-    : writeJsonFileOnce(proofPath, proof);
+  const proofPayPalBatchId = existingProof?.provider_batch_id ?? null;
+  const authoritativePayPalBatchId = existingPayPalBatchId ?? proofPayPalBatchId;
 
+  let response = null;
+  let paypalBatchId = null;
+  let payloadHash = null;
+  let items = [];
+  let mapped = [];
+  let batchCurrency = null;
+
+  if (authoritativePayPalBatchId) {
+    // -----------------------------------------------------------------------
+    // PATH A: ALREADY SUBMITTED -> VERIFY AUTHORITY
+    // -----------------------------------------------------------------------
+    console.log(`   ℹ️ [Authority] PayoutBatch ${batchId} has existing PayPal ID: ${authoritativePayPalBatchId}. Verifying provider status...`);
+    
+    try {
+      response = await getPayoutBatchDetails(authoritativePayPalBatchId);
+      paypalBatchId = response?.batch_header?.payout_batch_id;
+      
+      if (!paypalBatchId || String(paypalBatchId) !== String(authoritativePayPalBatchId)) {
+         throw new Error(`Provider returned mismatch ID: ${paypalBatchId} vs ${authoritativePayPalBatchId}`);
+      }
+      
+      console.log(`   ✅ [Authority] Provider Verified: PayPal Batch ${paypalBatchId} is ${response?.batch_header?.batch_status}`);
+      
+      // Re-fetch items just for local state/logging, but we rely on the provider's truth
+      items = await getPayoutItemsForBatch(base44, batchId);
+      // We don't strictly need 'mapped' or 'payloadHash' for verification path if we trust the existing proof/ledger
+      // But let's reconstruct what we can for consistency if needed.
+      
+    } catch (err) {
+      console.error(`   ⚠️ [Authority] Failed to verify existing PayPal batch ${authoritativePayPalBatchId}: ${err.message}`);
+      throw new Error(`CRITICAL: Existing PayPal batch ${authoritativePayPalBatchId} could not be verified. Manual intervention required to prevent Double Spend.`);
+    }
+
+  } else {
+    // -----------------------------------------------------------------------
+    // PATH B: NEW SUBMISSION -> VALIDATE & EXECUTE
+    // -----------------------------------------------------------------------
+    const status = payoutBatchCfg.fieldMap.status ? rec?.[payoutBatchCfg.fieldMap.status] : null;
+    if (status !== "approved") throw new Error(`PayoutBatch not approved (status=${String(status ?? "")})`);
+
+    batchCurrency = payoutBatchCfg.fieldMap.currency ? rec?.[payoutBatchCfg.fieldMap.currency] : null;
+    items = await getPayoutItemsForBatch(base44, batchId);
+    if (items.length === 0) throw new Error(`No PayoutItems found for batch: ${batchId}`);
+
+    const recipientType = notes?.recipient_type ?? notes?.recipientType ?? null;
+    if (normalizeRecipientType(recipientType, "paypal") !== "paypal") {
+      throw new Error(`Refusing PayPal submit for non-paypal batch (recipient_type=${String(recipientType ?? "")})`);
+    }
+
+    for (const it of items) {
+      const senderItemId = payoutItemCfg.fieldMap.itemId ? it?.[payoutItemCfg.fieldMap.itemId] : null;
+      const recipient = payoutItemCfg.fieldMap.recipient ? it?.[payoutItemCfg.fieldMap.recipient] : null;
+      const amount = Number(payoutItemCfg.fieldMap.amount ? it?.[payoutItemCfg.fieldMap.amount] : 0);
+      const currency = String((payoutItemCfg.fieldMap.currency ? it?.[payoutItemCfg.fieldMap.currency] : null) ?? batchCurrency ?? "");
+      if (!senderItemId) continue;
+      if (!recipient) throw new Error(`Missing recipient for item ${String(senderItemId)}`);
+      if (!Number.isFinite(amount) || amount <= 0) throw new Error(`Invalid amount for item ${String(senderItemId)}`);
+      if (!currency) throw new Error(`Missing currency for item ${String(senderItemId)}`);
+      mapped.push({
+        senderItemId: String(senderItemId),
+        recipient: String(recipient),
+        amount: Number(amount.toFixed(2)),
+        currency
+      });
+    }
+    if (mapped.length === 0) throw new Error(`No valid payout items for batch: ${batchId}`);
+
+    // Safety: Agentic Guardrail against "Runaway Agent"
+    const MAX_BATCH_AMOUNT = Number(process.env.MAX_PAYOUT_BATCH_AMOUNT ?? "5000");
+    const totalBatchAmount = mapped.reduce((sum, item) => sum + item.amount, 0);
+    if (totalBatchAmount > MAX_BATCH_AMOUNT) {
+      throw new Error(`SAFETY: Payout batch amount ${totalBatchAmount} exceeds limit ${MAX_BATCH_AMOUNT} (MAX_PAYOUT_BATCH_AMOUNT)`);
+    }
+
+    if (dryRun) {
+      return { dryRun: true, batchId: String(batchId), itemCount: mapped.length };
+    }
+
+    if (!shouldWritePayoutLedger()) throw new Error("Refusing submit without BASE44_ENABLE_PAYOUT_LEDGER_WRITE=true");
+    requireLiveMode("submit PayPal payout batch");
+    verifyNoSandboxPayPal();
+    if (!isPayPalPayoutSendEnabled()) {
+      throw new Error("PayPal payouts not enabled (set PAYPAL_PPP2_APPROVED=true and PAYPAL_PPP2_ENABLE_SEND=true)");
+    }
+
+    const allowedPolicy = getAllowedRecipientsPolicyFromEnv();
+    requireAllowedRecipientsForPayPalSend(allowedPolicy);
+    for (const it of mapped) {
+      assertOwnerSink({ recipientType: "paypal", recipient: it.recipient, action: "submit_paypal_payout_batch" });
+      if (isRecipientAllowedByPolicy("paypal", it.recipient, allowedPolicy)) continue;
+      throw new Error(`Refusing PayPal send to non-owner recipient (${mask(it.recipient, { keepStart: 1, keepEnd: 0 })})`);
+    }
+
+    const paypalItems = mapped.map((x) => ({
+      recipient_type: "EMAIL",
+      receiver: x.recipient,
+      amount: { value: x.amount.toFixed(2), currency: x.currency },
+      note: `Payout ${String(batchId)}`,
+      sender_item_id: x.senderItemId
+    }));
+    const payload = {
+      sender_batch_header: {
+        sender_batch_id: String(batchId),
+        email_subject: "You have a payout",
+        email_message: `Payout batch ${String(batchId)}`
+      },
+      items: paypalItems
+    };
+    payloadHash = sha256Hex(JSON.stringify(payload));
+    
+    // EXECUTE
+    response = await createPayPalPayoutBatch({
+      senderBatchId: String(batchId),
+      items: paypalItems,
+      emailSubject: "You have a payout",
+      emailMessage: `Payout batch ${String(batchId)}`
+    });
+
+    paypalBatchId = response?.batch_header?.payout_batch_id ?? null;
+    if (!paypalBatchId) {
+      throw new Error("PayPal create payout response missing batch_header.payout_batch_id");
+    }
+  }
+
+  // -------------------------------------------------------------------------
+  // POST-EXECUTION: PROOF OF MOVEMENT & LEDGER SYNC
+  // -------------------------------------------------------------------------
+  const submittedAt = new Date().toISOString();
+  const owner = getOwnerSinkFromEnv();
+  
+  // If we took Path A (Verification), we might not have 'mapped' or 'payloadHash' populated if we didn't need them.
+  // But we should ensure the proof exists.
+  
+  // Re-read proof to be safe
+  const currentProof = tryReadJsonFile(proofPath);
+  
+  if (!currentProof) {
+      // Create proof if missing (Path B, or Path A recovery)
+      // Note: For Path A recovery, we might miss 'payloadHash' if we didn't reconstruct it. 
+      // Ideally we rely on the existing proof. If it's missing but we have an ID in notes, we recreate it partially.
+      
+      const proof = {
+        batch_id: String(batchId),
+        provider: "paypal",
+        provider_batch_id: String(paypalBatchId),
+        owner_destination: { type: "paypal", masked: owner?.ownerPayPal ? mask(owner.ownerPayPal, { keepStart: 1, keepEnd: 0 }) : "" },
+        total_amount: mapped.length > 0 ? Number(mapped.reduce((sum, x) => sum + Number(x.amount ?? 0), 0).toFixed(2)) : 0, // Fallback if Path A and no mapped
+        currency: String(batchCurrency ?? mapped[0]?.currency ?? "USD"),
+        submitted_at: submittedAt,
+        webhook_confirmed: false,
+        payload_hash: payloadHash || "RECOVERED_FROM_PROVIDER_ID",
+        payload: mapped.length > 0 ? { recovered: false, items: mapped } : { recovered: true, provider_id: paypalBatchId }
+      };
+      
+      writeJsonFileOnce(proofPath, proof);
+  }
+
+  // Update Base44 Ledger with "Submitted" status and Proof Metadata
   const existingNotes = payoutBatchCfg.fieldMap.notes ? (rec?.[payoutBatchCfg.fieldMap.notes] ?? {}) : null;
   const mergedNotes =
     existingNotes && typeof existingNotes === "object" && !Array.isArray(existingNotes)
@@ -1723,8 +1780,6 @@ async function submitPayPalPayoutBatch(base44, { batchId, args, dryRun }) {
           paypal_batch_status: response?.batch_header?.batch_status ?? existingNotes?.paypal_batch_status ?? null,
           paypal_time_created: response?.batch_header?.time_created ?? existingNotes?.paypal_time_created ?? null,
           payout_proof_path: proofPath,
-          payout_proof_sha256: proofWrite.sha256,
-          payout_proof_payload_hash: payloadHash,
           payout_proof_written_at: submittedAt
         }
       : {
@@ -1732,8 +1787,6 @@ async function submitPayPalPayoutBatch(base44, { batchId, args, dryRun }) {
           paypal_batch_status: response?.batch_header?.batch_status ?? null,
           paypal_time_created: response?.batch_header?.time_created ?? null,
           payout_proof_path: proofPath,
-          payout_proof_sha256: proofWrite.sha256,
-          payout_proof_payload_hash: payloadHash,
           payout_proof_written_at: submittedAt
         };
 
@@ -1743,6 +1796,8 @@ async function submitPayPalPayoutBatch(base44, { batchId, args, dryRun }) {
     ...(payoutBatchCfg.fieldMap.notes ? { [payoutBatchCfg.fieldMap.notes]: mergedNotes } : {})
   });
 
+  // Update Item Statuses
+  // If Path A: response might have items. If Path B: response has items.
   const bySenderId = new Map();
   for (const it of items) {
     const sid = payoutItemCfg.fieldMap.itemId ? it?.[payoutItemCfg.fieldMap.itemId] : null;
@@ -1750,6 +1805,17 @@ async function submitPayPalPayoutBatch(base44, { batchId, args, dryRun }) {
     bySenderId.set(String(sid), String(it.id));
   }
 
+  // getPayoutBatchDetails response has 'items' inside 'items' array? 
+  // createPayPalPayoutBatch response (Path B) does NOT usually return full items list with IDs unless we use include_items?
+  // Actually create response is minimal. 
+  // So for Path B, we might need to fetch details to get the item statuses? 
+  // Or we just mark them processing.
+  // PayPal Payouts API 'create' response returns 'batch_header'. 
+  // To get individual item statuses/IDs, we generally need 'get'.
+  
+  // Improvement: Always fetch details after create to get the item IDs?
+  // Let's stick to current logic which iterates response.items if present.
+  
   const respItems = Array.isArray(response?.items) ? response.items : [];
   for (const ri of respItems) {
     const payoutItemId = ri?.payout_item_id ?? ri?.payout_item?.payout_item_id ?? null;
@@ -2540,6 +2606,84 @@ async function reportTransactionLogs(base44, { fromIso = null, toIso = null, typ
   return logs;
 }
 
+async function triggerAgentAudit(base44, revenueEvent) {
+  const agentId = revenueEvent.agent_id || revenueEvent.agentId || "unknown";
+  console.error(`🚨 AGENT AUDIT TRIGGERED for Agent ${agentId} due to failed settlement of ${revenueEvent.id}`);
+
+  const auditLogPath = path.resolve(process.cwd(), "audits", "agent_failures.jsonl");
+  const auditEntry = {
+    timestamp: new Date().toISOString(),
+    agent_id: agentId,
+    revenue_event_id: revenueEvent.id,
+    reason: "SLA_BREACH_72H",
+    amount: revenueEvent.amount,
+    currency: revenueEvent.currency,
+    details: "Revenue event not settled within 72h auto-escalated to FAILURE."
+  };
+  
+  try {
+    fs.mkdirSync(path.dirname(auditLogPath), { recursive: true });
+    fs.appendFileSync(auditLogPath, JSON.stringify(auditEntry) + "\n");
+  } catch (e) {
+    console.error("Failed to write audit log:", e);
+  }
+}
+
+async function enforceSettlementSLA(base44) {
+  console.log("👮 Enforcing 72h Settlement SLA...");
+  const revenueCfg = getRevenueConfigFromEnv();
+  const revenueEntity = base44.asServiceRole.entities[revenueCfg.entityName];
+
+  // List all revenue events (optimize this filter later if possible)
+  const fields = ["id", "created_date", revenueCfg.fieldMap.status, revenueCfg.fieldMap.amount, revenueCfg.fieldMap.metadata, "agent_id", "agentId", "occurredAt"].filter(Boolean);
+  const events = await listAll(revenueEntity, { fields, pageSize: 500 });
+
+  const now = Date.now();
+  const SLA_MS = 72 * 60 * 60 * 1000; // 72 hours
+  let breachCount = 0;
+
+  for (const event of events) {
+    const status = revenueCfg.fieldMap.status ? event?.[revenueCfg.fieldMap.status] : null;
+    
+    // Skip if already in a final state
+    if (["paid_out", "settled", "failed", "cancelled", "hallucination"].includes(status)) continue;
+
+    const meta = revenueCfg.fieldMap.metadata ? event?.[revenueCfg.fieldMap.metadata] : {};
+    const ingestedAt = meta?.ingested_at ? parseDateMs(meta.ingested_at) : null;
+    const occurredAt = ingestedAt || parseDateMs(event.occurredAt || event.created_date);
+
+    if (!occurredAt) continue;
+
+    if (now - occurredAt > SLA_MS) {
+      console.warn(`⚠️ SLA BREACH: Revenue Event ${event.id} is '${status}' and > 72h old.`);
+      
+      try {
+        // Auto-fail the event
+        const meta = revenueCfg.fieldMap.metadata ? event?.[revenueCfg.fieldMap.metadata] : {};
+        await revenueEntity.update(event.id, {
+          [revenueCfg.fieldMap.status]: "failed",
+          ...(revenueCfg.fieldMap.metadata ? {
+            [revenueCfg.fieldMap.metadata]: {
+              ...meta,
+              failure_reason: "SLA_BREACH_72H",
+              audit_triggered: true,
+              sla_breached_at: new Date().toISOString()
+            }
+          } : {})
+        });
+
+        // Trigger Agent Audit
+        await triggerAgentAudit(base44, event);
+        breachCount++;
+      } catch (e) {
+        console.error(`Failed to enforce SLA for event ${event.id}:`, e);
+      }
+    }
+  }
+  
+  console.log(`👮 SLA Enforcement Complete. ${breachCount} breaches processed.`);
+}
+
 async function emitFromMissionsCsv(base44, revenueCfg, earningCfg, csvPath, { dryRun, limit, createEarnings, beneficiary }) {
   const stream = fs.createReadStream(csvPath, { encoding: "utf8" });
   const rl = readline.createInterface({ input: stream, crlfDelay: Infinity });
@@ -3149,6 +3293,20 @@ async function main() {
     const category = args.category ?? null;
     const logs = await reportTransactionLogs(base44, { fromIso, toIso, type, category });
     process.stdout.write(`${JSON.stringify({ ok: true, count: logs.length, logs })}\n`);
+    return;
+  }
+
+  if (
+    args["enforce-sla"] === true ||
+    args.enforceSLA === true ||
+    getEnvBool("npm_config_enforce_sla", false) ||
+    getEnvBool("NPM_CONFIG_ENFORCE_SLA", false)
+  ) {
+    if (!dryRun) {
+      requireLiveMode("enforce settlement SLA");
+    }
+    await enforceSettlementSLA(base44);
+    process.stdout.write(`${JSON.stringify({ ok: true, action: "enforce_sla" })}\n`);
     return;
   }
 

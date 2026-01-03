@@ -93,7 +93,12 @@ function TryDetectPayPalWebhookId() {
   $paypalMode = $paypalModeRaw.ToString().ToLowerInvariant()
   $base = $env:PAYPAL_API_BASE_URL
   if ([string]::IsNullOrWhiteSpace($base)) {
-    if ($paypalMode -eq "sandbox") { $base = "https://api-m.sandbox.paypal.com" } else { $base = "https://api-m.paypal.com" }
+    if ($paypalMode -eq "sandbox") { 
+      Write-Error "CRITICAL: SANDBOX MODE IS FORBIDDEN. STRICT LIVE MODE ENFORCED."
+      exit 1 
+    } else { 
+      $base = "https://api-m.paypal.com" 
+    }
   }
 
   try {
@@ -143,7 +148,7 @@ function ListPayPalWebhooks() {
   $paypalMode = $paypalModeRaw.ToString().ToLowerInvariant()
   $base = $env:PAYPAL_API_BASE_URL
   if ([string]::IsNullOrWhiteSpace($base)) {
-    if ($paypalMode -eq "sandbox") { $base = "https://api-m.sandbox.paypal.com" } else { $base = "https://api-m.paypal.com" }
+    $base = "https://api-m.paypal.com"
   }
 
   $basic = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes("$($env:PAYPAL_CLIENT_ID):$($env:PAYPAL_CLIENT_SECRET)"))
@@ -214,7 +219,7 @@ function CreatePayPalWebhook([string]$url) {
   $paypalMode = $paypalModeRaw.ToString().ToLowerInvariant()
   $base = $env:PAYPAL_API_BASE_URL
   if ([string]::IsNullOrWhiteSpace($base)) {
-    if ($paypalMode -eq "sandbox") { $base = "https://api-m.sandbox.paypal.com" } else { $base = "https://api-m.paypal.com" }
+    $base = "https://api-m.paypal.com"
   }
 
   $basic = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes("$($env:PAYPAL_CLIENT_ID):$($env:PAYPAL_CLIENT_SECRET)"))

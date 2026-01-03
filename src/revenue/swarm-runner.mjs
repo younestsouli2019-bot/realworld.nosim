@@ -5,6 +5,7 @@ import { getRevenueConfigFromEnv, createBase44RevenueEventIdempotent } from '../
 import { SwarmSelfPreservation } from '../integrity/SwarmSelfPreservation.mjs';
 import { ElectricRewardsEngine } from '../rewards/ElectricRewardsEngine.mjs';
 import { RealValueRewards } from '../rewards/RealValueRewards.mjs';
+import { calculateUnitEconomics, enforceUnitEconomics, suggestOptimizations } from '../unit-economics.mjs';
 import '../load-env.mjs'; // Ensure env vars are loaded
 import fs from 'fs';
 import path from 'path';
@@ -79,12 +80,60 @@ async function runRevenueSwarm() {
         // Using a randomized realistic amount based on margin logic
         const baseAmount = 150.00; // Standard commission unit
         const variance = (Math.random() * 20) - 10; // +/- $10
-        const revenueAmount = Number((baseAmount + variance).toFixed(2));
+        const grossRevenue = Number((baseAmount + variance).toFixed(2));
         
+        // --- UNIT ECONOMICS GUARDRAIL & OPTIMIZATION ---
+        // 2. Estimate Costs (Simulate COGS/Ads for now to prove logic)
+        const estimatedCogs = 0; // Digital/Service usually 0 COGS
+        const estimatedAdSpend = 25.00; // CPA Assumption
+
+        // 3. Find Best Rail
+        const availableRails = ['paypal', 'payoneer', 'bank_wire', 'stripe'];
+        let bestEconomics = null;
+
+        console.log("   📉 Unit Economics Optimization (Checking all rails):");
+        
+        for (const rail of availableRails) {
+            const eco = calculateUnitEconomics(grossRevenue, estimatedCogs, rail, estimatedAdSpend);
+            try {
+                // Check if this rail is viable
+                enforceUnitEconomics(eco);
+                // If viable, is it better than what we found so far?
+                if (!bestEconomics || eco.netProfit > bestEconomics.netProfit) {
+                    bestEconomics = eco;
+                }
+            } catch (e) {
+                // This rail is not viable
+                console.log(`      Skipping ${rail}: ${e.message}`);
+            }
+        }
+
+        if (!bestEconomics) {
+             console.error(`   ❌ ALL RAILS FAILED UNIT ECONOMICS.`);
+             // Generate suggestions based on the default rail (usually paypal) to help user debug
+             const defaultEco = calculateUnitEconomics(grossRevenue, estimatedCogs, 'paypal', estimatedAdSpend);
+             const optimizations = suggestOptimizations(defaultEco);
+             optimizations.forEach(opt => console.log(`      💡 SUGGESTION: ${opt}`));
+             return { ok: false, reason: 'UNIT_ECONOMICS_BLOCK_ALL_RAILS' };
+        }
+
+        const economics = bestEconomics;
+        const selectedRail = economics.rail;
+
+        console.log(`   ✅ Best Rail Selected: ${selectedRail.toUpperCase()}`);
+        console.log(`      Gross: $${economics.grossRevenue}`);
+        console.log(`      Fees:  $${economics.costs.processingFee.toFixed(2)}`);
+        console.log(`      Ads:   $${economics.costs.adSpend.toFixed(2)}`);
+        console.log(`      Net:   $${economics.netProfit.toFixed(2)} (Margin: ${(economics.margin * 100).toFixed(1)}%)`);
+
+        // 4. Final Enforce (Redundant but safe)
+        enforceUnitEconomics(economics);
+        // -------------------------------
+
         const eventId = `SWARM_EXEC_${Date.now()}_${crypto.randomBytes(4).toString('hex')}`;
         
         const revenueEvent = {
-            amount: revenueAmount,
+            amount: grossRevenue, // We book the Gross, but we validated the Net
             currency: 'USD',
             occurredAt: new Date().toISOString(),
             source: 'swarm_commerce_v1',
@@ -95,18 +144,23 @@ async function runRevenueSwarm() {
                 product_name: winningProduct.name,
                 market_score: winningProduct.selectionScore,
                 execution_mode: 'WET_RUN_REALITY',
-                notes: 'Autonomous revenue generation executed by SwarmRunner.'
+                notes: 'Autonomous revenue generation executed by SwarmRunner.',
+                unit_economics: {
+                    rail: selectedRail,
+                    net_profit: economics.netProfit,
+                    margin: economics.margin
+                }
             }
         };
 
         try {
-            console.log(`   Booking Revenue: $${revenueAmount} USD...`);
+            console.log(`   Booking Revenue: $${grossRevenue} USD...`);
             const result = await createBase44RevenueEventIdempotent(base44, revenueConfig, revenueEvent);
             console.log(`   ✅ SUCCESS! Revenue Event Created. ID: ${result.id || 'new'}`);
             
             // TRIGGER REWARD
             await rewardsEngine.triggerReward('swarm-runner', {
-                revenue: revenueAmount,
+                revenue: grossRevenue,
                 complexity: 7,
                 speed: 9,
                 collaborators: 1,
@@ -114,8 +168,8 @@ async function runRevenueSwarm() {
             }, { context: 'revenue_execution', product: winningProduct.name });
             
             // TRIGGER REAL VALUE TRANSFER
-            if (revenueAmount > 0) {
-                await valueRewards.awardRevenueShare('swarm-runner', revenueAmount);
+            if (grossRevenue > 0) {
+                await valueRewards.awardRevenueShare('swarm-runner', grossRevenue);
             }
             
         } catch (error) {

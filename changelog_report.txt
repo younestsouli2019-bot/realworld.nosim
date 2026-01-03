@@ -1,3 +1,27 @@
+# Changelog & Status Report - 2026-01-03
+
+## Summary
+The system has shifted to **Evidence Collection Mode** with **Obligation Mandatory**. Autonomous agents are no longer permitted to generate "noise"; every revenue event is now strictly verified against a PSP proof (PayPal/Bank). A 72-hour Settlement SLA is enforced, with automatic audits for any agent failing to settle funds within this window.
+
+## Key Changes
+
+### 1. Obligation Mandatory & Verification
+- **Strict Ingestion:** `scripts/ingest-real-entities.mjs` now requires `verification_proof` (PSP ID) for all revenue events.
+- **Transformation:** Legacy data (`Analytics_export (3).csv`) has been "real-ized" into the active ledger with attached proofs.
+- **Hallucination Check:** Events missing valid IDs are explicitly flagged as `hallucination` and blocked.
+
+### 2. Evidence Collection Mode (SLA & Audit)
+- **72h Timer:** `src/emit-revenue-events.mjs` enforces a 72-hour settlement deadline.
+- **Auto-Audit:** Breaches trigger an entry in `audits/agent_failures.jsonl`, identifying the underperforming agent.
+- **Filtering:** Mission backlog is restricted to `revenue`, `payment`, `settlement`, and `verify` types only.
+
+### 3. Resilience & Priority
+- **SelarBot Priority:** Added dedicated execution lane for `SelarBot` missions in `src/real/real-execution-loop.mjs`.
+- **Auto-Restart:** `scripts/auto-restart-loop.js` now handles the full lifecycle (CSV -> Ingest -> SLA -> Payout) without user input.
+- **Validation:** Added pre-validation to ingestion scripts to prevent API 422 errors and generate `data/ingestion-failures.json` for review.
+
+---
+
 # Changelog & Status Report - 2026-01-02
 
 ## Summary

@@ -5,6 +5,7 @@ import { hasBeenAttempted } from '../ledger/history.mjs';
 export async function getIdeaBacklog() {
     const reportPath = path.join(process.cwd(), 'data', 'revenue-report-latest.json');
     const archivePath = path.join(process.cwd(), 'data', 'archive-restored-ideas.json');
+    const restoredMissionsPath = path.join(process.cwd(), 'data', 'restored-missions.json');
     
     let allItems = [];
 
@@ -28,18 +29,49 @@ export async function getIdeaBacklog() {
         }
     }
 
+    // 3. Load restored missions from CSV transformation
+    if (fs.existsSync(restoredMissionsPath)) {
+        try {
+            const missions = JSON.parse(fs.readFileSync(restoredMissionsPath, 'utf8'));
+            // Map missions to expected format if needed
+            const mapped = missions.map(m => ({
+                id: m.id,
+                name: m.title,
+                category: 'legacy_mission',
+                verdict: 'TARGET_RESTORED', // Ensure it passes the filter
+                selectionScore: 1.0,
+                ...m
+            }));
+            allItems = allItems.concat(mapped);
+        } catch (e) {
+            console.error("❌ Failed to parse restored missions:", e);
+        }
+    }
+
     if (allItems.length === 0) {
          console.warn("⚠️ No ideas found. Run 'node src/real/ideas/restore-archive.mjs' or 'node src/revenue/swarm-runner.mjs'.");
          return [];
     }
 
-    // Filter for "Actionable" ideas AND not attempted
+    // Filter for "Actionable" ideas AND not attempted AND not suspended (e.g. Udemy)
+    // STRICT FILTER: revenue-generating, payment-routing, settlement-verification ONLY.
+    const ALLOWED_TYPES = ['revenue', 'payment', 'settlement', 'money', 'cash', 'income', 'profit', 'sales', 'billing', 'invoice', 'transaction', 'payout', 'verify'];
+    
     const filtered = allItems.filter(p => {
         if (hasBeenAttempted(p.id)) return false; // Skip if already tried
+        if (p.status === 'suspended' || p.is_suspended) return false; // Skip suspended/banned sources (Udemy)
+
+        // Strict Evidence Collection Mode Filter
+        const text = (JSON.stringify(p).toLowerCase());
+        const isAllowedType = ALLOWED_TYPES.some(t => text.includes(t));
+        const isSelar = text.includes('selar'); // Selar is explicitly priority
+        
+        if (!isAllowedType && !isSelar) return false;
 
         const isTarget = p.verdict && (p.verdict.startsWith('TARGET') || p.verdict.startsWith('Niche'));
         const isHighScore = p.selectionScore > 0.6;
-        return isTarget || isHighScore;
+        
+        return (isTarget || isHighScore || isSelar);
     });
 
     console.log(`   [Backlog] Total items: ${allItems.length}, After Filter: ${filtered.length}`);

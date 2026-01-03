@@ -1,0 +1,74 @@
+[
+  {
+    "id": "68bbde98768731d1ecd410b8",
+    "type": "traffic",
+    "value": 2400,
+    "date": "2025-01-06T00:00:00.000Z",
+    "source": "Twitter",
+    "agent_id": "agent-1",
+    "legacy_file": "Analytics_export (1).csv"
+  },
+  {
+    "id": "68bbde98768731d1ecd410bc",
+    "type": "conversions",
+    "value": 32,
+    "date": "2025-01-05T00:00:00.000Z",
+    "source": "LinkedIn",
+    "agent_id": "agent-2",
+    "legacy_file": "Analytics_export (1).csv"
+  },
+  {
+    "id": "68bbde98768731d1ecd410bf",
+    "type": "engagement",
+    "value": 890,
+    "date": "2025-01-05T00:00:00.000Z",
+    "source": "TikTok",
+    "agent_id": "agent-5",
+    "legacy_file": "Analytics_export (1).csv"
+  },
+  {
+    "id": "68bbde98768731d1ecd410b9",
+    "type": "traffic",
+    "value": 1398,
+    "date": "2025-01-05T00:00:00.000Z",
+    "source": "LinkedIn",
+    "agent_id": "agent-2",
+    "legacy_file": "Analytics_export (1).csv"
+  },
+  {
+    "id": "68bbde98768731d1ecd410bb",
+    "type": "conversions",
+    "value": 45,
+    "date": "2025-01-06T00:00:00.000Z",
+    "source": "Twitter",
+    "agent_id": "agent-1",
+    "legacy_file": "Analytics_export (1).csv"
+  },
+  {
+    "id": "68bbde98768731d1ecd410be",
+    "type": "engagement",
+    "value": 1240,
+    "date": "2025-01-06T00:00:00.000Z",
+    "source": "YouTube",
+    "agent_id": "agent-4",
+    "legacy_file": "Analytics_export (1).csv"
+  },
+  {
+    "id": "68bbde98768731d1ecd410bd",
+    "type": "conversions",
+    "value": 78,
+    "date": "2025-01-04T00:00:00.000Z",
+    "source": "Reddit",
+    "agent_id": "agent-3",
+    "legacy_file": "Analytics_export (1).csv"
+  },
+  {
+    "id": "68bbde98768731d1ecd410ba",
+    "type": "traffic",
+    "value": 9800,
+    "date": "2025-01-04T00:00:00.000Z",
+    "source": "Reddit",
+    "agent_id": "agent-3",
+    "legacy_file": "Analytics_export (1).csv"
+  }
+]

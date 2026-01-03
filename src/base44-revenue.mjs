@@ -63,15 +63,17 @@ function buildRevenueData(cfg, event) {
   const data = {};
   const { fieldMap } = cfg;
 
-  if (event.amount == null || Number.isNaN(event.amount)) {
-    throw new Error("Revenue event requires a numeric amount");
+  if (event.amount == null || Number.isNaN(Number(event.amount))) {
+    throw new Error(`Revenue event requires a numeric amount. Got: ${event.amount}`);
   }
+  
+  const numericAmount = Number(event.amount);
 
-  if (!cfg.allowNonPositiveAmounts && event.amount <= 0) {
+  if (!cfg.allowNonPositiveAmounts && numericAmount <= 0) {
     throw new Error("Revenue event amount must be > 0");
   }
 
-  data[fieldMap.amount] = event.amount;
+  data[fieldMap.amount] = numericAmount;
   data[fieldMap.currency] = event.currency;
   data[fieldMap.occurredAt] = event.occurredAt;
   data[fieldMap.source] = event.source;
@@ -80,6 +82,24 @@ function buildRevenueData(cfg, event) {
 
   if (fieldMap.status && event.status != null) data[fieldMap.status] = event.status;
   if (fieldMap.payoutBatchId && event.payoutBatchId != null) data[fieldMap.payoutBatchId] = event.payoutBatchId;
+
+  // Enforce Revenue Verification (No IDs = Hallucination)
+  // "For each revenue event, attach one of: PSP transaction ID Settlement batch ID Bank reference Anything else is not revenue. No IDs = hallucination."
+  const hasExternalId = event.externalId && !String(event.externalId).startsWith("manual_");
+  const hasPspId = event.metadata?.psp_transaction_id || event.metadata?.paypal_transaction_id || event.metadata?.transaction_id;
+  const hasSettlementId = event.metadata?.settlement_batch_id || event.metadata?.settlement_id;
+  const hasBankRef = event.metadata?.bank_reference || event.metadata?.bank_ref;
+  
+  const isVerified = hasExternalId || hasPspId || hasSettlementId || hasBankRef;
+  
+  if (!isVerified && (!event.status || event.status === "confirmed")) {
+    // Force status to hallucination if no verification IDs present and not explicitly set to something else (like 'pending')
+    // We allow 'pending' or other statuses, but if it claims to be 'confirmed' or is undefined, we demote it.
+    if (fieldMap.status) {
+        console.warn(`⚠️  Marking Revenue Event ${event.externalId} as HALLUCINATION due to missing verification IDs.`);
+        data[fieldMap.status] = "hallucination";
+    }
+  }
 
   if (fieldMap.eventHash) {
     const occurredAtIso = normalizeIsoDate(event.occurredAt);

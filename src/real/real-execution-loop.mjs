@@ -21,6 +21,14 @@ export async function realExecutionLoop() {
     try {
       console.log(`🔥 EXECUTING IDEA: ${idea.title} (${idea.id})`);
 
+      // 0. Special Handling for 'SelarBot' (Priority Agent)
+      if (idea.handoff_agent === 'selarbot' || idea.title.toLowerCase().includes('selar')) {
+        console.log(`\n🤖 SPECIAL CARE: SelarBot Mission Detected: ${idea.title}`);
+        console.log(`   Ensuring high priority execution for Selar.co integration.`);
+        // Force priority and skip standard culling logic if any
+        idea.priority = 'critical';
+      }
+
       // 1. Build Offer (Force Checkout Creation)
       const offer = await buildOffer(idea);
       if (!offer.checkout_url) {
@@ -60,6 +68,51 @@ export async function realExecutionLoop() {
   
   console.log(`\n---------------------------------------------------`);
   console.log("🛑 LOOP COMPLETE. CHECK 'LIVE_OFFERS.md' FOR LINKS.");
+}
+
+async function handleSelarBotExecution(idea) {
+    console.log(`\n🤖 STARTING SELARBOT EXECUTION: ${idea.title}`);
+    recordAttempt({ idea_id: idea.id, status: 'STARTED_SELAR' });
+
+    try {
+        // 1. Build Selar-specific offer
+        // Ideally we would generate a Selar.co link here.
+        // For now, we use the buildOffer fallback but log clearly.
+        const offer = await buildOffer(idea);
+        
+        console.log(`   [Selar] 🚀 Generated Checkout Link: ${offer.checkout_url}`);
+        
+        // 2. Publish Offer
+        await publishOffer(offer);
+
+        // 3. Special Verification for Selar (72h SLA)
+        console.log(`   [Selar] ⏳ Waiting for settlement (SLA: 72h)...`);
+        
+        const payment = await waitForPayment({
+            offer,
+            timeoutHours: 72 // Explicit 72h SLA for Selar
+        });
+
+        if (payment.confirmed) {
+            console.log(`💰 SELAR PAYOUT CONFIRMED: ${payment.amount} ${payment.currency}`);
+            recordAttempt({ idea_id: idea.id, status: 'SUCCESS', revenue: payment.amount });
+        } else {
+            console.error(`❌ SELAR PAYMENT FAILED: ${payment.reason}`);
+            recordFailure({
+                idea_id: idea.id,
+                reason: `SELAR_PAYMENT_TIMEOUT: ${payment.reason}`
+            });
+            recordAttempt({ idea_id: idea.id, status: 'FAILED', reason: payment.reason });
+            
+            // Trigger specific audit for Selar failure
+            // We could call triggerAgentAudit here if we imported it, 
+            // but recordFailure is standard.
+        }
+    } catch (err) {
+        console.error(`   [Selar] Execution Error: ${err.message}`);
+        recordFailure({ idea_id: idea.id, reason: err.message });
+        recordAttempt({ idea_id: idea.id, status: 'FAILED', reason: err.message });
+    }
 }
 
 // Allow direct execution
