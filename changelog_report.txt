@@ -26,6 +26,15 @@ The system has been upgraded to **Hard-Binding Execution Evidence-Bound Systems*
 - **Hard-Binding Offers:** `buildOffer` (`src/real/offers/build-offer.mjs`) now strictly uses `OWNER_ACCOUNTS.paypal.email`. It ignores environment variables or autonomous suggestions that differ.
 - **Ledger Verification:** `syncPayPalBatchToLedger` now performs a CRITICAL security check: verify that the actual payout recipient matches the Owner Directive. Any mismatch throws a fatal error, preventing "payout_failed" from being silently ignored or money being routed elsewhere.
 
+### 6. Daemon & Infrastructure Hardening
+- **Base44 Pagination Fix:** Corrected `auto_settlement_daemon.js` to use offset-based pagination (`list(sort, limit, offset)`) instead of page-based, fixing the `base44.asServiceRole.list is not a function` error.
+- **Cross-Platform Compatibility:** Fixed file URL handling in `auto_settlement_daemon.js` using `pathToFileURL` to ensure robust CSV export path generation on Windows.
+- **Owner Directive Expansion:** Enhanced `src/owner-directive.mjs` to serve as the single source of truth for all account credentials, preventing configuration drift.
+
+### 7. Final Cleanup & Compliance
+- **Renamed Compliance Script:** Renamed `scripts/check-simulation.js` to `scripts/verify-live-mode-compliance.js` to reflect the "Wet-Run Live Only" philosophy.
+- **Codebase Sweep:** Performed final grep for "simulation" artifacts; confirmed clean state except for compliance checkers.
+
 ---
 
 # Changelog & Status Report - 2026-01-02

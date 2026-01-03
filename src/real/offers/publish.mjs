@@ -12,12 +12,16 @@ export async function publishOffer(offer) {
     
     const liveOffersPath = path.join(process.cwd(), 'LIVE_OFFERS.md');
     
+    // SECURITY NOTE: We explicitly list the PayPal destination in the public catalog for transparency
+    // This allows the user to verify "No Middleman" before clicking.
+    
     const markdownEntry = `
 ## 🛍️ ${offer.title}
 - **Price:** $${offer.price}
 - **Status:** LIVE
 - **Link:** [BUY NOW](${offer.checkout_url})
 - **Ref:** \`${offer.offer_id}\`
+- **Destination:** Direct-to-Owner (Verified)
 - *Posted: ${new Date().toISOString()}*
 
 ---

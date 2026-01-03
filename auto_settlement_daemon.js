@@ -8,16 +8,16 @@ import {
   generateOwnerPayoutConfig,
   validateOwnerDirectiveSetup,
   preExecutionOwnerCheck
-} from '../src/owner-directive.mjs';
-import { buildBase44Client } from '../src/base44-client.mjs';
-import { getRevenueConfigFromEnv } from '../src/base44-revenue.mjs';
-import { createPayPalPayoutBatch } from '../src/paypal-api.mjs';
-import { MoneyMovedGate } from '../src/real/money-moved-gate.mjs';
-import { EvidenceIntegrityChain } from '../src/real/evidence-integrity.mjs';
+} from './src/owner-directive.mjs';
+import { buildBase44Client } from './src/base44-client.mjs';
+import { getRevenueConfigFromEnv } from './src/base44-revenue.mjs';
+import { createPayPalPayoutBatch } from './src/paypal-api.mjs';
+import { MoneyMovedGate } from './src/real/money-moved-gate.mjs';
+import { EvidenceIntegrityChain } from './src/real/evidence-integrity.mjs';
 import { pathToFileURL } from 'url';
 import fs from 'fs';
 import path from 'path';
-import '../src/load-env.mjs';
+import './src/load-env.mjs';
 
 // ============================================================================
 // CONFIGURATION
@@ -196,12 +196,18 @@ async function fetchReadyForSettlement() {
     // We need to fetch all and filter because listing with complex filters might be limited
     // depending on the SDK/API capabilities.
     let allEvents = [];
-    let page = 1;
+    let offset = 0;
+    const limit = 100;
+    
     while (true) {
-        const res = await base44.asServiceRole.list(revenueEntity, { page, perPage: 100 });
-        allEvents = allEvents.concat(res.items);
-        if (page >= res.totalPages) break;
-        page++;
+        // list(sort, limit, offset)
+        const items = await revenueEntity.list("-created_date", limit, offset);
+        if (!items || !Array.isArray(items) || items.length === 0) break;
+        
+        allEvents = allEvents.concat(items);
+        
+        if (items.length < limit) break;
+        offset += limit;
     }
 
     const events = allEvents.filter(e => 
@@ -423,7 +429,11 @@ async function executeBankWireSettlement(batch) {
   // Generate bank wire CSV
   const csv = generateBankWireCSV(batch);
   const filename = `bank_wire_${batch.batch_id}.csv`;
-  const filePath = path.join('exports', filename);
+  const exportDir = path.resolve(process.cwd(), 'exports');
+  if (!fs.existsSync(exportDir)) {
+      fs.mkdirSync(exportDir, { recursive: true });
+  }
+  const filePath = path.join(exportDir, filename);
 
   fs.writeFileSync(filePath, csv);
 
