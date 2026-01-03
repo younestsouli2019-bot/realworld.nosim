@@ -22,10 +22,9 @@ The system has been upgraded to **Hard-Binding Execution Evidence-Bound Systems*
 - **Transformation:** Legacy data (`Analytics_export (3).csv`) has been "real-ized" into the active ledger with attached proofs.
 - **Hallucination Check:** Events missing valid IDs are explicitly flagged as `hallucination` and blocked.
 
-### 4. Evidence Collection Mode (SLA & Audit)
-- **72h Timer:** `src/emit-revenue-events.mjs` enforces a 72-hour settlement deadline.
-- **Auto-Audit:** Breaches trigger an entry in `audits/agent_failures.jsonl`, identifying the underperforming agent.
-- **Filtering:** Mission backlog is restricted to `revenue`, `payment`, `settlement`, and `verify` types only.
+### 5. Direct-to-Owner Re-Routing (No Middleman)
+- **Hard-Binding Offers:** `buildOffer` (`src/real/offers/build-offer.mjs`) now strictly uses `OWNER_ACCOUNTS.paypal.email`. It ignores environment variables or autonomous suggestions that differ.
+- **Ledger Verification:** `syncPayPalBatchToLedger` now performs a CRITICAL security check: verify that the actual payout recipient matches the Owner Directive. Any mismatch throws a fatal error, preventing "payout_failed" from being silently ignored or money being routed elsewhere.
 
 ---
 

@@ -4,6 +4,7 @@ import { getRevenueConfigFromEnv } from "../../base44-revenue.mjs";
 import { proveMoneyMoved } from "../../proofs/prove-money-moved.mjs";
 import { EvidenceIntegrityChain } from "../../real/evidence-integrity.mjs";
 import { MoneyMovedGate } from "../../real/money-moved-gate.mjs";
+import { OWNER_ACCOUNTS } from "../../owner-directive.mjs";
 
 async function findOneBy(entity, filter) {
   const res = await entity.filter(filter, "-created_date", 1, 0);
@@ -148,6 +149,15 @@ export async function syncPayPalBatchToLedger(base44, { batchId, paypalBatchId, 
                      timestamp: ppItem.time_processed || new Date().toISOString(),
                      recipient: ppItem.payout_item.receiver
                  };
+
+                 // SECURITY CHECK: Verify Recipient is OWNER
+                 // We don't just trust the PSP, we verify it matches our Owner Directive
+                 const actualRecipient = ppItem.payout_item.receiver;
+                 const ownerEmail = OWNER_ACCOUNTS.paypal.email;
+                 
+                 if (actualRecipient.toLowerCase() !== ownerEmail.toLowerCase()) {
+                     throw new Error(`CRITICAL: Money moved to UNAUTHORIZED RECIPIENT: ${actualRecipient}. Expected: ${ownerEmail}`);
+                 }
 
                  // 2. Add to Evidence Integrity Chain
                  await EvidenceIntegrityChain.addBlock(revId, proofData);

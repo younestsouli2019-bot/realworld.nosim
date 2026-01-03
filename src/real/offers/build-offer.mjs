@@ -1,8 +1,11 @@
 import crypto from 'crypto';
+import { OWNER_ACCOUNTS } from '../../owner-directive.mjs';
 
 export async function buildOffer(idea) {
     const price = idea.price_usd || 19.99;
-    const ownerPaypal = process.env.OWNER_PAYPAL || "younestsouli2019@gmail.com";
+    
+    // STRICT OWNER DIRECTIVE: Always use the hardcoded owner account
+    const ownerPaypal = OWNER_ACCOUNTS.paypal.email;
     
     // Create a unique Reference ID for this execution
     const offerId = `OFFER_${idea.id}_${Date.now()}`;
