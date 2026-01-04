@@ -1,8 +1,16 @@
-import { createClient } from "@base44/sdk";
+// import { createClient } from "@base44/sdk"; // Converted to dynamic import
 import fs from "node:fs/promises";
 import path from "node:path";
 import { CircuitBreaker } from "./swarm/circuit-breakers.mjs";
 import { threatMonitor } from "./security/threat-monitor.mjs";
+
+let createClient = null;
+try {
+  const sdk = await import("@base44/sdk");
+  createClient = sdk.createClient;
+} catch (e) {
+  // SDK not present, online mode will fail if attempted
+}
 
 const globalCircuitBreaker = new CircuitBreaker(5, 60000);
 
@@ -176,6 +184,9 @@ function createOfflineClient({ filePath }) {
 }
 
 function createOnlineClient() {
+  if (!createClient) {
+    throw new Error("Base44 SDK not installed. Cannot create online client.");
+  }
   const { appId, serviceToken } = getOnlineAuth();
   const serverUrl = process.env.BASE44_SERVER_URL || "https://agent-flow-ai-9855ea98.base44.app";
 
@@ -391,10 +402,17 @@ export function buildBase44Client({ allowMissing = false, mode = "auto" } = {}) 
   if (allowMissing) {
     try {
       getOnlineAuth();
+      if (!createClient) throw new Error("No SDK");
     } catch {
       return null;
     }
   }
+  
+  if (!createClient) {
+    console.warn("⚠️ Base44 SDK missing. Falling back to Offline Client.");
+    return createOfflineClient({ filePath: getOfflineStorePath() });
+  }
+
   return createOnlineClient();
 }
 

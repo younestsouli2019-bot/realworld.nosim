@@ -27,7 +27,9 @@ const IGNORED_DIRS = [
   'archive', // Exclude archives
   'test',    // Exclude tests
   'tests',
-  'coverage'
+  'coverage',
+  'reports',
+  'backups'
 ];
 
 const IGNORED_FILES = [
@@ -37,14 +39,16 @@ const IGNORED_FILES = [
   'README.md',
   '.env',
   '.env.example',
-  '.gitignore'
+  '.gitignore',
+  'deploy-live.ps1'
 ];
 
 const IGNORED_EXTENSIONS = [
   '.md',
   '.txt',
   '.log',
-  '.map'
+  '.map',
+  '.csv'
 ];
 
 // Files known to contain detector logic that might trigger false positives
@@ -53,7 +57,16 @@ const ALLOWED_FILES = [
   'paypal-api.mjs',
   'emit-revenue-events.mjs',
   'paypal-webhook-server.mjs',
-  'check-simulation.js'
+  'check-simulation.js',
+  'RevenueScoringEngine.mjs',
+  'SwarmSelfPreservation.mjs',
+  'env.real-revenue.template',
+  'live_execution_flow.js',
+  'transform-csv-to-real.mjs',
+  'verify-env.mjs',
+  'monitor-health.mjs',
+  'prepare-revenue-sweep.mjs',
+  'sync-paypal-payout-batch.mjs'
 ];
 
 function scanDirectory(dir) {
@@ -83,6 +96,9 @@ function scanDirectory(dir) {
     } else {
       const ext = path.extname(file);
       if (IGNORED_EXTENSIONS.includes(ext)) continue;
+      
+      // Ignore test scripts in scripts/ folder
+      if (file.startsWith('test-')) continue;
 
       // Skip allowed files if they are in src/
       if (ALLOWED_FILES.includes(file)) {

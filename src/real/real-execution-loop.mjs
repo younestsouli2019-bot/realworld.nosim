@@ -4,6 +4,7 @@ import { publishOffer } from "./offers/publish.mjs";
 import { waitForPayment } from "./payments/wait-for-payment.mjs";
 import { recordFailure } from "./ledger/failures.mjs";
 import { recordAttempt } from "./ledger/history.mjs";
+import { FulfillmentManager } from "./fulfillment/FulfillmentManager.mjs";
 import '../load-env.mjs'; // Ensure env vars are loaded for Base44 client
 
 export async function realExecutionLoop() {
@@ -68,7 +69,14 @@ async function executeIdea(idea) {
 
       console.log(`💰 REAL MONEY RECEIVED: ${payment.amount} ${payment.currency}`);
       recordAttempt({ idea_id: idea.id, status: 'SUCCESS', revenue: payment.amount });
-      // TODO: Trigger fulfillment here
+      
+      // Trigger Fulfillment
+      await FulfillmentManager.fulfillOrder({
+          id: idea.id,
+          product: idea.title,
+          customer_email: payment.payer_email, // Assuming payment object has this
+          revenue: payment.amount
+      });
 
     } catch (err) {
       recordFailure({
