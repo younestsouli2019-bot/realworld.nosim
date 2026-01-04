@@ -1,0 +1,76 @@
+{
+  "id": "BATCH_1767521125268",
+  "type": "batch",
+  "data": {
+    "batch_id": "BATCH_1767521125268",
+    "created_at": "2026-01-04T10:05:25.268Z",
+    "currency": "USD",
+    "total_amount": 1183,
+    "items": [
+      {
+        "earning_id": "EARN_1767455037743",
+        "amount": 100,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521125268_1"
+      },
+      {
+        "earning_id": "EARN_1767456763377",
+        "amount": 100,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521125268_2"
+      },
+      {
+        "earning_id": "EARN_1767462282500",
+        "amount": 75,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521125268_3"
+      },
+      {
+        "earning_id": "EARN_1767462283500",
+        "amount": 100,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521125268_4"
+      },
+      {
+        "earning_id": "EARN_1767521119456",
+        "amount": 66,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521125268_5"
+      },
+      {
+        "earning_id": "EARN_1767521122314",
+        "amount": 447,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521125268_6"
+      },
+      {
+        "earning_id": "EARN_1767521122728",
+        "amount": 92,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521125268_7"
+      },
+      {
+        "earning_id": "EARN_1767521124253",
+        "amount": 203,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521125268_8"
+      }
+    ],
+    "status": "completed",
+    "settled_at": "2026-01-04T10:05:25.288Z",
+    "method": "bank_wire",
+    "metadata": {
+      "files": "exports\\bank-wire\\bank_wire_BATCH_1767521125268_1767521125276.csv"
+    }
+  },
+  "saved_at": "2026-01-04T10:05:25.288Z",
+  "autonomous": true
+}

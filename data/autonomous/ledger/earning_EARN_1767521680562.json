@@ -1,0 +1,22 @@
+{
+  "id": "EARN_1767521680562",
+  "type": "earning",
+  "data": {
+    "earning_id": "EARN_1767521680562",
+    "amount": 104,
+    "currency": "USD",
+    "occurred_at": "2026-01-04T10:14:40.562Z",
+    "source": "Swarm Agent AGENT_03418 (Social Media Manager)",
+    "beneficiary": "younestsouli2019@gmail.com",
+    "status": "pending_payout",
+    "revenue_event_id": "PSP_1767521680129_AGENT_03418",
+    "metadata": {
+      "recipient_type": "owner",
+      "autonomous": true,
+      "ingested_at": "2026-01-04T10:14:40.562Z"
+    },
+    "created_at": "2026-01-04T10:14:40.562Z"
+  },
+  "saved_at": "2026-01-04T10:14:40.562Z",
+  "autonomous": true
+}

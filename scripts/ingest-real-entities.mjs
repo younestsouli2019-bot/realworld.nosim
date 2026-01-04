@@ -164,6 +164,7 @@ async function ingestMissions(base44) {
     const missionEntity = base44.asServiceRole.entities[missionEntityName];
     const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
     const failures = [];
+    const MAX_RETRIES = 3;
 
     for (const mission of missions) {
         if (!missionEntity) {
@@ -171,43 +172,58 @@ async function ingestMissions(base44) {
             break;
         }
 
-        try {
-             // Check if exists
-             const existing = await missionEntity.filter({ title: mission.title }, "-created_date", 1);
-             if (existing && existing.length > 0) {
-                 // Skip or update? Skip for now.
-                 process.stdout.write("s");
-                 continue;
-             }
+        let attempts = 0;
+        let success = false;
 
-             const payload = {
-                 title: mission.title,
-                 status: 'todo', // Reset to todo for Real Execution
-                 type: 'mission', // REQUIRED field
-                 metadata: {
-                     legacy_id: mission.id,
-                     restored: true,
-                     ...mission.parameters
-                 }
-             };
+        while (attempts < MAX_RETRIES && !success) {
+            attempts++;
+            try {
+                // Check if exists
+                const existing = await missionEntity.filter({ title: mission.title }, "-created_date", 1);
+                if (existing && existing.length > 0) {
+                    // Skip or update? Skip for now.
+                    process.stdout.write("s");
+                    success = true; // Treated as success (skipped)
+                    continue;
+                }
 
-             if (!payload.title || !payload.type) {
-                 throw new Error("Missing required fields: title or type");
-             }
+                const payload = {
+                    title: mission.title,
+                    status: 'todo', // Reset to todo for Real Execution
+                    type: 'mission', // REQUIRED field
+                    metadata: {
+                        legacy_id: mission.id,
+                        restored: true,
+                        ...mission.parameters
+                    }
+                };
 
-             await missionEntity.create(payload);
-             successCount++;
-             process.stdout.write(".");
-             await sleep(500); // Rate limit
-        } catch (err) {
-             process.stdout.write("x");
-             failures.push({
-                 id: mission.id,
-                 title: mission.title,
-                 error: err.message,
-                 timestamp: new Date().toISOString()
-             });
-             await sleep(1000);
+                if (!payload.title || !payload.type) {
+                    throw new Error("Missing required fields: title or type");
+                }
+
+                await missionEntity.create(payload);
+                successCount++;
+                process.stdout.write(".");
+                success = true;
+                await sleep(500); // Rate limit
+            } catch (err) {
+                if (attempts === MAX_RETRIES) {
+                    process.stdout.write("x");
+                    console.error(`\n❌ Failed to ingest '${mission.title}' after ${MAX_RETRIES} attempts: ${err.message}`);
+                    failures.push({
+                        id: mission.id,
+                        title: mission.title,
+                        error: err.message,
+                        stack: err.stack,
+                        timestamp: new Date().toISOString(),
+                        attempts: attempts
+                    });
+                } else {
+                    // Backoff before retry
+                    await sleep(1000 * attempts);
+                }
+            }
         }
     }
 
@@ -220,4 +236,9 @@ async function ingestMissions(base44) {
     console.log(`\n✅ Ingested ${successCount} Missions.`);
 }
 
-main().catch(console.error);
+main()
+    .then(() => process.exit(0))
+    .catch((err) => {
+        console.error(err);
+        process.exit(1);
+    });

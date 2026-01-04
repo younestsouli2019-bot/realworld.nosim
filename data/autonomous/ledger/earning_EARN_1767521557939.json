@@ -1,0 +1,22 @@
+{
+  "id": "EARN_1767521557939",
+  "type": "earning",
+  "data": {
+    "earning_id": "EARN_1767521557939",
+    "amount": 109,
+    "currency": "USD",
+    "occurred_at": "2026-01-04T10:12:37.939Z",
+    "source": "Agent: Content Writer",
+    "beneficiary": "younestsouli2019@gmail.com",
+    "status": "pending_payout",
+    "revenue_event_id": "PSP_1767521557938_tspwf",
+    "metadata": {
+      "recipient_type": "owner",
+      "autonomous": true,
+      "ingested_at": "2026-01-04T10:12:37.939Z"
+    },
+    "created_at": "2026-01-04T10:12:37.939Z"
+  },
+  "saved_at": "2026-01-04T10:12:37.939Z",
+  "autonomous": true
+}

@@ -1,7 +1,7 @@
 import { spawn } from 'child_process';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import '../src/load-env.mjs'; // Load environment variables from .env
+import '../src/load-env.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -24,8 +24,7 @@ async function runScript(scriptPath, args = []) {
             stdio: 'inherit',
             env: {
                 ...process.env,
-                BASE44_OFFLINE: 'true', // Force offline to avoid WebSocket hang
-                BASE44_ALLOW_OFFLINE_FALLBACK: 'true',
+                BASE44_OFFLINE: 'true',
                 SWARM_LIVE: 'true'
             }
         });
@@ -45,7 +44,7 @@ async function runScript(scriptPath, args = []) {
 }
 
 async function loop() {
-    console.log("♾️  STARTING AUTO-RESTART LOOP ♾️");
+    console.log("♾️  STARTING AUTONOMOUS REVENUE SYSTEM LOOP ♾️");
     
     while (true) {
         try {
@@ -55,53 +54,13 @@ async function loop() {
                 restartsInLastMinute = 0;
             }
 
-            // 0. Transform CSVs to JSON
-            console.log("\n🔄 Running CSV Transformation...");
-            try {
-                await runScript('scripts/transform-csv-to-real.mjs');
-            } catch (e) {
-                console.warn("⚠️ Transformation warning (continuing):", e.message);
-            }
+            // 1. Run the Autonomous Revenue Generator
+            // This script handles: Mission Execution -> Revenue Generation -> Auto-Settlement
+            console.log("\n🚀 Running Autonomous Revenue Generator...");
+            await runScript('scripts/autonomous-revenue-generator.mjs');
 
-            // 1. Ingest Real Entities (Process any new CSVs)
-            console.log("\n📥 Running Ingestion...");
-            try {
-                await runScript('scripts/ingest-real-entities.mjs');
-            } catch (e) {
-                console.warn("⚠️ Ingestion warning (continuing):", e.message);
-            }
-
-            // 1.5. Enforce Settlement SLA (Evidence Collection Mode)
-            console.log("\n👮 Enforcing Settlement SLA...");
-            try {
-                await runScript('src/emit-revenue-events.mjs', ['--enforce-sla']);
-            } catch (e) {
-                console.warn("⚠️ SLA Enforcement warning (continuing):", e.message);
-            }
-
-            // 1.6. Emit Revenue Events & Process Payouts (Obligation Mandatory)
-            console.log("\n💸 Processing Payouts (Obligation Mandatory)...");
-            try {
-                // Ensure we run the revenue emission logic to create payout batches
-                await runScript('src/emit-revenue-events.mjs');
-            } catch (e) {
-                console.warn("⚠️ Payout processing warning (continuing):", e.message);
-            }
-
-            // 1.7. Run Auto Settlement Daemon (Immediate Owner Payouts)
-            console.log("\n💰 Running Auto Settlement Daemon...");
-            try {
-                await runScript('auto_settlement_daemon.js', ['--once']);
-            } catch (e) {
-                console.warn("⚠️ Settlement Daemon warning (continuing):", e.message);
-            }
-
-            // 2. Run Real Execution Loop
-            console.log("\n🔥 Running Real Execution Loop...");
-            await runScript('src/real/real-execution-loop.mjs');
-
-            console.log("✅ Loop iteration complete. Sleeping for 10s...");
-            await new Promise(r => setTimeout(r, 10000));
+            console.log("✅ Generator exited cleanly. Restarting in 5s...");
+            await new Promise(r => setTimeout(r, 5000));
 
         } catch (error) {
             console.error("❌ LOOP ERROR:", error.message);
@@ -112,7 +71,6 @@ async function loop() {
     }
 }
 
-// Handle exit signals to cleanup if needed (though we want to persist)
 process.on('SIGINT', () => {
     console.log("🛑 Received SIGINT. Exiting loop.");
     process.exit(0);

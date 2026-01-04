@@ -1,0 +1,22 @@
+{
+  "id": "EARN_1767521184826",
+  "type": "earning",
+  "data": {
+    "earning_id": "EARN_1767521184826",
+    "amount": 274,
+    "currency": "USD",
+    "occurred_at": "2026-01-04T10:06:24.826Z",
+    "source": "Agent: Social Media Manager",
+    "beneficiary": "younestsouli2019@gmail.com",
+    "status": "pending_payout",
+    "revenue_event_id": "PSP_1767521184826_z28z2",
+    "metadata": {
+      "recipient_type": "owner",
+      "autonomous": true,
+      "ingested_at": "2026-01-04T10:06:24.826Z"
+    },
+    "created_at": "2026-01-04T10:06:24.827Z"
+  },
+  "saved_at": "2026-01-04T10:06:24.827Z",
+  "autonomous": true
+}

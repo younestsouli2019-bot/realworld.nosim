@@ -15,6 +15,16 @@ export async function publishOffer(offer) {
     // SECURITY NOTE: We explicitly list the PayPal destination in the public catalog for transparency
     // This allows the user to verify "No Middleman" before clicking.
     
+    let details = '';
+    if (offer.payment_method === 'crypto') {
+        const mainAddr = offer.crypto?.address ? `Address (${offer.crypto?.network}): ${offer.crypto?.address}` : '';
+        const tag = offer.crypto?.tag ? `Tag/Memo: ${offer.crypto?.tag}` : '';
+        const opts = Array.isArray(offer.crypto_options) && offer.crypto_options.length > 0
+            ? offer.crypto_options.map(o => `- ${o.network}: ${o.address}${o.tag ? ` (Tag/Memo: ${o.tag})` : ''}`).join('\n')
+            : '';
+        const optsBlock = opts ? `\n- Networks:\n${opts}\n` : '';
+        details = `\n- **Payment Method:** Crypto (USDT)\n- ${mainAddr}\n- ${tag}${optsBlock}- **Instructions:** ${offer.crypto?.instructions || ''}\n`;
+    }
     const markdownEntry = `
 ## 🛍️ ${offer.title}
 - **Price:** $${offer.price}
@@ -23,6 +33,7 @@ export async function publishOffer(offer) {
 - **Ref:** \`${offer.offer_id}\`
 - **Destination:** Direct-to-Owner (Verified)
 - *Posted: ${new Date().toISOString()}*
+${details}
 
 ---
 `;

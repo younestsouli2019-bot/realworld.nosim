@@ -1,0 +1,17 @@
+{
+  "earning_id": "EARN_1767462283500",
+  "amount": 100,
+  "currency": "USD",
+  "occurred_at": "2026-01-03T16:01:00.500Z",
+  "source": "Instant Lead Generation",
+  "beneficiary": "younestsouli2019@gmail.com",
+  "status": "pending_payout",
+  "revenue_event_id": "LIVE_1767462283000",
+  "metadata": {
+    "recipient_type": "owner",
+    "owner_directive_enforced": true,
+    "execution_type": "autonomous",
+    "mission_id": "micromission_lead_001"
+  },
+  "created_at": "2026-01-03T16:01:00.500Z"
+}

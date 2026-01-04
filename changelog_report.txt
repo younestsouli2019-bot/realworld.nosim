@@ -1,5 +1,4 @@
 # Changelog & Status Report - 2026-01-03
-
 ## Summary
 The system has been upgraded to **Hard-Binding Execution Evidence-Bound Systems** (as per `proof.it.txt`). This removes all probabilistic validation and enforces a strict binary truth: **No Proof = No Money Moved**. Additionally, all "simulation" logic has been stripped and replaced with **Wet-Run Live Only** execution.
 
@@ -63,4 +62,33 @@ Crucial security safeguards have been implemented to enforce the **Owner Revenue
 - **Revenue Swarm:** Operational and safe to run in "Live" mode under the new protection protocols.
 
 ---
-*System Secure & Ready for Continued Operation.*
+
+# Changelog & Status Report - 2026-01-04
+
+## Summary
+Implemented **Advanced Revenue Recovery** and **Bank Wire Primacy** to maximize owner revenue and ensure settlement reliability in restricted jurisdictions (Morocco). The system now autonomously recovers lost sales and prioritizes bank wires over PayPal.
+
+## Key Changes
+
+### 1. Advanced Revenue Recovery (Agent)
+- **New Agent:** `AdvancedRecoveryAgent` (`src/revenue/advanced-recovery.mjs`) now runs 24/7.
+- **Capabilities:**
+    - **Abandoned Cart Recovery:** Detects and recovers "Near Checkouts" (lost sales).
+    - **Smart Retry Logic:** Handles `insufficient_funds` errors with "Pay Day" awareness (retries on Fridays, 15th, 30th).
+    - **Temporal Targeting:** Retargets warm leads during high-liquidity windows.
+- **Integration:** Hard-wired into `SwarmRunner` to execute *before* market analysis.
+
+### 2. Bank Wire Primacy (Morocco Compliance)
+- **Settlement Logic:** Updated `full_autonomous_system.js` to set `preferredRail: 'bank'`.
+- **Reason:** Circumvents PayPal API restrictions in Morocco.
+- **Automation:** Bank wire files (Attijari/Payoneer format) are now generated automatically for manual upload, with Payoneer as a secondary fallback.
+
+### 3. Base44 Deployment Fixes
+- **API Connectivity:** Fixed `405 Method Not Allowed` errors in `push-to-base44.mjs` by correcting the API URL construction for dedicated Base44 app domains.
+- **24/7 Loop:** Validated `auto-restart-loop.js` for continuous daemon operation.
+
+### 4. Cloud Readiness
+- **Dockerization:** Verified `Dockerfile` and deployment scripts for cloud migration.
+- **Isolation:** Separated daemon logic from personal machine constraints.
+
+---

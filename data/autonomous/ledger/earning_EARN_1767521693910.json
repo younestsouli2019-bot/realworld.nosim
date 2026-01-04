@@ -1,0 +1,22 @@
+{
+  "id": "EARN_1767521693910",
+  "type": "earning",
+  "data": {
+    "earning_id": "EARN_1767521693910",
+    "amount": 380,
+    "currency": "USD",
+    "occurred_at": "2026-01-04T10:14:53.910Z",
+    "source": "Swarm Agent AGENT_04944 (Automation Specialist)",
+    "beneficiary": "younestsouli2019@gmail.com",
+    "status": "pending_payout",
+    "revenue_event_id": "PSP_1767521690807_AGENT_04944",
+    "metadata": {
+      "recipient_type": "owner",
+      "autonomous": true,
+      "ingested_at": "2026-01-04T10:14:53.910Z"
+    },
+    "created_at": "2026-01-04T10:14:53.910Z"
+  },
+  "saved_at": "2026-01-04T10:14:53.910Z",
+  "autonomous": true
+}

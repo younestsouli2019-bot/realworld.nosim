@@ -1,0 +1,22 @@
+{
+  "id": "EARN_1767521424216",
+  "type": "earning",
+  "data": {
+    "earning_id": "EARN_1767521424216",
+    "amount": 566,
+    "currency": "USD",
+    "occurred_at": "2026-01-04T10:10:24.216Z",
+    "source": "Agent: Lead Generator",
+    "beneficiary": "younestsouli2019@gmail.com",
+    "status": "pending_payout",
+    "revenue_event_id": "PSP_1767521424215_0snd0",
+    "metadata": {
+      "recipient_type": "owner",
+      "autonomous": true,
+      "ingested_at": "2026-01-04T10:10:24.216Z"
+    },
+    "created_at": "2026-01-04T10:10:24.216Z"
+  },
+  "saved_at": "2026-01-04T10:10:24.216Z",
+  "autonomous": true
+}

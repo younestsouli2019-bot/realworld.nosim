@@ -1,0 +1,31 @@
+{
+  "id": "AUTO_1767456640087_7ab1bab1",
+  "type": "batch",
+  "data": {
+    "batch_id": "AUTO_1767456640087_7ab1bab1",
+    "status": "executed",
+    "total_amount": 500,
+    "currency": "USD",
+    "created_at": "2026-01-03T16:10:40.087Z",
+    "approved_at": "2026-01-03T16:10:40.087Z",
+    "payout_method": "bank",
+    "recipient": "younestsouli2019@gmail.com",
+    "recipient_type": "owner",
+    "autonomous": true,
+    "items": [
+      {
+        "item_id": "ITEM_1767456640087_6403cd00",
+        "amount": 500,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "recipient_type": "owner",
+        "earning_id": "EARN_1767456597796",
+        "revenue_event_id": "REV_1767456597796"
+      }
+    ],
+    "bank_wire_file": "exports\\bank-wire\\bank_wire_AUTO_1767456640087_7ab1bab1_1767456640093.csv",
+    "executed_at": "2026-01-03T16:10:40.097Z"
+  },
+  "saved_at": "2026-01-03T16:10:40.099Z",
+  "autonomous": true
+}

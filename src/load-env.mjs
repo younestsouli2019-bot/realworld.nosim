@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { initSecretGuard } from './security/secret-guard.mjs';
 
 export function loadEnv() {
   const envPath = path.resolve(process.cwd(), '.env');
@@ -28,6 +29,10 @@ export function loadEnv() {
   } catch (e) {
     // ignore if .env missing
   }
+  
+  try {
+    initSecretGuard();
+  } catch {}
 }
 
 // Auto-load when imported

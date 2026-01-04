@@ -5,6 +5,7 @@ import { recordAttempt } from '../ledger/history.mjs';
 const HISTORY_PATH = path.join(process.cwd(), 'src', 'real', 'ledger', 'execution_history.json');
 const CULLED_PATH = path.join(process.cwd(), 'src', 'real', 'ledger', 'culled_missions.json');
 const LIVE_OFFERS_PATH = path.join(process.cwd(), 'LIVE_OFFERS.md');
+const GRACE_PATH = path.join(process.cwd(), 'src', 'real', 'ledger', 'grace_extensions.json');
 
 function loadJson(p) {
     if (!fs.existsSync(p)) return [];
@@ -16,10 +17,15 @@ export function enforceSla() {
     
     const history = loadJson(HISTORY_PATH);
     const culled = loadJson(CULLED_PATH);
+    const grace = loadJson(GRACE_PATH);
     const now = new Date();
-    const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
+    const baseDays = Number(process.env.SLA_BASE_DAYS ?? 30);
+    const graceDays = Number(process.env.SLA_GRACE_DAYS ?? 14);
+    const recentWindowDays = Number(process.env.SLA_RECENT_ACTIVITY_DAYS ?? 10);
+    const enableGrace = String(process.env.SLA_ENABLE_GRACE ?? "true").toLowerCase() === "true";
+    const BASE_MS = baseDays * 24 * 60 * 60 * 1000;
+    const RECENT_MS = recentWindowDays * 24 * 60 * 60 * 1000;
 
-    // Group by Idea
     const ideas = {};
     for (const entry of history) {
         if (!ideas[entry.idea_id]) ideas[entry.idea_id] = { started: null, success: false };
@@ -38,14 +44,53 @@ export function enforceSla() {
     const toCull = [];
 
     for (const [id, stats] of Object.entries(ideas)) {
-        if (stats.success) continue; // It made money, it lives.
-        if (!stats.started) continue; // Never started?
+        if (stats.success) continue;
+        if (!stats.started) continue;
 
         const ageMs = now - stats.started;
-        if (ageMs > THIRTY_DAYS_MS) {
-            // Check if already culled
+        if (ageMs > BASE_MS) {
             if (culled.includes(id)) continue;
-            
+            let recentActivity = false;
+            let activityCount = 0;
+            for (const e of history) {
+                if (e.idea_id !== id) continue;
+                const t = new Date(e.timestamp);
+                if (now - t <= RECENT_MS) {
+                    if (e.status === 'STARTED' || e.status === 'FAILED') {
+                        recentActivity = true;
+                        activityCount++;
+                    }
+                }
+            }
+            let environmentFavorable = false;
+            try {
+                const railStatsPath = path.join(process.cwd(), 'data', 'rail-stats.json');
+                if (fs.existsSync(railStatsPath)) {
+                    const statsObj = JSON.parse(fs.readFileSync(railStatsPath, 'utf8'));
+                    const rails = Object.values(statsObj || {});
+                    const totals = rails.map(r => (r.success || 0) + (r.failure || 0));
+                    const failures = rails.map(r => (r.failure || 0));
+                    const sumT = totals.reduce((a,b)=>a+b,0);
+                    const sumF = failures.reduce((a,b)=>a+b,0);
+                    const rate = sumT > 0 ? (sumF / sumT) : 0.0;
+                    environmentFavorable = rate < 0.2;
+                }
+            } catch {}
+            const contingency = String(process.env.REGULATORY_CONTINGENCY_ACTIVE ?? "false").toLowerCase() === "true";
+            const eligibleForGrace = enableGrace && (recentActivity || activityCount >= 2 || environmentFavorable || contingency);
+            if (eligibleForGrace) {
+                const until = new Date(stats.started.getTime() + (BASE_MS + graceDays * 24 * 60 * 60 * 1000)).toISOString();
+                const already = Array.isArray(grace) && grace.find(x => x?.id === id);
+                if (!already) {
+                    grace.push({ id, extendedUntil: until, baseDays, graceDays, recentActivity, activityCount, environmentFavorable, contingency });
+                    fs.writeFileSync(GRACE_PATH, JSON.stringify(grace, null, 2));
+                    recordAttempt({ idea_id: id, status: 'GRACE_EXTENDED', reason: `Extended by ${graceDays} days` });
+                    console.log(`🟡 Grace extended for ${id} by ${graceDays} days`);
+                } else {
+                    console.log(`🟡 Grace already recorded for ${id}`);
+                }
+                continue;
+            }
             toCull.push({ id, ageDays: Math.floor(ageMs / (24*60*60*1000)) });
         }
     }

@@ -1,0 +1,17 @@
+{
+  "earning_id": "EARN_1767462282500",
+  "amount": 75,
+  "currency": "USD",
+  "occurred_at": "2026-01-03T16:00:00.500Z",
+  "source": "Instant Email Campaign Setup",
+  "beneficiary": "younestsouli2019@gmail.com",
+  "status": "pending_payout",
+  "revenue_event_id": "LIVE_1767462282000",
+  "metadata": {
+    "recipient_type": "owner",
+    "owner_directive_enforced": true,
+    "execution_type": "autonomous",
+    "mission_id": "micromission_email_001"
+  },
+  "created_at": "2026-01-03T16:00:00.500Z"
+}

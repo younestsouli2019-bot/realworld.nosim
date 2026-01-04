@@ -1,0 +1,17 @@
+{
+  "name": "autonomous-settlement-swarm",
+  "version": "1.0.0",
+  "description": "Autonomous Revenue Settlement Swarm (PayPal/Bank Wire)",
+  "main": "src/worker.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/worker.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "dotenv": "^16.3.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

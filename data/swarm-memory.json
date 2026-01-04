@@ -4,82 +4,204 @@
     {
       "lastAlertAt": 0,
       "lastApprovalAlertAt": 0,
-      "lastDeadmanAt": 1767224308875,
-      "consecutiveFailures": 0,
+      "lastDeadmanAt": 1767507520512,
+      "lastBackupAt": 0,
+      "consecutiveFailures": 5,
       "freeze": {
-        "active": false
+        "active": true,
+        "since": "2026-01-04T04:51:11.384Z",
+        "violations": [
+          {
+            "type": "webhook_missing",
+            "severity": "high",
+            "message": "No PayPal webhooks observed"
+          }
+        ]
       },
       "exportedPayoneerBatches": {},
       "lastTick": {
         "ok": true,
-        "at": "2025-12-31T23:39:30.757Z",
+        "at": "2026-01-04T06:18:38.397Z",
         "mode": "auto",
         "results": {
           "deadman": {
             "ok": true,
-            "skipped": true,
-            "reason": "interval",
-            "nextInMs": 238118
+            "at": "2026-01-04T06:18:41.373Z",
+            "violations": []
           },
           "health": {
-            "at": "2025-12-31T23:39:30.758Z",
+            "at": "2026-01-04T06:18:41.672Z",
             "ok": true,
             "paypalOk": true,
             "base44Ok": true,
             "details": {
               "paypal": "ok",
               "base44": "ok",
-              "base44Mode": "offline"
+              "base44Mode": "auto"
             }
           },
+          "regulatory": {
+            "risk": "ELEVATED",
+            "threats": [
+              "AI and Crypto Agentic Payments Scrutiny",
+              "Financial Services Matters - December 2025"
+            ]
+          },
           "availableBalance": {
-            "mode": "offline",
+            "mode": "online",
             "ok": true,
             "result": {
               "ok": true,
               "totalConfirmedRevenue": 0,
-              "totalPaidOut": 0,
-              "totalCommittedToPayouts": 0,
-              "availableBalance": 0
-            },
-            "fallbackAttempted": true,
-            "primaryError": "Missing required env var: BASE44_APP_ID"
+              "totalPaidOut": 150,
+              "totalCommittedToPayouts": 150,
+              "availableBalance": -300
+            }
           },
           "pendingApproval": {
-            "mode": "offline",
+            "mode": "online",
             "ok": true,
             "result": {
               "ok": true,
               "count": 0,
               "batches": []
-            },
-            "fallbackAttempted": true,
-            "primaryError": "Missing required env var: BASE44_APP_ID"
+            }
           },
           "stuckPayouts": {
-            "mode": "offline",
+            "mode": "online",
             "ok": true,
             "result": {
               "ok": true,
-              "stuckBatchCount": 0,
+              "stuckBatchCount": 1,
               "stuckItemCount": 0,
-              "stuckBatches": [],
+              "stuckBatches": [
+                {
+                  "batchId": "PB_001_FIRST_PAYOUT",
+                  "status": "submitted_to_paypal",
+                  "totalAmount": 150,
+                  "currency": "USD",
+                  "ageHours": 318.31
+                }
+              ],
               "stuckItems": []
-            },
-            "fallbackAttempted": true,
-            "primaryError": "Missing required env var: BASE44_APP_ID"
+            }
+          },
+          "createPayoutBatches": {
+            "ok": true,
+            "skipped": true,
+            "reason": "freeze_active",
+            "freeze": {
+              "active": true,
+              "since": "2026-01-04T04:51:11.384Z",
+              "violations": [
+                {
+                  "type": "webhook_missing",
+                  "severity": "high",
+                  "message": "No PayPal webhooks observed"
+                }
+              ]
+            }
+          },
+          "autoApproval": {
+            "ok": true,
+            "skipped": true,
+            "reason": "freeze_active",
+            "freeze": {
+              "active": true,
+              "since": "2026-01-04T04:51:11.384Z",
+              "violations": [
+                {
+                  "type": "webhook_missing",
+                  "severity": "high",
+                  "message": "No PayPal webhooks observed"
+                }
+              ]
+            }
+          },
+          "autoSubmitPayPal": {
+            "ok": true,
+            "skipped": true,
+            "reason": "freeze_active",
+            "freeze": {
+              "active": true,
+              "since": "2026-01-04T04:51:11.384Z",
+              "violations": [
+                {
+                  "type": "webhook_missing",
+                  "severity": "high",
+                  "message": "No PayPal webhooks observed"
+                }
+              ]
+            }
+          },
+          "autoExportBankWire": {
+            "ok": true,
+            "skipped": true,
+            "reason": "freeze_active",
+            "freeze": {
+              "active": true,
+              "since": "2026-01-04T04:51:11.384Z",
+              "violations": [
+                {
+                  "type": "webhook_missing",
+                  "severity": "high",
+                  "message": "No PayPal webhooks observed"
+                }
+              ]
+            }
+          },
+          "syncPayPalLedger": {
+            "ok": true,
+            "skipped": true,
+            "reason": "freeze_active",
+            "freeze": {
+              "active": true,
+              "since": "2026-01-04T04:51:11.384Z",
+              "violations": [
+                {
+                  "type": "webhook_missing",
+                  "severity": "high",
+                  "message": "No PayPal webhooks observed"
+                }
+              ]
+            }
+          },
+          "revenueSwarm": {
+            "ok": true,
+            "skipped": true,
+            "reason": "freeze_active",
+            "freeze": {
+              "active": true,
+              "since": "2026-01-04T04:51:11.384Z",
+              "violations": [
+                {
+                  "type": "webhook_missing",
+                  "severity": "high",
+                  "message": "No PayPal webhooks observed"
+                }
+              ]
+            }
           }
         },
         "meta": {
           "policy": {
-            "truthOnlyUiEnabled": false,
+            "truthOnlyUiEnabled": true,
             "allowlists": {
-              "paypalConfigured": false
+              "paypalConfigured": true
             }
           },
           "freeze": {
-            "active": false
-          }
+            "active": true,
+            "since": "2026-01-04T04:51:11.384Z",
+            "violations": [
+              {
+                "type": "webhook_missing",
+                "severity": "high",
+                "message": "No PayPal webhooks observed"
+              }
+            ]
+          },
+          "regulatoryContingency": true
         }
       }
     }

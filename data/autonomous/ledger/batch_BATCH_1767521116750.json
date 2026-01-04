@@ -1,0 +1,48 @@
+{
+  "id": "BATCH_1767521116750",
+  "type": "batch",
+  "data": {
+    "batch_id": "BATCH_1767521116750",
+    "created_at": "2026-01-04T10:05:16.750Z",
+    "currency": "USD",
+    "total_amount": 375,
+    "items": [
+      {
+        "earning_id": "EARN_1767455037743",
+        "amount": 100,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521116751_1"
+      },
+      {
+        "earning_id": "EARN_1767456763377",
+        "amount": 100,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521116751_2"
+      },
+      {
+        "earning_id": "EARN_1767462282500",
+        "amount": 75,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521116751_3"
+      },
+      {
+        "earning_id": "EARN_1767462283500",
+        "amount": 100,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521116751_4"
+      }
+    ],
+    "status": "completed",
+    "settled_at": "2026-01-04T10:05:16.758Z",
+    "method": "bank_wire",
+    "metadata": {
+      "files": "exports\\bank-wire\\bank_wire_BATCH_1767521116750_1767521116753.csv"
+    }
+  },
+  "saved_at": "2026-01-04T10:05:16.758Z",
+  "autonomous": true
+}

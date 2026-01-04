@@ -1,0 +1,114 @@
+{
+  "name": "daemon-deployment-package",
+  "version": "1.0.0",
+  "description": "24/7 Autonomous Settlement Daemon - Deployment Scripts",
+  
+  "pm2_config": {
+    "apps": [
+      {
+        "name": "autonomous-settlement-daemon",
+        "script": "./scripts/unified-autonomous-daemon.mjs",
+        "instances": 1,
+        "exec_mode": "fork",
+        "autorestart": true,
+        "watch": false,
+        "max_memory_restart": "500M",
+        "env": {
+          "NODE_ENV": "production",
+          "TZ": "UTC"
+        },
+        "error_file": "./logs/daemon-error.log",
+        "out_file": "./logs/daemon-out.log",
+        "log_date_format": "YYYY-MM-DD HH:mm:ss Z",
+        "merge_logs": true,
+        "min_uptime": "10s",
+        "max_restarts": 10,
+        "restart_delay": 5000,
+        "kill_timeout": 5000,
+        "wait_ready": false,
+        "listen_timeout": 10000,
+        "cron_restart": "0 3 * * *"
+      }
+    ]
+  },
+  
+  "deployment_scripts": {
+    "start_daemon_unix.sh": "#!/bin/bash\n\n# Start Unified Autonomous Settlement Daemon\n# 24/7 Operation with Auto-Restart\n\nset -e\n\necho \"🚀 Starting Autonomous Settlement Daemon...\"\necho \"═══════════════════════════════════════════\"\n\n# Check if PM2 is installed\nif ! command -v pm2 &> /dev/null; then\n    echo \"❌ PM2 not found. Installing...\"\n    npm install -g pm2\nfi\n\n# Check environment variables\nif [ -z \"$BASE44_APP_ID\" ] || [ -z \"$BASE44_SERVICE_TOKEN\" ]; then\n    echo \"⚠️  Warning: Base44 credentials not set\"\n    echo \"   Daemon will use fallback storage mode\"\nfi\n\nif [ -z \"$PAYPAL_CLIENT_ID\" ] || [ -z \"$PAYPAL_CLIENT_SECRET\" ]; then\n    echo \"⚠️  Warning: PayPal credentials not set\"\n    echo \"   Bank wire fallback will be used\"\nfi\n\n# Create necessary directories\nmkdir -p logs audits/daemon data/daemon exports/bank-wire proof\n\n# Stop existing daemon if running\necho \"\"\necho \"🔄 Checking for existing daemon...\"\npm2 delete autonomous-settlement-daemon 2>/dev/null || echo \"   No existing daemon found\"\n\n# Start daemon with PM2\necho \"\"\necho \"▶️  Starting daemon...\"\npm2 start scripts/unified-autonomous-daemon.mjs \\\n  --name autonomous-settlement-daemon \\\n  --max-memory-restart 500M \\\n  --exp-backoff-restart-delay=5000 \\\n  --time\n\n# Save PM2 configuration\npm2 save\n\n# Setup PM2 startup script\npm2 startup\n\necho \"\"\necho \"✅ Daemon started successfully!\"\necho \"═══════════════════════════════════════════\"\necho \"\"\necho \"📊 Status:\"\npm2 status autonomous-settlement-daemon\n\necho \"\"\necho \"📋 Useful commands:\"\necho \"   View logs:    pm2 logs autonomous-settlement-daemon\"\necho \"   Monitor:      pm2 monit\"\necho \"   Restart:      pm2 restart autonomous-settlement-daemon\"\necho \"   Stop:         pm2 stop autonomous-settlement-daemon\"\necho \"   Statistics:   pm2 show autonomous-settlement-daemon\"\necho \"\"\necho \"🤖 Daemon is now running 24/7 with auto-restart\"\necho \"   All revenue will be automatically settled to owner accounts\"\necho \"\"\n",
+    
+    "start_daemon_windows.bat": "@echo off\nREM Start Unified Autonomous Settlement Daemon - Windows\nREM 24/7 Operation with Auto-Restart\n\necho.\necho Starting Autonomous Settlement Daemon...\necho ==========================================\necho.\n\nREM Check if PM2 is installed\npm2 --version >nul 2>&1\nif errorlevel 1 (\n    echo PM2 not found. Installing...\n    npm install -g pm2\n)\n\nREM Create directories\nif not exist logs mkdir logs\nif not exist audits\\daemon mkdir audits\\daemon\nif not exist data\\daemon mkdir data\\daemon\nif not exist exports\\bank-wire mkdir exports\\bank-wire\nif not exist proof mkdir proof\n\nREM Stop existing daemon\necho.\necho Checking for existing daemon...\npm2 delete autonomous-settlement-daemon 2>nul\n\nREM Start daemon\necho.\necho Starting daemon...\npm2 start scripts\\unified-autonomous-daemon.mjs ^\n  --name autonomous-settlement-daemon ^\n  --max-memory-restart 500M ^\n  --exp-backoff-restart-delay=5000 ^\n  --time\n\nREM Save configuration\npm2 save\n\necho.\necho Daemon started successfully!\necho ==========================================\necho.\necho Status:\npm2 status autonomous-settlement-daemon\n\necho.\necho Useful commands:\necho   View logs:    pm2 logs autonomous-settlement-daemon\necho   Monitor:      pm2 monit\necho   Restart:      pm2 restart autonomous-settlement-daemon\necho   Stop:         pm2 stop autonomous-settlement-daemon\necho.\necho Daemon is now running 24/7 with auto-restart\necho All revenue will be automatically settled to owner accounts\necho.\npause\n",
+    
+    "stop_daemon.sh": "#!/bin/bash\n\necho \"🛑 Stopping Autonomous Settlement Daemon...\"\necho \"══════════════════════════════════════════\"\n\n# Stop daemon\npm2 stop autonomous-settlement-daemon\n\necho \"\"\necho \"📊 Final Statistics:\"\npm2 show autonomous-settlement-daemon\n\necho \"\"\nread -p \"Delete daemon completely? (y/N): \" -n 1 -r\necho\nif [[ $REPLY =~ ^[Yy]$ ]]; then\n    pm2 delete autonomous-settlement-daemon\n    pm2 save\n    echo \"✅ Daemon deleted\"\nelse\n    echo \"✅ Daemon stopped (use 'pm2 restart' to resume)\"\nfi\n\necho \"\"\n",
+    
+    "ingest_revenue.sh": "#!/bin/bash\n\n# Ingest revenue into the autonomous system\n# Usage: ./ingest_revenue.sh <amount> <currency> <source>\n\nAMOUNT=${1:-100}\nCURRENCY=${2:-USD}\nSOURCE=${3:-manual}\n\necho \"📥 Ingesting Revenue\"\necho \"═══════════════════\"\necho \"   Amount: \\$${AMOUNT} ${CURRENCY}\"\necho \"   Source: ${SOURCE}\"\necho \"\"\n\nnode scripts/unified-autonomous-daemon.mjs \\\n  --ingest \\\n  --amount=${AMOUNT} \\\n  --currency=${CURRENCY} \\\n  --source=${SOURCE}\n\necho \"\"\necho \"✅ Revenue queued for automatic settlement\"\necho \"   Will be processed within 60 seconds\"\necho \"\"\n",
+    
+    "health_check.sh": "#!/bin/bash\n\necho \"💚 Daemon Health Check\"\necho \"═══════════════════════\"\necho \"\"\n\n# Check if daemon is running\nif pm2 list | grep -q \"autonomous-settlement-daemon.*online\"; then\n    echo \"✅ Daemon Status: RUNNING\"\nelse\n    echo \"❌ Daemon Status: STOPPED\"\n    exit 1\nfi\n\necho \"\"\necho \"📊 Statistics:\"\npm2 show autonomous-settlement-daemon | grep -E \"uptime|restarts|memory|status\"\n\necho \"\"\necho \"📋 Recent Logs (last 20 lines):\"\npm2 logs autonomous-settlement-daemon --lines 20 --nostream\n\necho \"\"\necho \"💰 Settlement Summary:\"\nif [ -f \"audits/daemon/$(date +%Y-%m-%d).jsonl\" ]; then\n    echo \"   Today's settlements:\"\n    grep '\"level\":\"money\"' \"audits/daemon/$(date +%Y-%m-%d).jsonl\" | wc -l\n    echo \"   Recent activity:\"\n    tail -5 \"audits/daemon/$(date +%Y-%m-%d).jsonl\" | jq -r '.message'\nelse\n    echo \"   No activity today\"\nfi\n\necho \"\"\n",
+    
+    "monitor_daemon.sh": "#!/bin/bash\n\n# Real-time monitoring of the daemon\n\necho \"🔍 Autonomous Daemon Monitor\"\necho \"═══════════════════════════════\"\necho \"\"\necho \"Press Ctrl+C to exit\"\necho \"\"\n\n# Show PM2 monitoring interface\npm2 monit\n"
+  },
+  
+  "package_json_additions": {
+    "scripts": {
+      "daemon:start": "bash scripts/start_daemon_unix.sh",
+      "daemon:start:win": "scripts\\start_daemon_windows.bat",
+      "daemon:stop": "bash scripts/stop_daemon.sh",
+      "daemon:restart": "pm2 restart autonomous-settlement-daemon",
+      "daemon:logs": "pm2 logs autonomous-settlement-daemon",
+      "daemon:monitor": "bash scripts/monitor_daemon.sh",
+      "daemon:health": "bash scripts/health_check.sh",
+      "daemon:ingest": "bash scripts/ingest_revenue.sh",
+      "daemon:stats": "node scripts/unified-autonomous-daemon.mjs --stats"
+    }
+  },
+  
+  "systemd_service": {
+    "filename": "/etc/systemd/system/autonomous-settlement.service",
+    "content": "[Unit]\nDescription=Autonomous Settlement Daemon\nAfter=network.target\n\n[Service]\nType=simple\nUser=settlement\nWorkingDirectory=/opt/autonomous-settlement\nEnvironment=\"PATH=/usr/bin:/usr/local/bin\"\nEnvironment=\"NODE_ENV=production\"\nExecStart=/usr/bin/pm2-runtime start /opt/autonomous-settlement/scripts/unified-autonomous-daemon.mjs --name autonomous-settlement-daemon\nRestart=always\nRestartSec=10\nKillMode=process\n\n[Install]\nWantedBy=multi-user.target\n"
+  },
+  
+  "docker_compose": {
+    "version": "3.8",
+    "services": {
+      "autonomous-daemon": {
+        "build": ".",
+        "container_name": "autonomous-settlement-daemon",
+        "restart": "unless-stopped",
+        "environment": [
+          "NODE_ENV=production",
+          "BASE44_APP_ID=${BASE44_APP_ID}",
+          "BASE44_SERVICE_TOKEN=${BASE44_SERVICE_TOKEN}",
+          "PAYPAL_CLIENT_ID=${PAYPAL_CLIENT_ID}",
+          "PAYPAL_CLIENT_SECRET=${PAYPAL_CLIENT_SECRET}",
+          "PAYPAL_MODE=${PAYPAL_MODE:-live}",
+          "OWNER_PAYPAL_EMAIL=${OWNER_PAYPAL_EMAIL}",
+          "OWNER_BANK_ACCOUNT=${OWNER_BANK_ACCOUNT}",
+          "OWNER_PAYONEER_ID=${OWNER_PAYONEER_ID}"
+        ],
+        "volumes": [
+          "./data:/app/data",
+          "./audits:/app/audits",
+          "./exports:/app/exports",
+          "./logs:/app/logs"
+        ],
+        "healthcheck": {
+          "test": ["CMD", "node", "scripts/health_check.js"],
+          "interval": "5m",
+          "timeout": "10s",
+          "retries": 3,
+          "start_period": "30s"
+        }
+      }
+    }
+  },
+  
+  "cron_jobs": {
+    "daily_report": "0 9 * * * cd /path/to/project && node scripts/generate-daily-report.mjs",
+    "weekly_audit": "0 0 * * 0 cd /path/to/project && node scripts/generate-weekly-audit.mjs",
+    "health_check": "*/30 * * * * cd /path/to/project && bash scripts/health_check.sh > /tmp/daemon-health.log 2>&1"
+  },
+  
+  "monitoring_endpoints": {
+    "healthcheck_url": "http://localhost:8788/health",
+    "stats_url": "http://localhost:8788/stats",
+    "metrics_url": "http://localhost:8788/metrics"
+  }
+}

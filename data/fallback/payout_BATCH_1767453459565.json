@@ -1,0 +1,29 @@
+{
+  "batch_id": "BATCH_1767453459565",
+  "status": "approved",
+  "total_amount": 5,
+  "currency": "USD",
+  "created_at": "2026-01-03T15:17:39.565Z",
+  "approved_at": "2026-01-03T15:17:39.565Z",
+  "payout_method": "paypal",
+  "recipient": "younestsouli2019@gmail.com",
+  "recipient_type": "owner",
+  "earning_ids": [
+    "EARN_1767453459479"
+  ],
+  "revenue_event_ids": [
+    "LIVE_1767453459467"
+  ],
+  "owner_directive_enforced": true,
+  "items": [
+    {
+      "item_id": "ITEM_1767453459565_6ww0it0sg",
+      "amount": 5,
+      "currency": "USD",
+      "recipient": "younestsouli2019@gmail.com",
+      "recipient_type": "owner",
+      "revenue_event_id": "LIVE_1767453459467",
+      "earning_id": "EARN_1767453459479"
+    }
+  ]
+}

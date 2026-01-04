@@ -1,0 +1,867 @@
+{
+  "id": "BATCH_1767521679365",
+  "type": "batch",
+  "data": {
+    "batch_id": "BATCH_1767521679365",
+    "created_at": "2026-01-04T10:14:39.365Z",
+    "currency": "USD",
+    "total_amount": 31397,
+    "items": [
+      {
+        "earning_id": "EARN_1767455037743",
+        "amount": 100,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_1"
+      },
+      {
+        "earning_id": "EARN_1767456763377",
+        "amount": 100,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_2"
+      },
+      {
+        "earning_id": "EARN_1767462282500",
+        "amount": 75,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_3"
+      },
+      {
+        "earning_id": "EARN_1767462283500",
+        "amount": 100,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_4"
+      },
+      {
+        "earning_id": "EARN_1767521119456",
+        "amount": 66,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_5"
+      },
+      {
+        "earning_id": "EARN_1767521122314",
+        "amount": 447,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_6"
+      },
+      {
+        "earning_id": "EARN_1767521122728",
+        "amount": 92,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_7"
+      },
+      {
+        "earning_id": "EARN_1767521124253",
+        "amount": 203,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_8"
+      },
+      {
+        "earning_id": "EARN_1767521125311",
+        "amount": 518,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_9"
+      },
+      {
+        "earning_id": "EARN_1767521183335",
+        "amount": 540,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_10"
+      },
+      {
+        "earning_id": "EARN_1767521184718",
+        "amount": 505,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_11"
+      },
+      {
+        "earning_id": "EARN_1767521184826",
+        "amount": 274,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_12"
+      },
+      {
+        "earning_id": "EARN_1767521185575",
+        "amount": 172,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_13"
+      },
+      {
+        "earning_id": "EARN_1767521186684",
+        "amount": 470,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_14"
+      },
+      {
+        "earning_id": "EARN_1767521241205",
+        "amount": 151,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_15"
+      },
+      {
+        "earning_id": "EARN_1767521243889",
+        "amount": 247,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_16"
+      },
+      {
+        "earning_id": "EARN_1767521243984",
+        "amount": 402,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_17"
+      },
+      {
+        "earning_id": "EARN_1767521245013",
+        "amount": 437,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_18"
+      },
+      {
+        "earning_id": "EARN_1767521246507",
+        "amount": 96,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_19"
+      },
+      {
+        "earning_id": "EARN_1767521301829",
+        "amount": 271,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_20"
+      },
+      {
+        "earning_id": "EARN_1767521303348",
+        "amount": 398,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_21"
+      },
+      {
+        "earning_id": "EARN_1767521303973",
+        "amount": 266,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_22"
+      },
+      {
+        "earning_id": "EARN_1767521305299",
+        "amount": 137,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_23"
+      },
+      {
+        "earning_id": "EARN_1767521305981",
+        "amount": 232,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_24"
+      },
+      {
+        "earning_id": "EARN_1767521359446",
+        "amount": 448,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_25"
+      },
+      {
+        "earning_id": "EARN_1767521361530",
+        "amount": 430,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_26"
+      },
+      {
+        "earning_id": "EARN_1767521364397",
+        "amount": 167,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_27"
+      },
+      {
+        "earning_id": "EARN_1767521366376",
+        "amount": 216,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_28"
+      },
+      {
+        "earning_id": "EARN_1767521366564",
+        "amount": 269,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_29"
+      },
+      {
+        "earning_id": "EARN_1767521419494",
+        "amount": 394,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_30"
+      },
+      {
+        "earning_id": "EARN_1767521421934",
+        "amount": 185,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_31"
+      },
+      {
+        "earning_id": "EARN_1767521422830",
+        "amount": 227,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_32"
+      },
+      {
+        "earning_id": "EARN_1767521424047",
+        "amount": 388,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_33"
+      },
+      {
+        "earning_id": "EARN_1767521424216",
+        "amount": 566,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_34"
+      },
+      {
+        "earning_id": "EARN_1767521436085",
+        "amount": 75,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_35"
+      },
+      {
+        "earning_id": "EARN_1767521436562",
+        "amount": 74,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_36"
+      },
+      {
+        "earning_id": "EARN_1767521437416",
+        "amount": 557,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_37"
+      },
+      {
+        "earning_id": "EARN_1767521438016",
+        "amount": 460,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_38"
+      },
+      {
+        "earning_id": "EARN_1767521441759",
+        "amount": 396,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_39"
+      },
+      {
+        "earning_id": "EARN_1767521494115",
+        "amount": 55,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_40"
+      },
+      {
+        "earning_id": "EARN_1767521499549",
+        "amount": 287,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_41"
+      },
+      {
+        "earning_id": "EARN_1767521500004",
+        "amount": 369,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_42"
+      },
+      {
+        "earning_id": "EARN_1767521500899",
+        "amount": 165,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_43"
+      },
+      {
+        "earning_id": "EARN_1767521500993",
+        "amount": 408,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_44"
+      },
+      {
+        "earning_id": "EARN_1767521557939",
+        "amount": 109,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_45"
+      },
+      {
+        "earning_id": "EARN_1767521558035",
+        "amount": 405,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_46"
+      },
+      {
+        "earning_id": "EARN_1767521559136",
+        "amount": 500,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_47"
+      },
+      {
+        "earning_id": "EARN_1767521560471",
+        "amount": 184,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_48"
+      },
+      {
+        "earning_id": "EARN_1767521561324",
+        "amount": 542,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_49"
+      },
+      {
+        "earning_id": "EARN_1767521677772",
+        "amount": 61,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_50"
+      },
+      {
+        "earning_id": "EARN_1767521677775",
+        "amount": 122,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_51"
+      },
+      {
+        "earning_id": "EARN_1767521677778",
+        "amount": 190,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_52"
+      },
+      {
+        "earning_id": "EARN_1767521677781",
+        "amount": 168,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_53"
+      },
+      {
+        "earning_id": "EARN_1767521677784",
+        "amount": 95,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_54"
+      },
+      {
+        "earning_id": "EARN_1767521677787",
+        "amount": 105,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_55"
+      },
+      {
+        "earning_id": "EARN_1767521677791",
+        "amount": 178,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_56"
+      },
+      {
+        "earning_id": "EARN_1767521677794",
+        "amount": 55,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_57"
+      },
+      {
+        "earning_id": "EARN_1767521677797",
+        "amount": 90,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_58"
+      },
+      {
+        "earning_id": "EARN_1767521677800",
+        "amount": 128,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_59"
+      },
+      {
+        "earning_id": "EARN_1767521677803",
+        "amount": 54,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_60"
+      },
+      {
+        "earning_id": "EARN_1767521677806",
+        "amount": 193,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_61"
+      },
+      {
+        "earning_id": "EARN_1767521677809",
+        "amount": 124,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_62"
+      },
+      {
+        "earning_id": "EARN_1767521677812",
+        "amount": 134,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_63"
+      },
+      {
+        "earning_id": "EARN_1767521677815",
+        "amount": 197,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_64"
+      },
+      {
+        "earning_id": "EARN_1767521677818",
+        "amount": 90,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_65"
+      },
+      {
+        "earning_id": "EARN_1767521677821",
+        "amount": 124,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_66"
+      },
+      {
+        "earning_id": "EARN_1767521677824",
+        "amount": 417,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_67"
+      },
+      {
+        "earning_id": "EARN_1767521677826",
+        "amount": 255,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_68"
+      },
+      {
+        "earning_id": "EARN_1767521677829",
+        "amount": 209,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_69"
+      },
+      {
+        "earning_id": "EARN_1767521677832",
+        "amount": 484,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_70"
+      },
+      {
+        "earning_id": "EARN_1767521677834",
+        "amount": 179,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_71"
+      },
+      {
+        "earning_id": "EARN_1767521677837",
+        "amount": 381,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_72"
+      },
+      {
+        "earning_id": "EARN_1767521677840",
+        "amount": 154,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_73"
+      },
+      {
+        "earning_id": "EARN_1767521677842",
+        "amount": 184,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_74"
+      },
+      {
+        "earning_id": "EARN_1767521677845",
+        "amount": 179,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_75"
+      },
+      {
+        "earning_id": "EARN_1767521677848",
+        "amount": 106,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_76"
+      },
+      {
+        "earning_id": "EARN_1767521677850",
+        "amount": 499,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_77"
+      },
+      {
+        "earning_id": "EARN_1767521677852",
+        "amount": 152,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_78"
+      },
+      {
+        "earning_id": "EARN_1767521677855",
+        "amount": 265,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_79"
+      },
+      {
+        "earning_id": "EARN_1767521677858",
+        "amount": 212,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_80"
+      },
+      {
+        "earning_id": "EARN_1767521677860",
+        "amount": 175,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_81"
+      },
+      {
+        "earning_id": "EARN_1767521677863",
+        "amount": 113,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_82"
+      },
+      {
+        "earning_id": "EARN_1767521677866",
+        "amount": 166,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_83"
+      },
+      {
+        "earning_id": "EARN_1767521677868",
+        "amount": 229,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_84"
+      },
+      {
+        "earning_id": "EARN_1767521677871",
+        "amount": 223,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_85"
+      },
+      {
+        "earning_id": "EARN_1767521677874",
+        "amount": 283,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_86"
+      },
+      {
+        "earning_id": "EARN_1767521677876",
+        "amount": 138,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_87"
+      },
+      {
+        "earning_id": "EARN_1767521677879",
+        "amount": 115,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_88"
+      },
+      {
+        "earning_id": "EARN_1767521677882",
+        "amount": 109,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_89"
+      },
+      {
+        "earning_id": "EARN_1767521677884",
+        "amount": 207,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_90"
+      },
+      {
+        "earning_id": "EARN_1767521677887",
+        "amount": 220,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_91"
+      },
+      {
+        "earning_id": "EARN_1767521677890",
+        "amount": 187,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_92"
+      },
+      {
+        "earning_id": "EARN_1767521677892",
+        "amount": 282,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_93"
+      },
+      {
+        "earning_id": "EARN_1767521677895",
+        "amount": 221,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_94"
+      },
+      {
+        "earning_id": "EARN_1767521677898",
+        "amount": 219,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_95"
+      },
+      {
+        "earning_id": "EARN_1767521677900",
+        "amount": 122,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_96"
+      },
+      {
+        "earning_id": "EARN_1767521677903",
+        "amount": 277,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_97"
+      },
+      {
+        "earning_id": "EARN_1767521677906",
+        "amount": 125,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_98"
+      },
+      {
+        "earning_id": "EARN_1767521677908",
+        "amount": 134,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_99"
+      },
+      {
+        "earning_id": "EARN_1767521677911",
+        "amount": 292,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_100"
+      },
+      {
+        "earning_id": "EARN_1767521677915",
+        "amount": 225,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_101"
+      },
+      {
+        "earning_id": "EARN_1767521677917",
+        "amount": 178,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_102"
+      },
+      {
+        "earning_id": "EARN_1767521677919",
+        "amount": 286,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_103"
+      },
+      {
+        "earning_id": "EARN_1767521677922",
+        "amount": 86,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_104"
+      },
+      {
+        "earning_id": "EARN_1767521677926",
+        "amount": 512,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_105"
+      },
+      {
+        "earning_id": "EARN_1767521677929",
+        "amount": 569,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_106"
+      },
+      {
+        "earning_id": "EARN_1767521677932",
+        "amount": 342,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_107"
+      },
+      {
+        "earning_id": "EARN_1767521677935",
+        "amount": 415,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_108"
+      },
+      {
+        "earning_id": "EARN_1767521677938",
+        "amount": 237,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_109"
+      },
+      {
+        "earning_id": "EARN_1767521677941",
+        "amount": 185,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_110"
+      },
+      {
+        "earning_id": "EARN_1767521677944",
+        "amount": 305,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_111"
+      },
+      {
+        "earning_id": "EARN_1767521677947",
+        "amount": 505,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_112"
+      },
+      {
+        "earning_id": "EARN_1767521677950",
+        "amount": 390,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_113"
+      },
+      {
+        "earning_id": "EARN_1767521677952",
+        "amount": 352,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_114"
+      },
+      {
+        "earning_id": "EARN_1767521677955",
+        "amount": 574,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_115"
+      },
+      {
+        "earning_id": "EARN_1767521677958",
+        "amount": 302,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_116"
+      },
+      {
+        "earning_id": "EARN_1767521677961",
+        "amount": 495,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_117"
+      },
+      {
+        "earning_id": "EARN_1767521677965",
+        "amount": 567,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_118"
+      },
+      {
+        "earning_id": "EARN_1767521677967",
+        "amount": 342,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_119"
+      },
+      {
+        "earning_id": "EARN_1767521677970",
+        "amount": 214,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_120"
+      },
+      {
+        "earning_id": "EARN_1767521677973",
+        "amount": 520,
+        "currency": "USD",
+        "recipient": "younestsouli2019@gmail.com",
+        "item_id": "ITEM_1767521679365_121"
+      }
+    ],
+    "status": "completed",
+    "settled_at": "2026-01-04T10:14:39.372Z",
+    "method": "bank_wire",
+    "metadata": {
+      "files": "exports\\bank-wire\\bank_wire_BATCH_1767521679365_1767521679367.csv"
+    }
+  },
+  "saved_at": "2026-01-04T10:14:39.372Z",
+  "autonomous": true
+}

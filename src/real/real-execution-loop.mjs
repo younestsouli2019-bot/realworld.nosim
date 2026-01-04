@@ -13,7 +13,21 @@ export async function realExecutionLoop() {
   const ideas = await getIdeaBacklog();
   console.log(`   Found ${ideas.length} candidates in backlog.`);
 
-  for (const idea of ideas) {
+  const parallel = process.env.REGULATORY_CONTINGENCY_ACTIVE === 'true';
+  if (parallel) {
+      console.log("⚡ CONTINGENCY MODE: Executing all ideas in PARALLEL to maximize immediate revenue.");
+      await Promise.all(ideas.map(executeIdea));
+  } else {
+      for (const idea of ideas) {
+        await executeIdea(idea);
+      }
+  }
+  
+  console.log(`\n---------------------------------------------------`);
+  console.log("🛑 LOOP COMPLETE. CHECK 'LIVE_OFFERS.md' FOR LINKS.");
+}
+
+async function executeIdea(idea) {
     console.log(`\n---------------------------------------------------`);
     // Record start of attempt
     recordAttempt({ idea_id: idea.id, status: 'STARTED' });
@@ -64,10 +78,6 @@ export async function realExecutionLoop() {
       // Update history with failure
       recordAttempt({ idea_id: idea.id, status: 'FAILED', reason: err.message });
     }
-  }
-  
-  console.log(`\n---------------------------------------------------`);
-  console.log("🛑 LOOP COMPLETE. CHECK 'LIVE_OFFERS.md' FOR LINKS.");
 }
 
 async function handleSelarBotExecution(idea) {

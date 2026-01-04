@@ -1,0 +1,15 @@
+*** AUTONOMOUS PAYONEER US WIRE INSTRUCTION ***
+DATE: 2026-01-03
+BATCH ID: BATCH_1767462284000
+TOTAL AMOUNT: $175.00 USD
+
+BENEFICIARY:
+Name: YOUNES TSOULI
+Bank: First Century Bank (Payoneer)
+Account Type: Checking
+Routing (ABA): 111000025
+Account Number: [REDACTED-SAFE]
+
+INSTRUCTIONS:
+Please process this wire immediately for the total amount of $175.00.
+Reference: AUTO-SETTLE-1767462284000

@@ -1,0 +1,19 @@
+
+=== PAYONEER GLOBAL PAYMENT SERVICE INSTRUCTIONS (US LOCAL) ===
+Use these details to transfer funds from PayPal, Stripe, or US Bank Account.
+
+BENEFICIARY:  Younes Tsouli
+BANK NAME:    Citibank
+ADDRESS:      111 Wall Street New York, NY 10043 USA
+ACCOUNT #:    70581950001361949
+ROUTING (ABA): 031100209
+SWIFT CODE:   CITIUS33
+ACCOUNT TYPE: CHECKING
+
+AMOUNT:       $11862 USD
+REFERENCE:    BATCH_1767521500558
+
+NOTE:
+- Select "Checking" if asked for account type.
+- This is a local US transfer (ACH/FedWire).
+- 72h Settlement SLA applies.

@@ -1,0 +1,22 @@
+{
+  "id": "EARN_1767521243984",
+  "type": "earning",
+  "data": {
+    "earning_id": "EARN_1767521243984",
+    "amount": 402,
+    "currency": "USD",
+    "occurred_at": "2026-01-04T10:07:23.984Z",
+    "source": "Agent: Automation Specialist",
+    "beneficiary": "younestsouli2019@gmail.com",
+    "status": "pending_payout",
+    "revenue_event_id": "PSP_1767521243983_us0qb",
+    "metadata": {
+      "recipient_type": "owner",
+      "autonomous": true,
+      "ingested_at": "2026-01-04T10:07:23.984Z"
+    },
+    "created_at": "2026-01-04T10:07:23.984Z"
+  },
+  "saved_at": "2026-01-04T10:07:23.984Z",
+  "autonomous": true
+}

@@ -1,0 +1,337 @@
+[
+  {
+    "timestamp": "2026-01-03T15:08:15.750Z",
+    "type": "info",
+    "message": "Processing: RevenueEvent"
+  },
+  {
+    "timestamp": "2026-01-03T15:08:15.752Z",
+    "type": "push",
+    "message": "GET /entities/RevenueEvent"
+  },
+  {
+    "timestamp": "2026-01-03T15:08:16.467Z",
+    "type": "info",
+    "message": "Schema exists, checking fields..."
+  },
+  {
+    "timestamp": "2026-01-03T15:08:16.468Z",
+    "type": "warning",
+    "message": "Missing fields: event_id, amount, currency, occurred_at, source, external_id, status, verification_proof, metadata, payout_batch_id, settled, settled_at, created_at, event_hash"
+  },
+  {
+    "timestamp": "2026-01-03T15:08:16.468Z",
+    "type": "push",
+    "message": "Updating schema..."
+  },
+  {
+    "timestamp": "2026-01-03T15:08:16.468Z",
+    "type": "push",
+    "message": "PUT /entities/RevenueEvent"
+  },
+  {
+    "timestamp": "2026-01-03T15:08:16.776Z",
+    "type": "error",
+    "message": "Request failed: Base44 API error: 405 - {\"error_type\":\"HTTPException\",\"message\":\"Method Not Allowed\",\"detail\":\"Method Not Allowed\",\"traceback\":\"\"}"
+  },
+  {
+    "timestamp": "2026-01-03T15:08:16.777Z",
+    "type": "error",
+    "message": "Failed: Base44 API error: 405 - {\"error_type\":\"HTTPException\",\"message\":\"Method Not Allowed\",\"detail\":\"Method Not Allowed\",\"traceback\":\"\"}"
+  },
+  {
+    "timestamp": "2026-01-03T15:08:16.778Z",
+    "type": "info",
+    "message": "Processing: Earning"
+  },
+  {
+    "timestamp": "2026-01-03T15:08:16.778Z",
+    "type": "push",
+    "message": "GET /entities/Earning"
+  },
+  {
+    "timestamp": "2026-01-03T15:08:17.171Z",
+    "type": "error",
+    "message": "Request failed: Base44 API error: 404 - {\"message\":\"Entity schema Earning not found in app\",\"detail\":null,\"traceback\":null,\"extra_data\":null}"
+  },
+  {
+    "timestamp": "2026-01-03T15:08:17.172Z",
+    "type": "push",
+    "message": "Schema does not exist, creating..."
+  },
+  {
+    "timestamp": "2026-01-03T15:08:17.172Z",
+    "type": "push",
+    "message": "POST /entities"
+  },
+  {
+    "timestamp": "2026-01-03T15:08:17.419Z",
+    "type": "error",
+    "message": "Request failed: Base44 API error: 405 - {\"error_type\":\"HTTPException\",\"message\":\"Method Not Allowed\",\"detail\":\"Method Not Allowed\",\"traceback\":\"\"}"
+  },
+  {
+    "timestamp": "2026-01-03T15:08:17.419Z",
+    "type": "error",
+    "message": "Failed: Base44 API error: 405 - {\"error_type\":\"HTTPException\",\"message\":\"Method Not Allowed\",\"detail\":\"Method Not Allowed\",\"traceback\":\"\"}"
+  },
+  {
+    "timestamp": "2026-01-03T15:08:17.420Z",
+    "type": "info",
+    "message": "Processing: PayoutBatch"
+  },
+  {
+    "timestamp": "2026-01-03T15:08:17.420Z",
+    "type": "push",
+    "message": "GET /entities/PayoutBatch"
+  },
+  {
+    "timestamp": "2026-01-03T15:08:17.715Z",
+    "type": "info",
+    "message": "Schema exists, checking fields..."
+  },
+  {
+    "timestamp": "2026-01-03T15:08:17.715Z",
+    "type": "warning",
+    "message": "Missing fields: batch_id, status, total_amount, currency, created_at, approved_at, submitted_at, completed_at, cancelled_at, notes, settlement_id, earning_ids, revenue_event_ids, payout_method, recipient, recipient_type, owner_directive_enforced"
+  },
+  {
+    "timestamp": "2026-01-03T15:08:17.716Z",
+    "type": "push",
+    "message": "Updating schema..."
+  },
+  {
+    "timestamp": "2026-01-03T15:08:17.716Z",
+    "type": "push",
+    "message": "PUT /entities/PayoutBatch"
+  },
+  {
+    "timestamp": "2026-01-03T15:08:17.982Z",
+    "type": "error",
+    "message": "Request failed: Base44 API error: 405 - {\"error_type\":\"HTTPException\",\"message\":\"Method Not Allowed\",\"detail\":\"Method Not Allowed\",\"traceback\":\"\"}"
+  },
+  {
+    "timestamp": "2026-01-03T15:08:17.983Z",
+    "type": "error",
+    "message": "Failed: Base44 API error: 405 - {\"error_type\":\"HTTPException\",\"message\":\"Method Not Allowed\",\"detail\":\"Method Not Allowed\",\"traceback\":\"\"}"
+  },
+  {
+    "timestamp": "2026-01-03T15:08:17.983Z",
+    "type": "info",
+    "message": "Processing: PayoutItem"
+  },
+  {
+    "timestamp": "2026-01-03T15:08:17.983Z",
+    "type": "push",
+    "message": "GET /entities/PayoutItem"
+  },
+  {
+    "timestamp": "2026-01-03T15:08:18.280Z",
+    "type": "info",
+    "message": "Schema exists, checking fields..."
+  },
+  {
+    "timestamp": "2026-01-03T15:08:18.280Z",
+    "type": "warning",
+    "message": "Missing fields: item_id, batch_id, status, amount, currency, recipient, recipient_type, created_at, processed_at, revenue_event_id, earning_id, transaction_id, paypal_status, paypal_transaction_id, paypal_item_id, error_message"
+  },
+  {
+    "timestamp": "2026-01-03T15:08:18.280Z",
+    "type": "push",
+    "message": "Updating schema..."
+  },
+  {
+    "timestamp": "2026-01-03T15:08:18.280Z",
+    "type": "push",
+    "message": "PUT /entities/PayoutItem"
+  },
+  {
+    "timestamp": "2026-01-03T15:08:18.696Z",
+    "type": "error",
+    "message": "Request failed: Base44 API error: 405 - {\"error_type\":\"HTTPException\",\"message\":\"Method Not Allowed\",\"detail\":\"Method Not Allowed\",\"traceback\":\"\"}"
+  },
+  {
+    "timestamp": "2026-01-03T15:08:18.697Z",
+    "type": "error",
+    "message": "Failed: Base44 API error: 405 - {\"error_type\":\"HTTPException\",\"message\":\"Method Not Allowed\",\"detail\":\"Method Not Allowed\",\"traceback\":\"\"}"
+  },
+  {
+    "timestamp": "2026-01-03T15:08:18.697Z",
+    "type": "info",
+    "message": "Processing: TransactionLog"
+  },
+  {
+    "timestamp": "2026-01-03T15:08:18.697Z",
+    "type": "push",
+    "message": "GET /entities/TransactionLog"
+  },
+  {
+    "timestamp": "2026-01-03T15:08:19.069Z",
+    "type": "info",
+    "message": "Schema exists, checking fields..."
+  },
+  {
+    "timestamp": "2026-01-03T15:08:19.070Z",
+    "type": "warning",
+    "message": "Missing fields: log_id, transaction_type, amount, currency, description, transaction_date, category, payment_method, reference_id, status, payout_batch_id, payout_item_id, metadata"
+  },
+  {
+    "timestamp": "2026-01-03T15:08:19.070Z",
+    "type": "push",
+    "message": "Updating schema..."
+  },
+  {
+    "timestamp": "2026-01-03T15:08:19.070Z",
+    "type": "push",
+    "message": "PUT /entities/TransactionLog"
+  },
+  {
+    "timestamp": "2026-01-03T15:08:19.352Z",
+    "type": "error",
+    "message": "Request failed: Base44 API error: 405 - {\"error_type\":\"HTTPException\",\"message\":\"Method Not Allowed\",\"detail\":\"Method Not Allowed\",\"traceback\":\"\"}"
+  },
+  {
+    "timestamp": "2026-01-03T15:08:19.352Z",
+    "type": "error",
+    "message": "Failed: Base44 API error: 405 - {\"error_type\":\"HTTPException\",\"message\":\"Method Not Allowed\",\"detail\":\"Method Not Allowed\",\"traceback\":\"\"}"
+  },
+  {
+    "timestamp": "2026-01-03T15:08:19.354Z",
+    "type": "push",
+    "message": "Creating test RevenueEvent..."
+  },
+  {
+    "timestamp": "2026-01-03T15:08:19.355Z",
+    "type": "push",
+    "message": "POST /entities/RevenueEvent/records"
+  },
+  {
+    "timestamp": "2026-01-03T15:08:19.641Z",
+    "type": "error",
+    "message": "Request failed: Base44 API error: 405 - {\"error_type\":\"HTTPException\",\"message\":\"Method Not Allowed\",\"detail\":\"Method Not Allowed\",\"traceback\":\"\"}"
+  },
+  {
+    "timestamp": "2026-01-03T15:08:19.641Z",
+    "type": "error",
+    "message": "Failed to create RevenueEvent: Base44 API error: 405 - {\"error_type\":\"HTTPException\",\"message\":\"Method Not Allowed\",\"detail\":\"Method Not Allowed\",\"traceback\":\"\"}"
+  },
+  {
+    "timestamp": "2026-01-03T15:08:19.642Z",
+    "type": "push",
+    "message": "Creating test Earning (OWNER)..."
+  },
+  {
+    "timestamp": "2026-01-03T15:08:19.642Z",
+    "type": "push",
+    "message": "POST /entities/Earning/records"
+  },
+  {
+    "timestamp": "2026-01-03T15:08:19.900Z",
+    "type": "error",
+    "message": "Request failed: Base44 API error: 405 - {\"error_type\":\"HTTPException\",\"message\":\"Method Not Allowed\",\"detail\":\"Method Not Allowed\",\"traceback\":\"\"}"
+  },
+  {
+    "timestamp": "2026-01-03T15:08:19.900Z",
+    "type": "error",
+    "message": "Failed to create Earning: Base44 API error: 405 - {\"error_type\":\"HTTPException\",\"message\":\"Method Not Allowed\",\"detail\":\"Method Not Allowed\",\"traceback\":\"\"}"
+  },
+  {
+    "timestamp": "2026-01-03T15:08:19.900Z",
+    "type": "push",
+    "message": "Creating test PayoutBatch..."
+  },
+  {
+    "timestamp": "2026-01-03T15:08:19.901Z",
+    "type": "push",
+    "message": "POST /entities/PayoutBatch/records"
+  },
+  {
+    "timestamp": "2026-01-03T15:08:20.188Z",
+    "type": "error",
+    "message": "Request failed: Base44 API error: 405 - {\"error_type\":\"HTTPException\",\"message\":\"Method Not Allowed\",\"detail\":\"Method Not Allowed\",\"traceback\":\"\"}"
+  },
+  {
+    "timestamp": "2026-01-03T15:08:20.188Z",
+    "type": "error",
+    "message": "Failed to create PayoutBatch: Base44 API error: 405 - {\"error_type\":\"HTTPException\",\"message\":\"Method Not Allowed\",\"detail\":\"Method Not Allowed\",\"traceback\":\"\"}"
+  },
+  {
+    "timestamp": "2026-01-03T15:08:20.189Z",
+    "type": "push",
+    "message": "Creating test PayoutItem..."
+  },
+  {
+    "timestamp": "2026-01-03T15:08:20.189Z",
+    "type": "push",
+    "message": "POST /entities/PayoutItem/records"
+  },
+  {
+    "timestamp": "2026-01-03T15:08:20.428Z",
+    "type": "error",
+    "message": "Request failed: Base44 API error: 405 - {\"error_type\":\"HTTPException\",\"message\":\"Method Not Allowed\",\"detail\":\"Method Not Allowed\",\"traceback\":\"\"}"
+  },
+  {
+    "timestamp": "2026-01-03T15:08:20.428Z",
+    "type": "error",
+    "message": "Failed to create PayoutItem: Base44 API error: 405 - {\"error_type\":\"HTTPException\",\"message\":\"Method Not Allowed\",\"detail\":\"Method Not Allowed\",\"traceback\":\"\"}"
+  },
+  {
+    "timestamp": "2026-01-03T15:08:20.430Z",
+    "type": "info",
+    "message": "Validating: Earnings have owner beneficiaries..."
+  },
+  {
+    "timestamp": "2026-01-03T15:08:20.430Z",
+    "type": "push",
+    "message": "GET /entities/Earning/records?"
+  },
+  {
+    "timestamp": "2026-01-03T15:08:20.699Z",
+    "type": "error",
+    "message": "Request failed: Base44 API error: 404 - {\"message\":\"Entity schema Earning not found in app\",\"detail\":null,\"traceback\":null,\"extra_data\":null}"
+  },
+  {
+    "timestamp": "2026-01-03T15:08:20.700Z",
+    "type": "error",
+    "message": "Validation error: Base44 API error: 404 - {\"message\":\"Entity schema Earning not found in app\",\"detail\":null,\"traceback\":null,\"extra_data\":null}"
+  },
+  {
+    "timestamp": "2026-01-03T15:08:20.700Z",
+    "type": "info",
+    "message": "Validating: PayoutBatches have owner recipients..."
+  },
+  {
+    "timestamp": "2026-01-03T15:08:20.701Z",
+    "type": "push",
+    "message": "GET /entities/PayoutBatch/records?"
+  },
+  {
+    "timestamp": "2026-01-03T15:08:20.996Z",
+    "type": "error",
+    "message": "Request failed: Base44 API error: 404 - {\"message\":\"Entity PayoutBatch with ID records not found\",\"detail\":null,\"traceback\":null,\"extra_data\":null}"
+  },
+  {
+    "timestamp": "2026-01-03T15:08:20.997Z",
+    "type": "error",
+    "message": "Validation error: Base44 API error: 404 - {\"message\":\"Entity PayoutBatch with ID records not found\",\"detail\":null,\"traceback\":null,\"extra_data\":null}"
+  },
+  {
+    "timestamp": "2026-01-03T15:08:20.997Z",
+    "type": "info",
+    "message": "Validating: PayoutItems have owner recipients..."
+  },
+  {
+    "timestamp": "2026-01-03T15:08:20.997Z",
+    "type": "push",
+    "message": "GET /entities/PayoutItem/records?"
+  },
+  {
+    "timestamp": "2026-01-03T15:08:21.317Z",
+    "type": "error",
+    "message": "Request failed: Base44 API error: 404 - {\"message\":\"Entity PayoutItem with ID records not found\",\"detail\":null,\"traceback\":null,\"extra_data\":null}"
+  },
+  {
+    "timestamp": "2026-01-03T15:08:21.318Z",
+    "type": "error",
+    "message": "Validation error: Base44 API error: 404 - {\"message\":\"Entity PayoutItem with ID records not found\",\"detail\":null,\"traceback\":null,\"extra_data\":null}"
+  }
+]

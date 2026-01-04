@@ -7,7 +7,8 @@ export class RailOptimizer {
     this.stats = this.loadStats() || {
       paypal: { success: 0, failure: 0, avgTime: 0, lastUsed: 0, consecutiveFailures: 0 },
       bank: { success: 0, failure: 0, avgTime: 0, lastUsed: 0, consecutiveFailures: 0 },
-      payoneer: { success: 0, failure: 0, avgTime: 0, lastUsed: 0, consecutiveFailures: 0 }
+      payoneer: { success: 0, failure: 0, avgTime: 0, lastUsed: 0, consecutiveFailures: 0 },
+      crypto: { success: 0, failure: 0, avgTime: 0, lastUsed: 0, consecutiveFailures: 0 }
     };
   }
 
@@ -33,6 +34,12 @@ export class RailOptimizer {
   }
   
   selectRail(amount, currency, country, recipientType) {
+    // 0. Regulatory Override (Pre-emption)
+    if (process.env.REGULATORY_CONTINGENCY_ACTIVE === 'true') {
+        // Force Crypto if available, otherwise fallback to Bank (harder to freeze than PayPal)
+        return 'crypto';
+    }
+
     const candidates = [];
     
     // Score each rail
@@ -87,6 +94,7 @@ export class RailOptimizer {
           case 'paypal': return Math.min(amount * 0.02, 20); // 2% capped
           case 'bank': return 5; // Flat fee
           case 'payoneer': return 3; // Flat fee
+          case 'crypto': return 1; // Very low fee (TRC20/BEP20)
           default: return amount * 0.1;
       }
   }

@@ -36,3 +36,7 @@ Steps.Ahead.txt
 confirmationneeded.txt
 constant.improvements.txt
 Nouveau dossier (3)/
+reports/
+reports/*.md
+reports/*.csv
+reports/*.pdf

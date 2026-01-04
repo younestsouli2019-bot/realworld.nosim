@@ -1,0 +1,11 @@
+
+=== MOROCCAN BANK WIRE INSTRUCTIONS (ATTIJARIWAFA BANK) ===
+Use these details for local transfers within Morocco.
+
+BENEFICIARY:  Younes Tsouli
+BANK NAME:    Attijariwafa Bank
+RIB:          007810000448500030594182
+CITY:         Casablanca (Default)
+
+AMOUNT:       5 USD (Convert to MAD if local)
+REFERENCE:    BATCH_1767453659044

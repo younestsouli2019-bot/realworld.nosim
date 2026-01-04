@@ -32,10 +32,11 @@
     "migrate:execute": "node migrate/execute-migration.mjs",
     "migrate:all": "node migrate/all-in-one.mjs",
     "migrate:status": "type migrate\\migration-summary.md",
-    "test": "node --test"
+    "start": "node ./scripts/auto-restart-loop.js",
+    "test": "node --test",
+    "start:autonomous": "node ./scripts/autonomous-revenue-generator.mjs"
   },
   "dependencies": {
     "@base44/sdk": "^0.8.5"
   }
 }
-

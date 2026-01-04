@@ -1,0 +1,22 @@
+{
+  "id": "EARN_1767521693140",
+  "type": "earning",
+  "data": {
+    "earning_id": "EARN_1767521693140",
+    "amount": 340,
+    "currency": "USD",
+    "occurred_at": "2026-01-04T10:14:53.140Z",
+    "source": "Swarm Agent AGENT_03680 (Lead Generator)",
+    "beneficiary": "younestsouli2019@gmail.com",
+    "status": "pending_payout",
+    "revenue_event_id": "PSP_1767521690807_AGENT_03680",
+    "metadata": {
+      "recipient_type": "owner",
+      "autonomous": true,
+      "ingested_at": "2026-01-04T10:14:53.140Z"
+    },
+    "created_at": "2026-01-04T10:14:53.140Z"
+  },
+  "saved_at": "2026-01-04T10:14:53.140Z",
+  "autonomous": true
+}

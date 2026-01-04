@@ -1,0 +1,16 @@
+{
+  "type": "BANK_WIRE_INSTRUCTION",
+  "batch_id": "BATCH_1767453459565",
+  "amount": 5,
+  "currency": "USD",
+  "recipient": {
+    "paypal": "younestsouli2019@gmail.com",
+    "bank": "007810000448500030594182",
+    "payoneer": "PRINCIPAL_ACCOUNT",
+    "name": "YOUNES TSOULI"
+  },
+  "reason": "PayPal API Failure",
+  "error_details": "PayPal payout failed: {\"name\":\"AUTHORIZATION_ERROR\",\"message\":\"Authorization error occurred.\",\"debug_id\":\"70ccab5716ae2\",\"information_link\":\"https://developer.paypal.com/docs/api/payments.payouts-batch/#errors\",\"links\":[]}",
+  "generated_at": "2026-01-03T15:17:40.639Z",
+  "status": "pending_manual_execution"
+}

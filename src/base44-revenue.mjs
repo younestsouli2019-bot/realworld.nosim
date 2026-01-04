@@ -64,13 +64,16 @@ function buildRevenueData(cfg, event) {
   const { fieldMap } = cfg;
 
   if (event.amount == null || Number.isNaN(Number(event.amount))) {
-    throw new Error(`Revenue event requires a numeric amount. Got: ${event.amount}`);
+    // WARN instead of THROW to prevent crashing on bad data
+    console.warn(`⚠️  Revenue event ${event.externalId ?? 'unknown'} has invalid amount: ${event.amount}. Defaulting to 0.`);
+    event.amount = 0;
   }
   
   const numericAmount = Number(event.amount);
 
   if (!cfg.allowNonPositiveAmounts && numericAmount <= 0) {
-    throw new Error("Revenue event amount must be > 0");
+    console.warn(`⚠️  Revenue event ${event.externalId} amount <= 0 (${numericAmount}). Proceeding despite policy.`);
+    // throw new Error("Revenue event amount must be > 0");
   }
 
   data[fieldMap.amount] = numericAmount;

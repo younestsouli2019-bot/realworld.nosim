@@ -1,0 +1,51 @@
+{"timestamp":"2026-01-03T15:43:57.744Z","level":"money","message":"   Amount: $100 USD","data":null,"autonomous":true}
+{"timestamp":"2026-01-03T15:43:57.745Z","level":"owner","message":"   Beneficiary: younestsouli2019@gmail.com","data":null,"autonomous":true}
+{"timestamp":"2026-01-03T15:44:09.678Z","level":"owner","message":"\n🔒 OWNER ACCOUNTS (HARDCODED):","data":null,"autonomous":true}
+{"timestamp":"2026-01-03T15:44:09.679Z","level":"owner","message":"   PayPal: younestsouli2019@gmail.com","data":null,"autonomous":true}
+{"timestamp":"2026-01-03T15:44:09.680Z","level":"owner","message":"   Bank: 007810000448500030594182 (Attijariwafa Bank)","data":null,"autonomous":true}
+{"timestamp":"2026-01-03T15:44:09.680Z","level":"owner","message":"   Payoneer: PRINCIPAL_ACCOUNT","data":null,"autonomous":true}
+{"timestamp":"2026-01-03T15:44:09.685Z","level":"money","message":"\n💰 EXECUTING AUTONOMOUS SETTLEMENT","data":null,"autonomous":true}
+{"timestamp":"2026-01-03T15:44:09.686Z","level":"money","message":"   Amount: $100 USD","data":null,"autonomous":true}
+{"timestamp":"2026-01-03T15:44:09.686Z","level":"owner","message":"   Recipient: younestsouli2019@gmail.com","data":null,"autonomous":true}
+{"timestamp":"2026-01-03T15:44:09.688Z","level":"money","message":"Executing autonomous PayPal payout...","data":null,"autonomous":true}
+{"timestamp":"2026-01-03T15:44:10.422Z","level":"error","message":"Settlement failed (attempt 1/5): PayPal auth failed: {\"error\":\"invalid_client\",\"error_description\":\"Client Authentication failed\"}","data":null,"autonomous":true}
+{"timestamp":"2026-01-03T15:44:40.431Z","level":"money","message":"Executing autonomous PayPal payout...","data":null,"autonomous":true}
+{"timestamp":"2026-01-03T15:44:40.961Z","level":"error","message":"Settlement failed (attempt 2/5): PayPal auth failed: {\"error\":\"invalid_client\",\"error_description\":\"Client Authentication failed\"}","data":null,"autonomous":true}
+{"timestamp":"2026-01-03T15:45:10.976Z","level":"money","message":"Executing autonomous PayPal payout...","data":null,"autonomous":true}
+{"timestamp":"2026-01-03T15:45:11.515Z","level":"error","message":"Settlement failed (attempt 3/5): PayPal auth failed: {\"error\":\"invalid_client\",\"error_description\":\"Client Authentication failed\"}","data":null,"autonomous":true}
+{"timestamp":"2026-01-03T15:45:41.533Z","level":"money","message":"Executing autonomous PayPal payout...","data":null,"autonomous":true}
+{"timestamp":"2026-01-03T15:45:42.461Z","level":"error","message":"Settlement failed (attempt 4/5): PayPal auth failed: {\"error\":\"invalid_client\",\"error_description\":\"Client Authentication failed\"}","data":null,"autonomous":true}
+{"timestamp":"2026-01-03T15:46:12.477Z","level":"money","message":"Executing autonomous PayPal payout...","data":null,"autonomous":true}
+{"timestamp":"2026-01-03T15:46:13.295Z","level":"error","message":"Settlement failed (attempt 5/5): PayPal auth failed: {\"error\":\"invalid_client\",\"error_description\":\"Client Authentication failed\"}","data":null,"autonomous":true}
+{"timestamp":"2026-01-03T15:46:13.297Z","level":"money","message":"\n💰 EXECUTING AUTONOMOUS SETTLEMENT","data":null,"autonomous":true}
+{"timestamp":"2026-01-03T15:46:13.299Z","level":"money","message":"   Amount: $100 USD","data":null,"autonomous":true}
+{"timestamp":"2026-01-03T15:46:13.301Z","level":"owner","message":"   Recipient: younestsouli2019@gmail.com","data":null,"autonomous":true}
+{"timestamp":"2026-01-03T15:46:13.307Z","level":"money","message":"   Amount: $100 USD","data":null,"autonomous":true}
+{"timestamp":"2026-01-03T15:46:13.308Z","level":"owner","message":"   Recipient: 007810000448500030594182 (Attijariwafa Bank)","data":null,"autonomous":true}
+{"timestamp":"2026-01-03T15:46:13.315Z","level":"money","message":"   Amount: $100 USD","data":null,"autonomous":true}
+{"timestamp":"2026-01-03T15:46:13.316Z","level":"owner","message":"   Recipient: younestsouli2019@gmail.com","data":null,"autonomous":true}
+{"timestamp":"2026-01-03T16:05:40.032Z","level":"owner","message":"\n🔒 OWNER ACCOUNTS (HARDCODED):","data":null,"autonomous":true}
+{"timestamp":"2026-01-03T16:05:40.033Z","level":"owner","message":"   PayPal: younestsouli2019@gmail.com","data":null,"autonomous":true}
+{"timestamp":"2026-01-03T16:05:40.035Z","level":"owner","message":"   Bank: 007810000448500030594182 (Attijariwafa Bank)","data":null,"autonomous":true}
+{"timestamp":"2026-01-03T16:05:40.036Z","level":"owner","message":"   Payoneer: PRINCIPAL_ACCOUNT","data":null,"autonomous":true}
+{"timestamp":"2026-01-03T16:09:57.798Z","level":"money","message":"   Amount: $500 USD","data":null,"autonomous":true}
+{"timestamp":"2026-01-03T16:09:57.799Z","level":"owner","message":"   Beneficiary: younestsouli2019@gmail.com","data":null,"autonomous":true}
+{"timestamp":"2026-01-03T16:10:40.088Z","level":"money","message":"\n💰 EXECUTING AUTONOMOUS SETTLEMENT","data":null,"autonomous":true}
+{"timestamp":"2026-01-03T16:10:40.089Z","level":"money","message":"   Amount: $500 USD","data":null,"autonomous":true}
+{"timestamp":"2026-01-03T16:10:40.090Z","level":"owner","message":"   Recipient: younestsouli2019@gmail.com","data":null,"autonomous":true}
+{"timestamp":"2026-01-03T16:10:40.094Z","level":"money","message":"   Amount: $500 USD","data":null,"autonomous":true}
+{"timestamp":"2026-01-03T16:10:40.095Z","level":"owner","message":"   Recipient: 007810000448500030594182 (Attijariwafa Bank)","data":null,"autonomous":true}
+{"timestamp":"2026-01-03T16:10:40.100Z","level":"money","message":"   Amount: $500 USD","data":null,"autonomous":true}
+{"timestamp":"2026-01-03T16:10:40.101Z","level":"owner","message":"   Recipient: younestsouli2019@gmail.com","data":null,"autonomous":true}
+{"timestamp":"2026-01-03T16:11:40.600Z","level":"owner","message":"\n🔒 OWNER ACCOUNTS (HARDCODED):","data":null,"autonomous":true}
+{"timestamp":"2026-01-03T16:11:40.602Z","level":"owner","message":"   PayPal: younestsouli2019@gmail.com","data":null,"autonomous":true}
+{"timestamp":"2026-01-03T16:11:40.603Z","level":"owner","message":"   Bank: 007810000448500030594182 (Attijariwafa Bank)","data":null,"autonomous":true}
+{"timestamp":"2026-01-03T16:11:40.606Z","level":"owner","message":"   Payoneer: PRINCIPAL_ACCOUNT","data":null,"autonomous":true}
+{"timestamp":"2026-01-03T16:12:43.379Z","level":"money","message":"   Amount: $100 USD","data":null,"autonomous":true}
+{"timestamp":"2026-01-03T16:12:43.380Z","level":"owner","message":"   Beneficiary: younestsouli2019@gmail.com","data":null,"autonomous":true}
+{"timestamp":"2026-01-03T16:13:40.629Z","level":"money","message":"\n💰 EXECUTING AUTONOMOUS SETTLEMENT","data":null,"autonomous":true}
+{"timestamp":"2026-01-03T16:13:40.630Z","level":"money","message":"   Amount: $100 USD","data":null,"autonomous":true}
+{"timestamp":"2026-01-03T16:13:40.631Z","level":"owner","message":"   Recipient: younestsouli2019@gmail.com","data":null,"autonomous":true}
+{"timestamp":"2026-01-03T16:13:40.637Z","level":"money","message":"   Amount: $100 USD","data":null,"autonomous":true}
+{"timestamp":"2026-01-03T16:13:40.641Z","level":"money","message":"   Amount: $100 USD","data":null,"autonomous":true}
+{"timestamp":"2026-01-03T16:13:40.642Z","level":"owner","message":"   Recipient: younestsouli2019@gmail.com","data":null,"autonomous":true}

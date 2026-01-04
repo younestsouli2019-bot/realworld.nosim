@@ -1,0 +1,35 @@
+paypal account still active (as it has Always been)
+younestsouli2019@gmail.com
+Account type : Business
+PayPal Merchant ID : WUZT78VS66PDQ
+API credentials
+Important: Keep your app secure! Rotate client secrets regularly, store credentials safely, and never share client IDs or secrets publicly.
+Display App Name
+learnworlds
+
+Client ID
+Ab77NaLjBXZx_NdTDuFD1QR8NhPozQPUSQsDgE4_SC9W8RLqXOoi6YvmQeeb8KrHCXA3E_3OgQInvtfk
+
+Secret key 1
+EJKdqkNU3K4JXpKo08MvgDhRF0AUkk4XMzxNlhT1gb8SgcS4bbWoxhRDFdlVKATcV86uUalkTDWsm4lm
+
+Display App Name
+PPP2
+
+Client ID
+AblIB7rHWR7h899Za9v5yYgli8Y2453ySCCMrjb76d48yOPaBToqOLuif-57O9EWHlPMfZuEKjdY0MmU
+
+Secret key 1
+••••••••••••••••
+Disabled
+
+
+Secret key 2
+EG1um0gCOJ36wGDiCQL-DkkKN2LVfe4_cGzzJbmDTFn9Uy8RnPnjyM344cbg7AU0x5JF3-7T6UmaHn4_
+
+https://ced176c4f9a969.lhr.life/paypal/webhook	3S914645GR804771W	Payment capture completed, Payment payouts-item failed, Payment payouts-item refunded, Payment payouts-item succeeded, Payment payouts-item unclaimed
+
+03/01/26, 07:18	403 ERROR	f54334af32fa9	POST /v1/payments/payouts	Authorization error occurred.
+03/01/26, 07:14	403 ERROR	70ccab5716ae2	POST /v1/payments/payouts	Authorization error occurred.
+03/01/26, 07:14	403 ERROR	cec659a212624	POST /v1/payments/payouts	Authorization error occurred.
+27/12/25, 04:44	200 OK	e86811fecdfeb	GET /v1/notifications/webhooks	

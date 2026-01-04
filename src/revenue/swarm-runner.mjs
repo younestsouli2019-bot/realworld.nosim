@@ -1,4 +1,5 @@
 import { MarketIntelligenceAgent } from './market-intelligence.mjs';
+import { AdvancedRecoveryAgent } from './advanced-recovery.mjs';
 import { ProductSelectionEngine } from './product-scoring.mjs';
 import { buildBase44Client } from '../base44-client.mjs';
 import { getRevenueConfigFromEnv, createBase44RevenueEventIdempotent } from '../base44-revenue.mjs';
@@ -25,7 +26,18 @@ async function runRevenueSwarm() {
 
     // 1. Initialize Agents
     const marketAgent = new MarketIntelligenceAgent('./config/revenue-model.json');
+    const recoveryAgent = new AdvancedRecoveryAgent();
     const scoringEngine = new ProductSelectionEngine(marketAgent.config);
+
+    // 1.5. Execute Advanced Recovery (Lost Sales / Pay Day Logic)
+    const recoveredRevenueItems = await recoveryAgent.executeRecoveryLoop();
+    
+    if (recoveredRevenueItems.length > 0) {
+        console.log(`\n💰 [SwarmRunner] Processing ${recoveredRevenueItems.length} RECOVERED revenue events...`);
+        for (const item of recoveredRevenueItems) {
+             console.log(`   + $${item.amount.toFixed(2)} from ${item.source} (${item.product})`);
+        }
+    }
 
     // 2. Execute Market Analysis
     const marketData = await marketAgent.analyzeMarket();

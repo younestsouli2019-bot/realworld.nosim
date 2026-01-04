@@ -1,0 +1,22 @@
+{
+  "id": "EARN_1767521680148",
+  "type": "earning",
+  "data": {
+    "earning_id": "EARN_1767521680148",
+    "amount": 185,
+    "currency": "USD",
+    "occurred_at": "2026-01-04T10:14:40.148Z",
+    "source": "Swarm Agent AGENT_00231 (Content Writer)",
+    "beneficiary": "younestsouli2019@gmail.com",
+    "status": "pending_payout",
+    "revenue_event_id": "PSP_1767521680129_AGENT_00231",
+    "metadata": {
+      "recipient_type": "owner",
+      "autonomous": true,
+      "ingested_at": "2026-01-04T10:14:40.148Z"
+    },
+    "created_at": "2026-01-04T10:14:40.148Z"
+  },
+  "saved_at": "2026-01-04T10:14:40.148Z",
+  "autonomous": true
+}

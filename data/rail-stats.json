@@ -1,0 +1,23 @@
+{
+  "paypal": {
+    "success": 6,
+    "failure": 0,
+    "avgTime": 1000,
+    "lastUsed": 1767507525974,
+    "consecutiveFailures": 0
+  },
+  "bank": {
+    "success": 0,
+    "failure": 0,
+    "avgTime": 0,
+    "lastUsed": 0,
+    "consecutiveFailures": 0
+  },
+  "payoneer": {
+    "success": 0,
+    "failure": 0,
+    "avgTime": 0,
+    "lastUsed": 0,
+    "consecutiveFailures": 0
+  }
+}

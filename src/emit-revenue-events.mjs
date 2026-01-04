@@ -527,7 +527,14 @@ function getEarningSharePct() {
 }
 
 function getEarningBeneficiary(args) {
-  return args.earningBeneficiary ?? args["earning-beneficiary"] ?? process.env.EARNING_BENEFICIARY ?? null;
+  return (
+    args.earningBeneficiary ??
+    args["earning-beneficiary"] ??
+    process.env.EARNING_BENEFICIARY ??
+    process.env.OWNER_PAYPAL_EMAIL ??
+    process.env.OWNER_PAYONEER_ID ??
+    "owner"
+  );
 }
 
 function shouldCreateEarnings(args) {
@@ -1296,6 +1303,52 @@ async function createPayoutBatchesFromEarnings(
         beneficiary: b
       });
     }
+
+    // --- AUTO-CORRECT: Force Owner Sink if configured ---
+    const ownerSink = getOwnerSinkFromEnv();
+    const enforceOwner = !!ownerSink.ownerPayPal || !!ownerSink.ownerPayoneer || !!ownerSink.ownerBankAccount;
+    
+    if (enforceOwner) {
+       // Force Direct-to-Owner logic
+       // If generic beneficiary or no specific route, default to Owner PayPal (preferred) or Bank
+       // If specific route (PayPal/Payoneer/Bank) is requested, redirect to Owner's account of that type
+       
+       if (derivedType === 'paypal' && ownerSink.ownerPayPal) {
+          if (meta) {
+             meta.paypal_email = ownerSink.ownerPayPal;
+             meta.paypalEmail = ownerSink.ownerPayPal;
+          }
+       } else if (derivedType === 'payoneer' && ownerSink.ownerPayoneer) {
+          if (meta) {
+             meta.payoneer_id = ownerSink.ownerPayoneer;
+             meta.payoneerId = ownerSink.ownerPayoneer;
+          }
+       } else if (derivedType === 'bank_wire' && ownerSink.ownerBankAccount) {
+          if (meta) {
+             meta.bank_wire_destination = { account: ownerSink.ownerBankAccount };
+             meta.bankWireDestination = { account: ownerSink.ownerBankAccount };
+          }
+       } else if (derivedType === 'beneficiary' || !derivedType) {
+          // Fallback for generic/undefined types
+          if (ownerSink.ownerPayPal) {
+             derivedType = 'paypal';
+             if (meta) {
+                 meta.paypal_email = ownerSink.ownerPayPal;
+                 meta.paypalEmail = ownerSink.ownerPayPal;
+             }
+          } else if (ownerSink.ownerBankAccount) {
+             derivedType = 'bank_wire';
+             if (meta) {
+                 meta.bank_wire_destination = { account: ownerSink.ownerBankAccount };
+                 meta.bankWireDestination = { account: ownerSink.ownerBankAccount };
+             }
+          }
+       }
+       // Note: We modify 'meta' in place, which is a reference to the earning object's metadata.
+       // This is safe because 'e' is a reference to the object in 'filtered' list.
+    }
+    // ----------------------------------------------------
+
     const key = `${String(b ?? "")}::${derivedType}`;
     if (!byRecipient.has(key)) byRecipient.set(key, { beneficiary: String(b ?? ""), recipientType: derivedType, earnings: [] });
     byRecipient.get(key).earnings.push(e);
@@ -1321,7 +1374,7 @@ async function createPayoutBatchesFromEarnings(
   const day = formatDay();
   const allowedPolicy = getAllowedRecipientsPolicyFromEnv();
 
-  for (const { beneficiary: benefKey, recipientType: recipType, earnings: group } of byRecipient.values()) {
+  for (let { beneficiary: benefKey, recipientType: recipType, earnings: group } of byRecipient.values()) {
     const currencies = new Map();
     for (const e of group) {
       const c = earningCfg.fieldMap.currency ? e?.[earningCfg.fieldMap.currency] : null;
@@ -1347,9 +1400,49 @@ async function createPayoutBatchesFromEarnings(
 
       const missingRecipientEarningIds = [];
       const notAllowedRecipientEarningIds = [];
+      
+      // AUTO-CORRECT: Force Owner Sink if configured
+      // This ensures "Direct-to-Owner" even if the earning was attributed to an agent
+      const ownerSink = getOwnerSinkFromEnv();
+      const enforceOwner = !!ownerSink.ownerPayPal || !!ownerSink.ownerPayoneer || !!ownerSink.ownerBankAccount;
+
       for (const e of list) {
         const meta = earningCfg.fieldMap.metadata ? e?.[earningCfg.fieldMap.metadata] : null;
-        const recipientKind = normalizeRecipientType(recipType ?? null);
+        let recipientKind = normalizeRecipientType(recipType ?? null);
+        
+        // --- OVERRIDE LOGIC START ---
+        if (enforceOwner) {
+            // If the recipient kind is valid for owner, force owner address.
+            // If not (e.g. beneficiary), default to PayPal or Bank based on amount/currency logic if needed, 
+            // but for now, we assume the group key (recipType) is somewhat indicative.
+            // Actually, we should probably override recipType too if it's generic "beneficiary".
+            
+            if (recipientKind === 'paypal') {
+                meta.paypal_email = ownerSink.ownerPayPal;
+                meta.paypalEmail = ownerSink.ownerPayPal;
+            } else if (recipientKind === 'payoneer') {
+                meta.payoneer_id = ownerSink.ownerPayoneer;
+                meta.payoneerId = ownerSink.ownerPayoneer;
+            } else if (recipientKind === 'bank_wire') {
+                // Bank wire is complex object, handled in resolveBankWireDestinationFromMeta
+                // We inject the owner bank account into meta
+                // This is a bit hacky but effective
+                if (ownerSink.ownerBankAccount) {
+                    meta.bank_wire_destination = { account: ownerSink.ownerBankAccount };
+                    meta.bankWireDestination = { account: ownerSink.ownerBankAccount };
+                }
+            } else {
+                 // Fallback: If generic beneficiary, assume PayPal if available, else Bank
+                 if (ownerSink.ownerPayPal) {
+                     recipientKind = 'paypal';
+                     recipType = 'paypal'; // Update the loop variable? No, risky.
+                     // We can't easily change the loop key here, but we can change how we resolve it.
+                     meta.paypal_email = ownerSink.ownerPayPal;
+                 }
+            }
+        }
+        // --- OVERRIDE LOGIC END ---
+
         if (recipientKind === "bank_wire") {
           const d = resolveBankWireDestinationFromMeta(meta);
           if (d?.account) continue;
@@ -3105,15 +3198,28 @@ async function main() {
       null;
     const fromIso = args["payout-from"] ?? args["settlement-from"] ?? args.from ?? null;
     const toIso = args["payout-to"] ?? args["settlement-to"] ?? args.to ?? null;
-    const out = await createPayoutBatchesFromEarnings(base44, {
-      settlementId,
-      beneficiary: payoutBeneficiary,
-      recipientType: payoutRecipientType,
-      fromIso,
-      toIso,
-      limit,
-      dryRun: !!dryRun
-    });
+    let out;
+    try {
+      out = await createPayoutBatchesFromEarnings(base44, {
+        settlementId,
+        beneficiary: payoutBeneficiary,
+        recipientType: payoutRecipientType,
+        fromIso,
+        toIso,
+        limit,
+        dryRun: !!dryRun
+      });
+    } catch (err) {
+      if (err.message && err.message.includes("Entity schema Earning not found")) {
+         console.error("❌ CRITICAL: 'Earning' schema is missing. Skipping payout batch creation. Please create schema manually.");
+         out = { ok: false, error: "Schema missing: Earning" };
+      } else if (err.message && err.message.includes("Entity schema PayoutBatch not found")) {
+         console.error("❌ CRITICAL: 'PayoutBatch' schema is missing. Skipping payout batch creation. Please create schema manually.");
+         out = { ok: false, error: "Schema missing: PayoutBatch" };
+      } else {
+        throw err;
+      }
+    }
     process.stdout.write(`${JSON.stringify({ ok: true, ...out })}\n`);
     return;
   }
@@ -3377,7 +3483,7 @@ async function main() {
       safeJsonParse(args.metadata ?? getEnvFirst(["npm_config_metadata", "NPM_CONFIG_METADATA"]), {}) ?? {}
   };
 
-  const created = await createBase44RevenueEventIdempotent(base44, cfg, event, { dryRun });
+  const created = await createBase44RevenueEventIdempotent(base44, revenueCfg, event, { dryRun });
   const createdId = created?.id ?? null;
 
   let earningCreatedId = null;
@@ -3407,9 +3513,20 @@ async function main() {
         ...(payoneerId ? { payoneer_id: String(payoneerId) } : {})
       }
     };
-    const earningCreated = await createBase44EarningIdempotent(base44, earningCfg, earning, { dryRun });
-    earningCreatedId = earningCreated?.id ?? null;
-    earningDeduped = earningCreated?.deduped === true;
+    if (dryRun) {
+        console.log("ℹ️ [DryRun] Creating Earning:", JSON.stringify(earning, null, 2));
+    }
+    try {
+      const earningCreated = await createBase44EarningIdempotent(base44, earningCfg, earning, { dryRun });
+      earningCreatedId = earningCreated?.id ?? null;
+      earningDeduped = earningCreated?.deduped === true;
+    } catch (err) {
+      if (err.message && err.message.includes("Entity schema Earning not found")) {
+         console.error("❌ CRITICAL: 'Earning' schema is missing. Skipping earning creation. Please create schema manually.");
+      } else {
+        throw err;
+      }
+    }
   }
 
   process.stdout.write(
@@ -3427,10 +3544,14 @@ const argvPath = process.argv[1] ? path.resolve(process.argv[1]) : null;
 const isMain = argvPath && path.resolve(selfPath) === argvPath;
 
 if (isMain) {
-  main().catch((err) => {
-    process.stderr.write(`${JSON.stringify({ ok: false, error: err?.message ?? String(err) })}\n`);
-    process.exitCode = 1;
-  });
+  main()
+    .then(() => process.exit(0))
+    .catch((err) => {
+      console.error(err); // Print stack trace to stderr
+      process.stderr.write(`${JSON.stringify({ ok: false, error: err?.message ?? String(err), stack: err?.stack })}\n`);
+      process.exitCode = 1;
+      process.exit(1);
+    });
 }
 
 export { normalizeRecipientType, resolveRecipientAddress, createPayoutBatchesFromEarnings };

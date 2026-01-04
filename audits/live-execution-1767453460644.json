@@ -1,0 +1,498 @@
+{
+  "execution_id": "6dfe9018e8953964",
+  "started_at": "2026-01-03T15:17:39.467Z",
+  "completed_at": "2026-01-03T15:17:40.644Z",
+  "duration_ms": 1177,
+  "logs": [
+    {
+      "timestamp": "2026-01-03T15:17:39.467Z",
+      "elapsed": 0,
+      "level": "info",
+      "message": "╔════════════════════════════════════════════════════════════╗",
+      "data": null
+    },
+    {
+      "timestamp": "2026-01-03T15:17:39.469Z",
+      "elapsed": 2,
+      "level": "info",
+      "message": "║  LIVE EXECUTION - OWNER REVENUE SYSTEM                     ║",
+      "data": null
+    },
+    {
+      "timestamp": "2026-01-03T15:17:39.469Z",
+      "elapsed": 2,
+      "level": "info",
+      "message": "╚════════════════════════════════════════════════════════════╝",
+      "data": null
+    },
+    {
+      "timestamp": "2026-01-03T15:17:39.469Z",
+      "elapsed": 3,
+      "level": "info",
+      "message": "\n📋 Configuration:",
+      "data": null
+    },
+    {
+      "timestamp": "2026-01-03T15:17:39.470Z",
+      "elapsed": 3,
+      "level": "info",
+      "message": "   Mode: LIVE EXECUTION",
+      "data": null
+    },
+    {
+      "timestamp": "2026-01-03T15:17:39.470Z",
+      "elapsed": 3,
+      "level": "info",
+      "message": "   Base44 App: 6888ac155ebf84dd9855ea98",
+      "data": null
+    },
+    {
+      "timestamp": "2026-01-03T15:17:39.470Z",
+      "elapsed": 3,
+      "level": "info",
+      "message": "   PayPal Mode: live",
+      "data": null
+    },
+    {
+      "timestamp": "2026-01-03T15:17:39.471Z",
+      "elapsed": 4,
+      "level": "info",
+      "message": "   Write Enabled: true",
+      "data": null
+    },
+    {
+      "timestamp": "2026-01-03T15:17:39.471Z",
+      "elapsed": 4,
+      "level": "owner",
+      "message": "\n🔒 Owner Accounts:",
+      "data": null
+    },
+    {
+      "timestamp": "2026-01-03T15:17:39.472Z",
+      "elapsed": 5,
+      "level": "owner",
+      "message": "   PayPal: younestsouli2019@gmail.com",
+      "data": null
+    },
+    {
+      "timestamp": "2026-01-03T15:17:39.472Z",
+      "elapsed": 5,
+      "level": "owner",
+      "message": "   Bank: 007810000448500030594182",
+      "data": null
+    },
+    {
+      "timestamp": "2026-01-03T15:17:39.472Z",
+      "elapsed": 5,
+      "level": "owner",
+      "message": "   Payoneer: PRINCIPAL_ACCOUNT",
+      "data": null
+    },
+    {
+      "timestamp": "2026-01-03T15:17:39.473Z",
+      "elapsed": 6,
+      "level": "warning",
+      "message": "Schema check skipped (--skip-schema-check)",
+      "data": null
+    },
+    {
+      "timestamp": "2026-01-03T15:17:39.473Z",
+      "elapsed": 6,
+      "level": "warning",
+      "message": "Fallback storage ENABLED - data will be saved locally",
+      "data": null
+    },
+    {
+      "timestamp": "2026-01-03T15:17:39.474Z",
+      "elapsed": 7,
+      "level": "info",
+      "message": "\n============================================================",
+      "data": null
+    },
+    {
+      "timestamp": "2026-01-03T15:17:39.474Z",
+      "elapsed": 7,
+      "level": "info",
+      "message": "STEP 1: Create Revenue Event",
+      "data": null
+    },
+    {
+      "timestamp": "2026-01-03T15:17:39.474Z",
+      "elapsed": 7,
+      "level": "info",
+      "message": "============================================================",
+      "data": null
+    },
+    {
+      "timestamp": "2026-01-03T15:17:39.475Z",
+      "elapsed": 8,
+      "level": "info",
+      "message": "Creating revenue event: LIVE_1767453459467",
+      "data": null
+    },
+    {
+      "timestamp": "2026-01-03T15:17:39.475Z",
+      "elapsed": 8,
+      "level": "money",
+      "message": "  → Amount: 5 USD",
+      "data": null
+    },
+    {
+      "timestamp": "2026-01-03T15:17:39.475Z",
+      "elapsed": 8,
+      "level": "info",
+      "message": "  → Source: live_wet_run",
+      "data": null
+    },
+    {
+      "timestamp": "2026-01-03T15:17:39.478Z",
+      "elapsed": 11,
+      "level": "success",
+      "message": "Revenue saved to fallback: revenue_LIVE_1767453459467.json",
+      "data": null
+    },
+    {
+      "timestamp": "2026-01-03T15:17:39.478Z",
+      "elapsed": 11,
+      "level": "info",
+      "message": "\n============================================================",
+      "data": null
+    },
+    {
+      "timestamp": "2026-01-03T15:17:39.478Z",
+      "elapsed": 11,
+      "level": "info",
+      "message": "STEP 2: Create Owner Earning",
+      "data": null
+    },
+    {
+      "timestamp": "2026-01-03T15:17:39.479Z",
+      "elapsed": 12,
+      "level": "info",
+      "message": "============================================================",
+      "data": null
+    },
+    {
+      "timestamp": "2026-01-03T15:17:39.479Z",
+      "elapsed": 12,
+      "level": "info",
+      "message": "Creating earning: EARN_1767453459479",
+      "data": null
+    },
+    {
+      "timestamp": "2026-01-03T15:17:39.479Z",
+      "elapsed": 12,
+      "level": "owner",
+      "message": "  → Beneficiary: younestsouli2019@gmail.com (OWNER)",
+      "data": null
+    },
+    {
+      "timestamp": "2026-01-03T15:17:39.479Z",
+      "elapsed": 12,
+      "level": "money",
+      "message": "  → Amount: 5 USD",
+      "data": null
+    },
+    {
+      "timestamp": "2026-01-03T15:17:39.563Z",
+      "elapsed": 96,
+      "level": "success",
+      "message": "Earning saved to fallback: earning_EARN_1767453459479.json",
+      "data": null
+    },
+    {
+      "timestamp": "2026-01-03T15:17:39.564Z",
+      "elapsed": 97,
+      "level": "owner",
+      "message": "  → Beneficiary: younestsouli2019@gmail.com (OWNER)",
+      "data": null
+    },
+    {
+      "timestamp": "2026-01-03T15:17:39.564Z",
+      "elapsed": 97,
+      "level": "info",
+      "message": "\n============================================================",
+      "data": null
+    },
+    {
+      "timestamp": "2026-01-03T15:17:39.564Z",
+      "elapsed": 97,
+      "level": "info",
+      "message": "STEP 3: Create Payout Batch",
+      "data": null
+    },
+    {
+      "timestamp": "2026-01-03T15:17:39.564Z",
+      "elapsed": 97,
+      "level": "info",
+      "message": "============================================================",
+      "data": null
+    },
+    {
+      "timestamp": "2026-01-03T15:17:39.565Z",
+      "elapsed": 98,
+      "level": "info",
+      "message": "Creating payout batch: BATCH_1767453459565",
+      "data": null
+    },
+    {
+      "timestamp": "2026-01-03T15:17:39.565Z",
+      "elapsed": 98,
+      "level": "money",
+      "message": "  → Total Amount: 5 USD",
+      "data": null
+    },
+    {
+      "timestamp": "2026-01-03T15:17:39.565Z",
+      "elapsed": 98,
+      "level": "owner",
+      "message": "  → Recipient: younestsouli2019@gmail.com (OWNER)",
+      "data": null
+    },
+    {
+      "timestamp": "2026-01-03T15:17:39.565Z",
+      "elapsed": 98,
+      "level": "info",
+      "message": "  → Items: 1",
+      "data": null
+    },
+    {
+      "timestamp": "2026-01-03T15:17:39.567Z",
+      "elapsed": 100,
+      "level": "success",
+      "message": "Payout saved to fallback: payout_BATCH_1767453459565.json",
+      "data": null
+    },
+    {
+      "timestamp": "2026-01-03T15:17:39.567Z",
+      "elapsed": 100,
+      "level": "owner",
+      "message": "  → Recipient: younestsouli2019@gmail.com (OWNER)",
+      "data": null
+    },
+    {
+      "timestamp": "2026-01-03T15:17:39.567Z",
+      "elapsed": 100,
+      "level": "info",
+      "message": "\n============================================================",
+      "data": null
+    },
+    {
+      "timestamp": "2026-01-03T15:17:39.567Z",
+      "elapsed": 100,
+      "level": "info",
+      "message": "STEP 4: Execute PayPal Payout",
+      "data": null
+    },
+    {
+      "timestamp": "2026-01-03T15:17:39.567Z",
+      "elapsed": 100,
+      "level": "info",
+      "message": "============================================================",
+      "data": null
+    },
+    {
+      "timestamp": "2026-01-03T15:17:39.568Z",
+      "elapsed": 101,
+      "level": "money",
+      "message": "Executing PayPal payout...",
+      "data": null
+    },
+    {
+      "timestamp": "2026-01-03T15:17:39.568Z",
+      "elapsed": 101,
+      "level": "info",
+      "message": "Obtaining PayPal access token...",
+      "data": null
+    },
+    {
+      "timestamp": "2026-01-03T15:17:40.177Z",
+      "elapsed": 710,
+      "level": "success",
+      "message": "PayPal access token obtained",
+      "data": null
+    },
+    {
+      "timestamp": "2026-01-03T15:17:40.178Z",
+      "elapsed": 711,
+      "level": "info",
+      "message": "PayPal payout payload:",
+      "data": {
+        "sender_batch_header": {
+          "sender_batch_id": "BATCH_1767453459565",
+          "email_subject": "Revenue Settlement - Owner Payment",
+          "email_message": "Your revenue settlement payment"
+        },
+        "items": [
+          {
+            "recipient_type": "EMAIL",
+            "amount": {
+              "value": "5.00",
+              "currency": "USD"
+            },
+            "receiver": "younestsouli2019@gmail.com",
+            "note": "Revenue settlement: LIVE_1767453459467",
+            "sender_item_id": "ITEM_1767453459565_6ww0it0sg"
+          }
+        ]
+      }
+    },
+    {
+      "timestamp": "2026-01-03T15:17:40.638Z",
+      "elapsed": 1171,
+      "level": "error",
+      "message": "PayPal execution failed: PayPal payout failed: {\"name\":\"AUTHORIZATION_ERROR\",\"message\":\"Authorization error occurred.\",\"debug_id\":\"70ccab5716ae2\",\"information_link\":\"https://developer.paypal.com/docs/api/payments.payouts-batch/#errors\",\"links\":[]}",
+      "data": null
+    },
+    {
+      "timestamp": "2026-01-03T15:17:40.638Z",
+      "elapsed": 1172,
+      "level": "warning",
+      "message": "⚠️ Switching to BANK WIRE / MANUAL SETTLEMENT fallback",
+      "data": null
+    },
+    {
+      "timestamp": "2026-01-03T15:17:40.640Z",
+      "elapsed": 1173,
+      "level": "success",
+      "message": "✅ Bank Wire Instruction generated: WIRE_INSTRUCTION_BATCH_1767453459565.json",
+      "data": null
+    },
+    {
+      "timestamp": "2026-01-03T15:17:40.640Z",
+      "elapsed": 1173,
+      "level": "money",
+      "message": "   → Please manually wire 5 USD to 007810000448500030594182",
+      "data": null
+    },
+    {
+      "timestamp": "2026-01-03T15:17:40.641Z",
+      "elapsed": 1174,
+      "level": "info",
+      "message": "\n============================================================",
+      "data": null
+    },
+    {
+      "timestamp": "2026-01-03T15:17:40.641Z",
+      "elapsed": 1174,
+      "level": "info",
+      "message": "📊 EXECUTION SUMMARY",
+      "data": null
+    },
+    {
+      "timestamp": "2026-01-03T15:17:40.641Z",
+      "elapsed": 1174,
+      "level": "info",
+      "message": "============================================================",
+      "data": null
+    },
+    {
+      "timestamp": "2026-01-03T15:17:40.641Z",
+      "elapsed": 1174,
+      "level": "success",
+      "message": "\n✅ Revenue Events: 1",
+      "data": null
+    },
+    {
+      "timestamp": "2026-01-03T15:17:40.642Z",
+      "elapsed": 1175,
+      "level": "info",
+      "message": "   - LIVE_1767453459467: 5 USD",
+      "data": null
+    },
+    {
+      "timestamp": "2026-01-03T15:17:40.642Z",
+      "elapsed": 1175,
+      "level": "success",
+      "message": "\n✅ Earnings (OWNER): 1",
+      "data": null
+    },
+    {
+      "timestamp": "2026-01-03T15:17:40.642Z",
+      "elapsed": 1175,
+      "level": "info",
+      "message": "   - EARN_1767453459479: 5 USD",
+      "data": null
+    },
+    {
+      "timestamp": "2026-01-03T15:17:40.642Z",
+      "elapsed": 1175,
+      "level": "owner",
+      "message": "     → Beneficiary: younestsouli2019@gmail.com",
+      "data": null
+    },
+    {
+      "timestamp": "2026-01-03T15:17:40.642Z",
+      "elapsed": 1175,
+      "level": "info",
+      "message": "     → Storage: fallback",
+      "data": null
+    },
+    {
+      "timestamp": "2026-01-03T15:17:40.643Z",
+      "elapsed": 1176,
+      "level": "success",
+      "message": "\n✅ Payout Batches: 1",
+      "data": null
+    },
+    {
+      "timestamp": "2026-01-03T15:17:40.643Z",
+      "elapsed": 1176,
+      "level": "money",
+      "message": "   - BATCH_1767453459565: 5 USD",
+      "data": null
+    },
+    {
+      "timestamp": "2026-01-03T15:17:40.643Z",
+      "elapsed": 1176,
+      "level": "owner",
+      "message": "     → Recipient: younestsouli2019@gmail.com (OWNER)",
+      "data": null
+    },
+    {
+      "timestamp": "2026-01-03T15:17:40.643Z",
+      "elapsed": 1176,
+      "level": "info",
+      "message": "     → Storage: fallback",
+      "data": null
+    },
+    {
+      "timestamp": "2026-01-03T15:17:40.643Z",
+      "elapsed": 1177,
+      "level": "info",
+      "message": "\n============================================================",
+      "data": null
+    },
+    {
+      "timestamp": "2026-01-03T15:17:40.644Z",
+      "elapsed": 1177,
+      "level": "success",
+      "message": "✅ EXECUTION COMPLETED",
+      "data": null
+    },
+    {
+      "timestamp": "2026-01-03T15:17:40.644Z",
+      "elapsed": 1177,
+      "level": "info",
+      "message": "============================================================\n",
+      "data": null
+    }
+  ],
+  "config": {
+    "base44": {
+      "appId": "6888ac155ebf84dd9855ea98",
+      "serviceToken": "2f3df25fb1734602ac59d0a36ba30da3",
+      "enableWrite": true
+    },
+    "paypal": {
+      "clientId": "AblIB7rHWR7h899Za9v5yYgli8Y2453ySCCMrjb76d48yOPaBToqOLuif-57O9EWHlPMfZuEKjdY0MmU",
+      "clientSecret": "EG1um0gCOJ36wGDiCQL-DkkKN2LVfe4_cGzzJbmDTFn9Uy8RnPnjyM344cbg7AU0x5JF3-7T6UmaHn4_",
+      "mode": "live"
+    },
+    "execution": {
+      "dryRun": false,
+      "forceExecution": false,
+      "skipSchemaCheck": true
+    }
+  }
+}

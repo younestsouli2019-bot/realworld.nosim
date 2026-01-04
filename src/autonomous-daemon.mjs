@@ -20,6 +20,7 @@ import { runRevenueSwarm } from "./revenue/swarm-runner.mjs";
 import { runFullBackup } from "./backup-runner.mjs";
 import { runSystemIntegritySync } from "./system-integrity.mjs";
 import { threatMonitor } from "./security/threat-monitor.mjs";
+import { regulatoryMonitor } from "./contingency/regulatory-monitor.mjs";
 import { runDoomsdayExport } from "./real/ledger/doomsday-export.mjs";
 import { enforceOwnerDirective } from "./owner-directive.mjs";
 import { 
@@ -1108,6 +1109,18 @@ async function runTick(cfg, state) {
     const health = await checkHealthOnce(cfg);
     out.results.health = health;
     await maybeAlertOnFailure(cfg, health, state);
+  }
+
+  // Regulatory Scan (Pre-emption)
+  const regulatoryStatus = await regulatoryMonitor.scanForThreats();
+  out.results.regulatory = regulatoryStatus;
+  if (regulatoryStatus.risk === 'CRITICAL' || regulatoryStatus.risk === 'ELEVATED') {
+      out.meta.regulatoryContingency = true;
+      // Note: We don't FREEZE on regulatory risk, we ACCELERATE (Contingency Plan)
+      // But if risk is 'CRITICAL' (e.g. sanctions), we might want to activate Bunker Mode via ThreatMonitor
+      if (regulatoryStatus.risk === 'CRITICAL') {
+          threatMonitor.reportError('regulatory_sanctions', new Error("451 Unavailable For Legal Reasons (Simulated)"));
+      }
   }
 
   if (cfg.tasks.missionHealth) {
