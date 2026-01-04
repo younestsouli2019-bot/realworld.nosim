@@ -17,7 +17,7 @@ All notable changes to this project will be documented in this file.
 - **LazyArk Fusion Protocol**: Implemented `runLazyArkFusion` in `AutonomousAgentUpgrader` to cluster overlapping agents into compliant, high-automation super-agents.
 - **Charity Conversion Fallback**: Added fallback mechanism to convert failed harvest agents into "Charity Outreach Bots" for non-profit missions.
 - **Critical Resource Alerting**: Integrated automated file-based alerting for fused agents entering maintenance mode due to missing credentials.
-- **Owner Identity Verification**: Hard-coded Owner Identity (Younes Tsouli, CIN: A337773) and strict verification sources (Biometrics, Gov ID) into `OwnerSettlementEnforcer`.
+- **Owner Identity Verification**: Hard-coded Owner Identity (Younes Tsouli, CIN: A337773) and strict verification sources (Biometrics, Gov ID) into `OwnerSettlementEnforcer`. **NOTE**: ENV overrides for identity have been explicitly REMOVED to enforce immutability.
 - **Crypto Settlement Optimization**: Enforced immediate "discreet" routing for crypto settlements to Trust Wallet/Bybit.
 - **Proof-of-Settlement Protocol**: Replaced private key requirement with "Proof-of-Settlement" verification. The system now autonomously monitors the blockchain to verify real transactions instead of attempting to sign them locally (Security First).
 - **Strict Verification Policy**: Enforced "PROOF IT ALL" swarm-wide. Status updates to `COMPLETED` or `PAID` now require external cryptographic or API proof.
