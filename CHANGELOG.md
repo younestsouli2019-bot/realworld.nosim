@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased] - 2026-01-04
+### Documentation & Operations
+- **Comprehensive Documentation Suite**: Created `docs/` directory covering:
+  - **Testing**: `TESTING_STRATEGY.md` with new consolidated runner `scripts/run-full-suite.mjs`.
+  - **Security**: `SECURITY_POLICY.md` detailing "No Private Key" and "Owner Only" rules.
+  - **Disaster Recovery**: `DISASTER_RECOVERY.md` with new automated backup script `scripts/system-backup.mjs`.
+  - **Operations**: `OPERATIONAL_MANUAL.md` for monitoring and deployment.
+  - **Compliance**: `COMPLIANCE_FRAMEWORK.md` for GDPR/KYC/AML adherence.
+- **Unified Test Runner**: Added `npm test` command to execute critical system tests in one pass.
+- **Backup Utility**: Added `npm run backup` for one-click system snapshots.
+- **README**: Created root `README.md` as the central entry point.
+
 ### Added
 - **Distributed Consistency**: Implemented `MutexLock` for atomic file-based ledger updates, preventing race conditions in parallel agent execution.
 - **Strict No-Simulation Policy**: Enforced "NO SIMULATION" rule across all revenue agents (`MarketIntelligence`, `AdvancedRecovery`, `ProductSelection`). Removed `Math.random()` heuristics in favor of "Real Data or Empty" logic.

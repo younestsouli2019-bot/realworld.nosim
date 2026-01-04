@@ -5,9 +5,11 @@
   "type": "module",
   "main": "scripts/autonomous-revenue-generator.mjs",
   "scripts": {
-    "start": "node scripts/autonomous-revenue-generator.mjs",
-    "test": "node scripts/test-real-revenue.mjs",
-    "test:blog": "node scripts/test-blog-writer.mjs",
+    "start": "node scripts/run-swarm-orchestrated.mjs",
+    "start:legacy": "node scripts/autonomous-revenue-generator.mjs",
+    "test": "node scripts/run-full-suite.mjs",
+    "test:unit": "node scripts/test-swarm-orchestrator.mjs",
+    "backup": "node scripts/system-backup.mjs",
     "verify-env": "node scripts/verify-env.mjs",
     "monitor": "node scripts/monitor-revenue-health.mjs"
   },
