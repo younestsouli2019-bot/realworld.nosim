@@ -1,0 +1,12 @@
+{
+  "id": "RCP_8f5a8c08-4d75-41c9-b23d-42b7a1dbd27b",
+  "name": "Test Update",
+  "email": "younestsouli2019@gmail.com",
+  "type": "individual",
+  "jurisdiction": "US",
+  "tax_form_status": "pending",
+  "payment_methods": [],
+  "created_at": "2026-01-04T16:35:39.975Z",
+  "status": "active",
+  "updated_at": "2026-01-04T16:35:39.975Z"
+}

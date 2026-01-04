@@ -1,0 +1,12 @@
+{
+  "id": "RCP_d53580d5-7351-4eac-b67d-bc5058bf593c",
+  "name": "Cache Test",
+  "email": "cache@test.com",
+  "type": "business",
+  "jurisdiction": "US",
+  "tax_form_status": "pending",
+  "payment_methods": [],
+  "created_at": "2026-01-04T16:24:52.547Z",
+  "status": "active",
+  "updated_at": "2026-01-04T16:24:52.547Z"
+}

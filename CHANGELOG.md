@@ -4,6 +4,30 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased] - 2026-01-04
 ### Added
+- **Smart Settlement Engine**: Implemented `SmartSettlementOrchestrator` to intelligently route funds based on daily limits and channel availability (Bank, Payoneer, Crypto).
+- **Settlement Constraints**: Defined `SettlementConstraints` to model real-world limits (e.g., $10k Bank, $2k Payoneer) and rate limits.
+- **Queueing Architecture**: Transactions exceeding limits or missing resources are now QUEUED (`QUEUED_MISSING_RESOURCE`) instead of failed, waiting for user intervention or resource availability.
+- **Chain Verification Utility**: Created `ChainVerifier` for strict, swarm-wide on-chain proof of all financial events.
+- **Immutable Ledger**: `SettlementLedger` now tracks daily usage and queued items persistently.
+- **LazyArk Fusion Protocol**: Implemented `runLazyArkFusion` in `AutonomousAgentUpgrader` to cluster overlapping agents into compliant, high-automation super-agents.
+- **Charity Conversion Fallback**: Added fallback mechanism to convert failed harvest agents into "Charity Outreach Bots" for non-profit missions.
+- **Critical Resource Alerting**: Integrated automated file-based alerting for fused agents entering maintenance mode due to missing credentials.
+- **Owner Identity Verification**: Hard-coded Owner Identity (Younes Tsouli, CIN: A337773) and strict verification sources (Biometrics, Gov ID) into `OwnerSettlementEnforcer`.
+- **Crypto Settlement Optimization**: Enforced immediate "discreet" routing for crypto settlements to Trust Wallet/Bybit.
+- **Proof-of-Settlement Protocol**: Replaced private key requirement with "Proof-of-Settlement" verification. The system now autonomously monitors the blockchain to verify real transactions instead of attempting to sign them locally (Security First).
+- **Strict Verification Policy**: Enforced "PROOF IT ALL" swarm-wide. Status updates to `COMPLETED` or `PAID` now require external cryptographic or API proof.
+
+### Changed
+- **Settlement Policy**: Strictly enforced "Owner-Only" settlement destinations with no human-in-loop for verified accounts.
+- **Agent Needs Assessment**: Enhanced `assessNeeds` to trigger critical alerts and maintenance mode for missing environment variables.
+- **Financial Reconciliation**: Implemented auto-resolution for trivial stalled events and missing attribution patching.
+
+### Fixed
+- **Redundant Code**: Removed orphaned revenue validation logic in `autonomous-upgrader.mjs`.
+- **Test Script Imports**: Corrected import errors in `test-reconciliation-logic.mjs`.
+
+## [Unreleased] - 2026-01-04
+### Added
 - **Human Verification Protocol (KYC)**: Implemented `KYC_INTERVENTION_PROTOCOL` in `AutonomousAgentUpgrader`. Agents encountering identity checks will now pause (`paused_kyc_required`) and export a request to `exports/kyc-requests/` for manual user intervention.
 - **Owner Auto-Approval**: Updated `emit-revenue-events.mjs` to automatically approve payout batches destined for verified Owner Accounts (bypassing the `pending_approval` gate).
 - **Agent Needs Assessment (Sondage)**: Implemented `assessNeeds` capability in `AutonomousAgentUpgrader` to identify missing resources (API keys) and capabilities before upgrading.

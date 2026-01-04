@@ -1,0 +1,28 @@
+{
+  "id": "REV_09fd2a3f-1ef4-449a-9179-3941bf543c17",
+  "source_system": "Baseline",
+  "original_data": {
+    "amount": 100,
+    "timestamp": "2025-12-20T16:24:08.170Z"
+  },
+  "amount": 100,
+  "currency": "USD",
+  "status": "settled",
+  "timestamp": "2025-12-20T16:24:08.170Z",
+  "metadata": {
+    "proof_verified": true,
+    "proof_source": "paypal",
+    "proof_id": "PAYPAL_1767547142928_t3om5ijm7",
+    "recovered_at": "2026-01-04T17:19:02.928Z"
+  },
+  "attribution": {
+    "agent_id": "unknown",
+    "campaign_id": null,
+    "source_url": null
+  },
+  "updated_at": "2026-01-04T17:19:02.929Z",
+  "settlement_info": {
+    "destination": "OWNER_ACCOUNTS",
+    "timestamp": "2026-01-04T17:19:02.929Z"
+  }
+}

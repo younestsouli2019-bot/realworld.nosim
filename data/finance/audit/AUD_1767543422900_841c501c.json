@@ -1,0 +1,17 @@
+{
+  "id": "AUD_1767543422900_841c501c",
+  "timestamp": "2026-01-04T16:17:02.900Z",
+  "action": "TEST_RETRY",
+  "entity_id": "TEST_RETRY_1767543416881",
+  "actor": "TestRunner",
+  "changes": {
+    "before": null,
+    "after": "RECOVERED_SUCCESS"
+  },
+  "context": {
+    "action": "TEST_RETRY",
+    "actor": "TestRunner",
+    "status": "success"
+  },
+  "updated_at": "2026-01-04T16:17:02.900Z"
+}

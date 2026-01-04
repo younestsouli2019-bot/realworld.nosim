@@ -1,0 +1,17 @@
+{
+  "id": "AUD_1767543416879_547457d6",
+  "timestamp": "2026-01-04T16:16:56.879Z",
+  "action": "TEST_PAYMENT",
+  "entity_id": "TEST_TX_1767543416876",
+  "actor": "TestRunner",
+  "changes": {
+    "before": null,
+    "after": "SUCCESS_PAYMENT_123"
+  },
+  "context": {
+    "action": "TEST_PAYMENT",
+    "actor": "TestRunner",
+    "status": "success"
+  },
+  "updated_at": "2026-01-04T16:16:56.879Z"
+}

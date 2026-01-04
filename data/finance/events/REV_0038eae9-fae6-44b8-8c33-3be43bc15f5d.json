@@ -1,0 +1,28 @@
+{
+  "id": "REV_0038eae9-fae6-44b8-8c33-3be43bc15f5d",
+  "source_system": "Anomaly",
+  "original_data": {
+    "amount": 5000,
+    "timestamp": "2026-01-04T16:24:08.218Z"
+  },
+  "amount": 5000,
+  "currency": "USD",
+  "status": "settled",
+  "timestamp": "2026-01-04T16:24:08.218Z",
+  "metadata": {
+    "proof_verified": true,
+    "proof_source": "paypal",
+    "proof_id": "PAYPAL_1767547142922_0axuouh4m",
+    "recovered_at": "2026-01-04T17:19:02.922Z"
+  },
+  "attribution": {
+    "agent_id": "unknown",
+    "campaign_id": null,
+    "source_url": null
+  },
+  "updated_at": "2026-01-04T17:19:02.925Z",
+  "settlement_info": {
+    "destination": "OWNER_ACCOUNTS",
+    "timestamp": "2026-01-04T17:19:02.925Z"
+  }
+}

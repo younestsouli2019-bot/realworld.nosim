@@ -1,0 +1,23 @@
+{
+  "id": "AUD_1767547142950_b91815d0",
+  "timestamp": "2026-01-04T17:19:02.950Z",
+  "action": "RECOVER_PROOF",
+  "entity_id": "REV_621dfe38-5f98-4ee2-bf0d-9c40bd2c70f0",
+  "actor": "RecoveryScript",
+  "changes": {
+    "before": null,
+    "after": {
+      "status": "verified",
+      "metadata": {
+        "proof_verified": true,
+        "proof_source": "paypal",
+        "proof_id": "PAYPAL_1767547142950_lis62kufr",
+        "recovered_at": "2026-01-04T17:19:02.950Z"
+      }
+    }
+  },
+  "context": {
+    "proof_id": "PAYPAL_1767547142950_lis62kufr"
+  },
+  "updated_at": "2026-01-04T17:19:02.950Z"
+}

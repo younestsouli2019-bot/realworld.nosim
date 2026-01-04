@@ -1,0 +1,32 @@
+{
+  "id": "REV_84587c16-3dd0-48f0-983e-e15dc2c1560e",
+  "source_system": "TestSystem",
+  "original_data": {
+    "amount": 1000,
+    "currency": "USD",
+    "metadata": {
+      "recipient_id": "RCP_d53580d5-7351-4eac-b67d-bc5058bf593c"
+    }
+  },
+  "amount": 1000,
+  "currency": "USD",
+  "status": "settled",
+  "timestamp": "2026-01-04T16:24:53.556Z",
+  "metadata": {
+    "recipient_id": "RCP_d53580d5-7351-4eac-b67d-bc5058bf593c",
+    "proof_verified": true,
+    "proof_source": "paypal",
+    "proof_id": "PAYPAL_1767547142958_zhyb7h9so",
+    "recovered_at": "2026-01-04T17:19:02.958Z"
+  },
+  "attribution": {
+    "agent_id": "unknown",
+    "campaign_id": null,
+    "source_url": null
+  },
+  "updated_at": "2026-01-04T17:19:02.959Z",
+  "settlement_info": {
+    "destination": "OWNER_ACCOUNTS",
+    "timestamp": "2026-01-04T17:19:02.959Z"
+  }
+}

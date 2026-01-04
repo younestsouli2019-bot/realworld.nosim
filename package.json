@@ -12,11 +12,11 @@
     "monitor": "node scripts/monitor-revenue-health.mjs"
   },
   "dependencies": {
-    "@base44/sdk": "^1.0.0",
     "@paypal/payouts-sdk": "^1.1.1",
     "openai": "^4.24.1",
     "stripe": "^14.10.0",
-    "googleapis": "^129.0.0"
+    "googleapis": "^129.0.0",
+    "ethers": "^6.10.0"
   },
   "devDependencies": {
     "dotenv": "^16.3.1"

@@ -1,6 +1,7 @@
 // src/agents/autonomous-upgrader.mjs
 import { NameComplianceService } from '../legal/NameComplianceService.mjs';
 import { recordAttempt } from '../real/ledger/history.mjs';
+import { OwnerSettlementEnforcer } from '../policy/owner-settlement.mjs';
 
 export class AutonomousAgentUpgrader {
   constructor() {
@@ -208,10 +209,51 @@ export class AutonomousAgentUpgrader {
     return score;
   }
 
+  getPaymentConfiguration() {
+    // Centralized Payment Configuration via OwnerSettlementEnforcer
+    // This ensures STRICT OWNER-ONLY SETTLEMENT with NO HUMAN-IN-LOOP for verified accounts.
+    return OwnerSettlementEnforcer.getPaymentConfiguration();
+  }
+
+  async triggerCriticalAlert(agentName, gaps) {
+    const alertId = `ALERT_${Date.now()}`;
+    const alertData = {
+      id: alertId,
+      timestamp: new Date().toISOString(),
+      level: 'CRITICAL',
+      agent: agentName,
+      message: 'Fused Agent halted due to Critical Resource Gaps',
+      gaps: gaps,
+      action_required: 'Provide missing environment variables or credentials.'
+    };
+
+    console.error(`\n🚨 [CRITICAL ALERT] ${alertData.message}`);
+    console.error(`   Agent: ${agentName}`);
+    console.error(`   Gaps: ${JSON.stringify(gaps)}`);
+
+    // Persist to disk
+    try {
+      const fs = await import('fs');
+      const path = await import('path');
+      const alertDir = path.join(process.cwd(), 'exports', 'alerts');
+      
+      if (!fs.existsSync(alertDir)) {
+        fs.mkdirSync(alertDir, { recursive: true });
+      }
+      
+      const alertPath = path.join(alertDir, `${alertId}.json`);
+      fs.writeFileSync(alertPath, JSON.stringify(alertData, null, 2));
+      console.log(`   📄 Alert saved to: ${alertPath}`);
+    } catch (err) {
+      console.error(`   ⚠️ Failed to save alert file: ${err.message}`);
+    }
+  }
+
   async createFusedAgent(cluster) {
     // 1. Generate new compliant name
     const baseName = `${cluster.category} Fusion Unit`;
-    const compliantName = this.legal.ensureCompliantName(baseName, cluster.category, 'FUSED');
+    // Use cluster ID to ensure unique naming hash
+    const compliantName = this.legal.ensureCompliantName(baseName, cluster.category, cluster.id);
     
     // 2. Merge capabilities
     const mergedApiRequirements = new Set();
@@ -233,6 +275,9 @@ export class AutonomousAgentUpgrader {
       // Merge Metrics
       Object.assign(mergedMetrics, agent.real_time_metrics || {});
     }
+
+    // Provision Payment Config
+    const paymentConfig = this.getPaymentConfiguration();
     
     // 3. Create Entity Payload
     const newAgentPayload = {
@@ -248,17 +293,7 @@ export class AutonomousAgentUpgrader {
       api_requirements: Array.from(mergedApiRequirements),
       workflow_config: {
         ...mergedWorkflow,
-        payment_processing: {
-          enabled: true,
-          supported_gateways: ['bank_transfer', 'payoneer', 'binance', 'stripe', 'paypal'], // Enforce full suite (Priority Ordered)
-          settlement_priority: ['bank_transfer', 'payoneer', 'binance', 'stripe', 'paypal'],
-          credentials: {
-             // Injecting placeholder/env credentials
-             binance: { has_secret: true },
-             paypal: { has_secret: true },
-             payoneer: { has_token: true }
-          }
-        }
+        payment_processing: paymentConfig // Use FULLY PROVISIONED config
       },
       real_time_metrics: {
         ...mergedMetrics,
@@ -270,6 +305,30 @@ export class AutonomousAgentUpgrader {
         original_agents: cluster.agents.map(a => ({ id: a.id, name: a.name }))
       }
     };
+
+    // INTEGRATION: Assess needs of the new configuration before finalizing
+    // This catches critical resource gaps (missing env vars) before deployment
+    try {
+      const simulatedAgent = { id: `sim_${Date.now()}`, ...newAgentPayload };
+      const initialNeeds = await this.assessNeeds(simulatedAgent);
+      
+      // Embed assessment into metadata
+      newAgentPayload.metadata.initial_needs_assessment = initialNeeds;
+      
+      // If critical gaps exist, start in maintenance mode to prevent failures
+      if (initialNeeds.recommendation === 'HALT_AND_FIX_ENV') {
+          console.warn(`    ⚠️ Fused agent ${compliantName} has CRITICAL resource gaps:`, initialNeeds.resource_gaps);
+          newAgentPayload.status = 'maintenance_mode';
+          newAgentPayload.metadata.maintenance_reason = 'Critical Resource Gaps detected during Fusion (Missing Env Vars)';
+          
+          // Trigger Automated Alert
+          await this.triggerCriticalAlert(compliantName, initialNeeds.resource_gaps);
+      } else {
+        console.log(`    ✅ Fused agent ${compliantName} passed needs assessment: ${initialNeeds.recommendation}`);
+      }
+    } catch (err) {
+      console.warn(`    ⚠️ Needs assessment failed during fusion: ${err.message}`);
+    }
     
     // 4. POST to API
     try {
@@ -389,12 +448,12 @@ export class AutonomousAgentUpgrader {
     // Categorize agents
     for (const agent of agents) {
       // Run Needs Assessment (Sondage)
-      const needs = this.assessAgentNeeds(agent);
-      if (needs.length > 0) {
+      const needs = await this.assessNeeds(agent);
+      if (needs.needs.length > 0) {
         analysis.needs_assessment.push({
           agent_id: agent.id,
           agent_name: agent.name,
-          needs: needs
+          needs: needs.needs
         });
       }
 
@@ -449,11 +508,33 @@ export class AutonomousAgentUpgrader {
    * "Sondage": Assess what the agent NEEDS based on performance and configuration.
    * This identifies resource gaps, tool shortages, or optimization opportunities.
    */
-  assessAgentNeeds(agent) {
-    const needs = [];
+  async assessNeeds(agent) {
+     console.log('    [DEBUG] Running assessNeeds for', agent.name);
+     const needs = [];
+    const gaps = [];
     const metrics = agent.real_time_metrics || {};
+    const paymentConfig = agent.workflow_config?.payment_processing || {};
 
-    // 1. Financial Needs
+    // 1. Critical Configuration Gaps
+    if (paymentConfig.enabled && !paymentConfig.owner_only_settlement) {
+        gaps.push({ resource: 'OWNER_SETTLEMENT_CONFIG', severity: 'CRITICAL' });
+        needs.push('Enforce Owner-Only Settlement');
+    }
+
+    // Check for Env Vars if API requirements exist
+    if (agent.api_requirements) {
+        if (agent.api_requirements.includes('binance_api') && !process.env.BINANCE_API_SECRET) {
+            gaps.push({ resource: 'BINANCE_API_SECRET', severity: 'CRITICAL' });
+        }
+        if (agent.api_requirements.includes('paypal_api') && !process.env.PAYPAL_SECRET) {
+            gaps.push({ resource: 'PAYPAL_SECRET', severity: 'CRITICAL' });
+        }
+        if (agent.api_requirements.includes('stripe_api') && !process.env.STRIPE_SECRET_KEY) {
+            gaps.push({ resource: 'STRIPE_SECRET_KEY', severity: 'CRITICAL' });
+        }
+    }
+
+    // 2. Financial Needs
     if (!metrics.revenue_tracking) {
       needs.push('Revenue Tracking Module');
     }
@@ -464,7 +545,7 @@ export class AutonomousAgentUpgrader {
       needs.push('Payment Gateway Integration');
     }
 
-    // 2. Operational Needs
+    // 3. Operational Needs
     if (agent.automation_level !== 'autonomous_wet_run') {
       needs.push('autonomy_level_upgrade');
     }
@@ -475,7 +556,7 @@ export class AutonomousAgentUpgrader {
       needs.push('Latency Optimization');
     }
 
-    // 3. Resource Needs
+    // 4. Resource Needs
     if (metrics.api_usage_percent > 80) {
       needs.push('API Quota Increase');
     }
@@ -483,12 +564,18 @@ export class AutonomousAgentUpgrader {
       needs.push('Compute Resource Scale-up');
     }
 
-    // 4. Compliance Needs
+    // 5. Compliance Needs
     if (!this.legal.isNameCompliant(agent.name)) {
       needs.push('Copyright Compliance Rename');
     }
 
-    return needs;
+    const hasCriticalGaps = gaps.some(g => g.severity === 'CRITICAL');
+
+    return {
+        needs,
+        resource_gaps: gaps,
+        recommendation: hasCriticalGaps ? 'HALT_AND_FIX_ENV' : 'PROCEED'
+    };
   }
 
   async generateUpgradePlan(analysis) {
@@ -836,64 +923,31 @@ export class AutonomousAgentUpgrader {
     // ENFORCING DIRECT-TO-OWNER SETTLEMENT
     const newWorkflowConfig = {
       ...(agent.workflow_config || {}),
-      payment_processing: {
-        enabled: true,
-        supported_gateways: ['bank_transfer', 'payoneer', 'binance', 'stripe', 'paypal'],
-        settlement_priority: ['bank_transfer', 'payoneer', 'binance', 'stripe', 'paypal'], // Explicit Priority 1-5 (PayPal Last due to Country Restrictions)
-        auto_configuration: true,
-        proof_generation: true,
-        settlement_automation: true,
-        owner_only_settlement: true, // STRICT ENFORCEMENT
-        settlement_destinations: {
-              bank: '007810000448500030594182', // Priority 1: Attijari
-              payoneer: 'younestsouli2019@gmail.com', // Priority 2: Primary (Email preferred)
-              crypto: '0xA46225a984E2B2B5E5082E52AE8d8915A09fEfe7', // Priority 3: Trust Wallet (Primary)
-              crypto_bybit_erc20: '0xf6b9e2fcf43d41c778cba2bf46325cd201cc1a10', // Bybit (Secondary)
-              crypto_bybit_ton: 'UQDIrlJp7NmV-5mief8eNB0b0sYGO0L62Vu7oGX49UXtqlDQ', // Bybit (TON)
-              stripe: '007810000448500030594182', // Priority 4: Stripe (via Bank)
-              paypal: 'younestsouli2019@gmail.com' // Priority 5: Backup (Last Resort)
-            },
-        credentials: {
-          binance: {
-            api_key: process.env.BINANCE_API_KEY,
-            api_secret: process.env.BINANCE_API_SECRET ? '***SECURE***' : undefined,
-            has_secret: !!process.env.BINANCE_API_SECRET
-          },
-          paypal: {
-            client_id: process.env.PAYPAL_CLIENT_ID,
-            has_secret: !!process.env.PAYPAL_SECRET
-          },
-          payoneer: {
-            program_id: process.env.PAYONEER_PROGRAM_ID || '85538995',
-            has_token: !!process.env.PAYONEER_TOKEN
-          },
-          stripe: {
-            publishable_key: process.env.STRIPE_PUBLISHABLE_KEY,
-            has_secret: !!process.env.STRIPE_SECRET_KEY
-          }
-        }
-      },
-      revenue_validation: {
-        enabled: true,
-        proof_requirements: ['psp_id', 'transaction_id', 'amount', 'currency'],
-        validation_timeout: 5000,
-        retry_strategy: 'exponential_backoff'
-      }
+      payment_processing: this.getPaymentConfiguration() // Use Shared Helper
+    };
+
+    const newMetrics = {
+      ...(agent.real_time_metrics || {}),
+      revenue_tracking: true,
+      multi_currency: true
     };
     
     return {
       applied: true,
       updates: {
+        api_requirements: Array.from(new Set(newApiRequirements)),
         workflow_config: newWorkflowConfig,
-        api_requirements: newApiRequirements
+        real_time_metrics: newMetrics,
+        payment_gateway_capable: true
       },
       details: {
-        added_capabilities: ['payment_processing', 'revenue_validation', 'live_credentials', 'owner_settlement_enforcement'],
-        supported_gateways: ['paypal', 'stripe', 'bank_transfer', 'binance', 'payoneer'],
-        credentials_injected: ['binance', 'paypal', 'payoneer', 'stripe']
+        gateways: ['bank', 'payoneer', 'binance', 'stripe', 'paypal'],
+        reason: 'Wet-run requirement',
+        owner_settlement_enforced: true
       }
     };
   }
+
 
   /**
    * Assess agent needs and resource gaps (Sondage)

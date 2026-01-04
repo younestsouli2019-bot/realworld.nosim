@@ -6,6 +6,7 @@
 
 import { AdvancedFinancialManager } from '../src/finance/AdvancedFinancialManager.mjs';
 import { getEnvBool } from '../src/autonomous-config.mjs';
+import { reconcileAmountMismatches } from './reconcile-amount-mismatches.mjs';
 
 // Load environment variables via --env-file or assumes pre-loaded
 
@@ -29,7 +30,7 @@ const CONFIG = {
 // FINANCIAL ORCHESTRATOR
 // ============================================================================
 
-class FinancialOrchestrator {
+export class FinancialOrchestrator {
   constructor() {
     this.manager = new AdvancedFinancialManager();
     this.stats = {
@@ -56,19 +57,58 @@ class FinancialOrchestrator {
 
   async autoResolveDiscrepancies(discrepancies) {
     console.log('   🛠️  Auto-Resolving Discrepancies...');
+
+    // 1. Filter for Amount Mismatches (handled by specialized script logic)
+    const amountMismatches = discrepancies.filter(d => d.type === 'AMOUNT_MISMATCH');
+    if (amountMismatches.length > 0) {
+      console.log(`      -> Delegating ${amountMismatches.length} Amount Mismatches to Reconcile Logic...`);
+      try {
+        await reconcileAmountMismatches();
+        console.log('      ✅ Amount Mismatches Reconciled.');
+      } catch (e) {
+        console.error('      ❌ Failed to reconcile amount mismatches:', e.message);
+      }
+    }
+
+    // 2. Handle other types
     for (const disc of discrepancies) {
       if (disc.type === 'STALLED_EVENT') {
-        // Simple logic: If stalled for > 24h, we mark it as 'investigation_required' or similar
-        // For this demo, we'll just log it. In a real system, we might retry settlement.
-        console.log(`      -> Flagging Stalled Event ${disc.id} for manual review.`);
-        
-        // Example: If amount is trivial (< $1), we could auto-writeoff
-        // await this.manager.revenue.adjustEvent(disc.id, 0, 'Auto-Writeoff Stalled < $1');
+        // Auto-Resolution for Trivial Amounts
+        const trivialThreshold = 1.0;
+        // Use exposed amount or parse from details
+        const amount = disc.amount !== undefined ? Number(disc.amount) : Number(disc.details.match(/Amount: \$([\d.]+)/)?.[1] || 0);
+
+        if (amount > 0 && amount < trivialThreshold) {
+             console.log(`      -> Auto-Writeoff Stalled Event ${disc.id} ($${amount} < $1)`);
+             try {
+                // Adjust to 0
+                const event = this.manager.storage.load('events', disc.id);
+                if (event) {
+                    event.amount = 0;
+                    event.status = 'written_off';
+                    event.metadata = { ...event.metadata, writeoff_reason: 'Stalled Trivial Amount', auto_resolved: true };
+                    this.manager.storage.save('events', disc.id, event);
+                    console.log(`      ✅ Written off ${disc.id}`);
+                }
+             } catch (e) {
+                 console.error(`      ❌ Failed to write-off ${disc.id}: ${e.message}`);
+             }
+        } else {
+             console.log(`      -> Flagging Stalled Event ${disc.id} for manual review (Amount: $${amount} or Unknown).`);
+        }
       }
       else if (disc.type === 'MISSING_ATTRIBUTION') {
         console.log(`      -> Patching Missing Attribution for ${disc.id} -> 'unknown_legacy'`);
-        // We could patch the event here if we had an updateEvent method exposed easily
-        // this.manager.revenue.updateEvent(disc.id, { attribution: { agent_id: 'unknown_legacy' } });
+        try {
+            const event = this.manager.storage.load('events', disc.id);
+            if (event) {
+                event.attribution = { ...event.attribution, agent_id: 'unknown_legacy', auto_patched: true };
+                this.manager.storage.save('events', disc.id, event);
+                console.log(`      ✅ Patched attribution for ${disc.id}`);
+            }
+        } catch (e) {
+            console.error(`      ❌ Failed to patch attribution for ${disc.id}: ${e.message}`);
+        }
       }
     }
   }
@@ -154,7 +194,11 @@ process.on('SIGINT', () => {
   process.exit(0);
 });
 
-main().catch(error => {
-  console.error('\n❌ FATAL ERROR:', error);
-  process.exit(1);
-});
+import { pathToFileURL } from 'url';
+
+if (import.meta.url === pathToFileURL(process.argv[1]).href) {
+  main().catch(error => {
+    console.error('\n❌ FATAL ERROR:', error);
+    process.exit(1);
+  });
+}

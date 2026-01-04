@@ -1,0 +1,22 @@
+{
+  "daily_usage": {},
+  "transactions": [],
+  "queued": [
+    {
+      "id": "queue_1767556757308_1tqac2dri",
+      "timestamp": "2026-01-04T19:59:17.308Z",
+      "channel": "BINANCE_API",
+      "amount": 850,
+      "reason": "MISSING_API_KEY",
+      "status": "QUEUED"
+    },
+    {
+      "id": "queue_1767556796620_6frp2ezs0",
+      "timestamp": "2026-01-04T19:59:56.620Z",
+      "channel": "BINANCE_API",
+      "amount": 850,
+      "reason": "MISSING_API_KEY",
+      "status": "QUEUED"
+    }
+  ]
+}

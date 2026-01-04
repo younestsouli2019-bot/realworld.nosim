@@ -946,7 +946,8 @@ export class AdvancedFinancialManager {
           discrepancies.push({
             id: event.id,
             type: 'STALLED_EVENT',
-            details: `Event pending for ${(age / 3600000).toFixed(1)} hours`
+            amount: event.amount, // Expose amount for decision making
+            details: `Event pending for ${(age / 3600000).toFixed(1)} hours. Amount: $${event.amount}`
           });
         }
       }
@@ -958,6 +959,24 @@ export class AdvancedFinancialManager {
           type: 'MISSING_ATTRIBUTION',
           details: 'Event lacks agent_id attribution'
         });
+      }
+
+      // Check 3: Amount Mismatch (Ledger vs Proof)
+      // PSP Proof is the Source of Truth
+      if (event.verification_proof && event.verification_proof.amount) {
+          const ledgerAmount = Number(event.amount);
+          const proofAmount = Number(event.verification_proof.amount);
+          if (Math.abs(ledgerAmount - proofAmount) > 0.01) {
+              discrepancies.push({
+                  id: event.id,
+                  type: 'AMOUNT_MISMATCH',
+                  details: `Ledger: ${ledgerAmount}, Proof: ${proofAmount}`,
+                  correction_data: {
+                      correct_amount: proofAmount,
+                      diff: Math.abs(ledgerAmount - proofAmount)
+                  }
+              });
+          }
       }
     }
 

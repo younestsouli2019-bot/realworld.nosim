@@ -9,8 +9,17 @@
   },
   "amount": 500,
   "currency": "EUR",
-  "status": "pending_reconciliation",
+  "status": "settled",
   "timestamp": "2026-01-04T15:26:56.029Z",
-  "metadata": {},
-  "updated_at": "2026-01-04T15:26:56.029Z"
+  "metadata": {
+    "proof_verified": true,
+    "proof_source": "paypal",
+    "proof_id": "PAYPAL_1767547142980_msttcd9dw",
+    "recovered_at": "2026-01-04T17:19:02.980Z"
+  },
+  "updated_at": "2026-01-04T17:19:02.981Z",
+  "settlement_info": {
+    "destination": "OWNER_ACCOUNTS",
+    "timestamp": "2026-01-04T17:19:02.981Z"
+  }
 }

@@ -1,0 +1,33 @@
+{
+  "id": "AUD_1767543848184_df0112f8",
+  "timestamp": "2026-01-04T16:24:08.184Z",
+  "action": "INGEST_REVENUE",
+  "entity_id": "REV_adba78b4-3eab-486f-b33f-0d508858ae16",
+  "actor": "System",
+  "changes": {
+    "before": null,
+    "after": {
+      "id": "REV_adba78b4-3eab-486f-b33f-0d508858ae16",
+      "source_system": "Baseline",
+      "original_data": {
+        "amount": 100,
+        "timestamp": "2025-12-30T16:24:08.170Z"
+      },
+      "amount": 100,
+      "currency": "USD",
+      "status": "pending_reconciliation",
+      "timestamp": "2025-12-30T16:24:08.170Z",
+      "metadata": {},
+      "attribution": {
+        "agent_id": "unknown",
+        "campaign_id": null,
+        "source_url": null
+      },
+      "updated_at": "2026-01-04T16:24:08.183Z"
+    }
+  },
+  "context": {
+    "source": "Baseline"
+  },
+  "updated_at": "2026-01-04T16:24:08.184Z"
+}

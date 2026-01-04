@@ -1,0 +1,10 @@
+{
+  "id": "RCP_ee1fad10-71ad-48e6-a77e-62227ac93986",
+  "name": "Audit Test User",
+  "email": "audit@test.com",
+  "type": "individual",
+  "payment_methods": [],
+  "created_at": "2026-01-04T16:16:56.873Z",
+  "status": "active",
+  "updated_at": "2026-01-04T16:16:56.873Z"
+}

@@ -1,0 +1,38 @@
+{
+  "id": "AUD_1767543848166_b4234210",
+  "timestamp": "2026-01-04T16:24:08.166Z",
+  "action": "INGEST_REVENUE",
+  "entity_id": "REV_98c453c1-c3c1-4eef-9ab6-8ba2475e2ec1",
+  "actor": "System",
+  "changes": {
+    "before": null,
+    "after": {
+      "id": "REV_98c453c1-c3c1-4eef-9ab6-8ba2475e2ec1",
+      "source_system": "TestSystem",
+      "original_data": {
+        "amount": 1000,
+        "currency": "USD",
+        "metadata": {
+          "recipient_id": "RCP_163c607c-3c7b-46e9-a4c7-60d3f780109f"
+        }
+      },
+      "amount": 1000,
+      "currency": "USD",
+      "status": "pending_reconciliation",
+      "timestamp": "2026-01-04T16:24:08.165Z",
+      "metadata": {
+        "recipient_id": "RCP_163c607c-3c7b-46e9-a4c7-60d3f780109f"
+      },
+      "attribution": {
+        "agent_id": "unknown",
+        "campaign_id": null,
+        "source_url": null
+      },
+      "updated_at": "2026-01-04T16:24:08.165Z"
+    }
+  },
+  "context": {
+    "source": "TestSystem"
+  },
+  "updated_at": "2026-01-04T16:24:08.166Z"
+}

@@ -1,0 +1,19 @@
+{
+  "id": "RCP_fe65f487-1c7e-404f-a49f-a159f49839dd",
+  "name": "Test Payoneer Secondary",
+  "email": "younesdgc@gmail.com",
+  "type": "individual",
+  "jurisdiction": "US",
+  "tax_form_status": "pending",
+  "payment_methods": [
+    {
+      "type": "payoneer",
+      "details": {
+        "email": "younesdgc@gmail.com"
+      }
+    }
+  ],
+  "created_at": "2026-01-04T17:29:21.777Z",
+  "status": "active",
+  "updated_at": "2026-01-04T17:29:21.779Z"
+}

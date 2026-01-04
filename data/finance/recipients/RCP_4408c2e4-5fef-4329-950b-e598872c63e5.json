@@ -1,0 +1,19 @@
+{
+  "id": "RCP_4408c2e4-5fef-4329-950b-e598872c63e5",
+  "name": "Younes Tsouli",
+  "email": "younestsouli2019@gmail.com",
+  "type": "individual",
+  "jurisdiction": "US",
+  "tax_form_status": "pending",
+  "payment_methods": [
+    {
+      "type": "paypal",
+      "details": {
+        "email": "younestsouli2019@gmail.com"
+      }
+    }
+  ],
+  "created_at": "2026-01-04T16:35:39.968Z",
+  "status": "active",
+  "updated_at": "2026-01-04T16:35:39.970Z"
+}

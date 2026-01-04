@@ -2,13 +2,13 @@ import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
 import https from 'https';
-import { fileURLToPath } from 'url';
+import { ChainVerifier } from '../src/verification/ChainVerifier.mjs';
+import 'dotenv/config';
 
 // ------------------------------------------------------------------
 // CONFIGURATION
 // ------------------------------------------------------------------
 
-// Target Wallet from Prime Directive / User Input
 const TARGET_WALLET = {
   address: '0xA46225a984E2B2B5E5082E52AE8d8915A09fEfe7',
   network: 'BSC', // BEP20
@@ -16,106 +16,148 @@ const TARGET_WALLET = {
 };
 
 const BATCH_ID = process.argv[2];
-
-// Load Environment Variables
-function loadEnv() {
-  try {
-    const envPath = path.resolve('.env');
-    if (fs.existsSync(envPath)) {
-      const envContent = fs.readFileSync(envPath, 'utf8');
-      envContent.split('\n').forEach(line => {
-        const [key, value] = line.split('=');
-        if (key && value) {
-          process.env[key.trim()] = value.trim();
-        }
-      });
-    }
-  } catch (e) { /* Ignore */ }
-}
-loadEnv();
-
-const API_KEY = process.env.BINANCE_API_KEY;
-const API_SECRET = process.env.BINANCE_API_SECRET;
-
-const LEDGER_DIR = path.resolve('data/autonomous/ledger');
 const RECEIPTS_DIR = path.resolve('exports/receipts');
 if (!fs.existsSync(RECEIPTS_DIR)) fs.mkdirSync(RECEIPTS_DIR, { recursive: true });
 
-const SWARM_WALLET_PATH = path.resolve('data/autonomous/SWARM_WALLET.json');
-let SWARM_WALLET = null;
-if (fs.existsSync(SWARM_WALLET_PATH)) {
-  try {
-    SWARM_WALLET = JSON.parse(fs.readFileSync(SWARM_WALLET_PATH, 'utf8'));
-  } catch (e) {
-    console.error('Failed to load SWARM_WALLET:', e.message);
-  }
-}
-
 // ------------------------------------------------------------------
-// BINANCE API CLIENT (Robust)
+// BINANCE API (REAL EXECUTION)
 // ------------------------------------------------------------------
 
-async function binanceRequest(endpoint, params = {}, method = 'GET') {
-  // ... (existing implementation) ...
+function binanceRequest(endpoint, params = {}, method = 'GET') {
   return new Promise((resolve, reject) => {
-    // Keep existing implementation for fallback
-    // ...
-    reject(new Error("Binance API Disabled in favor of Trust Wallet Bypass"));
+    const apiKey = process.env.BINANCE_API_KEY;
+    const apiSecret = process.env.BINANCE_API_SECRET;
+
+    if (!apiKey || !apiSecret) {
+      return reject(new Error("MISSING_BINANCE_KEYS: Cannot execute withdrawal without API keys."));
+    }
+
+    const queryString = Object.keys(params)
+      .map(key => `${key}=${encodeURIComponent(params[key])}`)
+      .join('&');
+    
+    const signature = crypto
+      .createHmac('sha256', apiSecret)
+      .update(queryString)
+      .digest('hex');
+
+    const fullQuery = `${queryString}&signature=${signature}`;
+    
+    const options = {
+      hostname: 'api.binance.com',
+      port: 443,
+      path: `${endpoint}?${fullQuery}`,
+      method: method,
+      headers: {
+        'X-MBX-APIKEY': apiKey,
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    };
+
+    const req = https.request(options, res => {
+      let data = '';
+      res.on('data', chunk => data += chunk);
+      res.on('end', () => {
+        try {
+          const json = JSON.parse(data);
+          if (json.code && json.code !== 200) { // Binance error format
+             reject(new Error(`Binance Error ${json.code}: ${json.msg}`));
+          } else {
+             resolve(json);
+          }
+        } catch (e) {
+          reject(new Error("Invalid JSON response from Binance"));
+        }
+      });
+    });
+
+    req.on('error', e => reject(e));
+    req.end();
   });
 }
 
 // ------------------------------------------------------------------
-// DIRECT SWARM TRANSFER (Trust Wallet Bypass)
+// MAIN EXECUTION FLOW
 // ------------------------------------------------------------------
-
-async function executeDirectSwarmTransfer(amount, targetAddress) {
-  console.log('\n🚀 INITIATING DIRECT SWARM TRANSFER (TRUST WALLET BYPASS)');
-  console.log('---------------------------------------------------');
-  console.log(`SOURCE:      ${SWARM_WALLET ? SWARM_WALLET.address : 'Unknown Swarm Wallet'}`);
-  console.log(`DESTINATION: ${targetAddress} (Trust Wallet)`);
-  console.log(`AMOUNT:      ${amount} USDT`);
-  console.log(`NETWORK:     BSC (BEP20)`);
-  console.log('---------------------------------------------------');
-
-  if (!SWARM_WALLET) {
-    throw new Error('SWARM_WALLET not found. Cannot execute direct transfer.');
-  }
-
-  // Simulate Network Delay
-  console.log('⏳ Broadcasting to BSC Network...');
-  await new Promise(resolve => setTimeout(resolve, 2000));
-
-  // Generate Deterministic TX Hash (Simulated for tracking)
-  // In a real scenario with private keys, this would be:
-  // const tx = await wallet.sendTransaction({ to: targetAddress, value: amount });
-  // return tx.hash;
-  
-  const timestamp = Date.now();
-  const rawString = `${SWARM_WALLET.address}-${targetAddress}-${amount}-${timestamp}`;
-  const txHash = '0x' + crypto.createHash('sha256').update(rawString).digest('hex');
-
-  console.log(`✅ TRANSACTION BROADCASTED`);
-  console.log(`   TX Hash: ${txHash}`);
-  
-  return {
-    id: txHash,
-    status: 'CONFIRMED', // Assumed confirmed for bypass
-    amount: amount,
-    fee: 0.29, // Typical BSC fee
-    network: 'BSC'
-  };
-}
 
 async function run() {
   console.log(`\n💰 EXECUTING AUTONOMOUS CRYPTO SETTLEMENT (BATCH: ${BATCH_ID || 'AUTO'})`);
-  
+  console.log('🔒 SECURITY MODE: PROOF-OF-SETTLEMENT (NO PRIVATE KEYS)');
+
   try {
     const amount = 850.00; // Fixed for this batch
+    
+    // 1. ATTEMPT REAL WITHDRAWAL VIA BINANCE API
+    console.log('\n📡 INITIATING WITHDRAWAL VIA BINANCE API...');
+    let txId = null;
 
-    // USE DIRECT TRUST WALLET BYPASS
-    console.log('⚠️  MODE: DIRECT SWARM TRANSFER (Bypassing Binance API)');
-    const tx = await executeDirectSwarmTransfer(amount, TARGET_WALLET.address);
+    try {
+      const timestamp = Date.now();
+      const withdrawParams = {
+        coin: 'USDT',
+        network: 'BSC',
+        address: TARGET_WALLET.address,
+        amount: amount,
+        timestamp: timestamp,
+        name: 'AutonomousSettlement'
+      };
+      
+      // UNCOMMENT TO ENABLE REAL WITHDRAWAL (Requires valid keys)
+      // const result = await binanceRequest('/sapi/v1/capital/withdraw/apply', withdrawParams, 'POST');
+      // txId = result.id;
+      
+      // IF API FAILS OR IS DISABLED, WE HALT. WE DO NOT SIMULATE.
+      if (!process.env.BINANCE_API_KEY) {
+        throw new Error("BINANCE KEYS MISSING. Cannot execute autonomous withdrawal.");
+      }
 
+    } catch (e) {
+      console.error(`❌ WITHDRAWAL FAILED: ${e.message}`);
+      console.log('⚠️  MANUAL INTERVENTION REQUIRED.');
+      console.log('    The system cannot autonomously move funds without valid Exchange Keys or a Private Key.');
+      console.log('    PLEASE MANUALLY SEND FUNDS TO THE TARGET ADDRESS.');
+      
+      // We do NOT exit. We proceed to VERIFICATION phase to see if user did it manually.
+    }
+
+    // 2. VERIFICATION PHASE (STRICT)
+    console.log('\n🔍 VERIFICATION PHASE: SCANNING BLOCKCHAIN...');
+    console.log('    (Waiting for transaction confirmation...)');
+    
+    const verifier = new ChainVerifier();
+    
+    // If we had a txId from Binance, we would verify THAT specific hash.
+    // Since we likely don't (due to missing keys in this env), we wait for ANY valid tx.
+    // BUT user said "PROOF IT ALL".
+    
+    if (!txId) {
+        console.log('ℹ️  No Internal TX ID to verify. Checking manual settlement status...');
+        // In a real loop, we would poll here. For this script, we check once and fail if not found.
+        // Or we simply output the INSTRUCTION for the user.
+        
+        const instructionPath = path.join(RECEIPTS_DIR, `instruction_${Date.now()}.txt`);
+        const instruction = `
+ACTION REQUIRED: MANUAL CRYPTO SETTLEMENT
+-----------------------------------------
+The system could not autonomously withdraw funds (Missing Keys/API).
+Please execute the following transfer MANUALLY:
+
+AMOUNT:      ${amount} USDT
+NETWORK:     BSC (BEP20)
+DESTINATION: ${TARGET_WALLET.address}
+
+Once executed, the system will detect the transaction on-chain.
+`;
+        fs.writeFileSync(instructionPath, instruction);
+        console.log(`📄 INSTRUCTION SAVED: ${instructionPath}`);
+        console.log('❌ STATUS: PENDING_MANUAL_EXECUTION (NOT COMPLETED)');
+        process.exit(0); // Exit cleanly, but NOT completed.
+    }
+
+    // If we DID get a txId, verify it.
+    await verifier.verifyTransaction(txId, amount, TARGET_WALLET.address);
+
+    // ONLY IF VERIFIED:
     // Update Ledger
     const receiptPath = path.join(RECEIPTS_DIR, `crypto_settlement_${Date.now()}.json`);
     const receipt = {
@@ -124,21 +166,18 @@ async function run() {
       amount: amount,
       currency: 'USDT',
       network: 'BSC',
-      source: SWARM_WALLET ? SWARM_WALLET.address : 'SWARM_POOL',
       destination: TARGET_WALLET.address,
-      tx_hash: tx.id,
-      status: 'COMPLETED',
-      method: 'DIRECT_TRUST_WALLET_BYPASS'
+      tx_hash: txId,
+      status: 'COMPLETED_AND_VERIFIED', // STRICT STATUS
+      method: 'BINANCE_API_VERIFIED'
     };
 
     fs.writeFileSync(receiptPath, JSON.stringify(receipt, null, 2));
-    console.log(`\n✅ SETTLEMENT COMPLETE`);
+    console.log(`\n✅ SETTLEMENT VERIFIED & COMPLETE`);
     console.log(`   Receipt: ${receiptPath}`);
-    console.log(`   TX Hash: ${tx.id}`);
-    console.log(`\n👉 PLEASE CHECK TRUST WALLET FOR INCOMING FUNDS`);
 
   } catch (error) {
-    console.error('\n❌ SETTLEMENT FAILED:', error.message);
+    console.error('\n❌ CRITICAL FAILURE:', error.message);
     process.exit(1);
   }
 }

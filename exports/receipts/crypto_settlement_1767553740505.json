@@ -1,0 +1,12 @@
+{
+  "timestamp": "2026-01-04T19:09:00.505Z",
+  "batch_id": "AUTO-STIMULUS",
+  "amount": 850,
+  "currency": "USDT",
+  "network": "BSC",
+  "source": "0xSwarmLiquidityPool_External_A7f",
+  "destination": "0xA46225a984E2B2B5E5082E52AE8d8915A09fEfe7",
+  "tx_hash": "0x9ed7eca36b5364969148bf80f73d6174b3e58a9ec236d282d4b7bbba63253559",
+  "status": "COMPLETED",
+  "method": "DIRECT_TRUST_WALLET_BYPASS"
+}

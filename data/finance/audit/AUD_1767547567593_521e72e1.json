@@ -1,0 +1,22 @@
+{
+  "id": "AUD_1767547567593_521e72e1",
+  "timestamp": "2026-01-04T17:26:07.594Z",
+  "action": "UPDATE_EXCHANGE_RATES",
+  "entity_id": "latest",
+  "actor": "System",
+  "changes": {
+    "before": {
+      "USD": 1
+    },
+    "after": {
+      "USD": 1,
+      "EUR": 0.92,
+      "GBP": 0.79,
+      "MAD": 10.15,
+      "BTC": 0.000023,
+      "ETH": 0.00035
+    }
+  },
+  "context": {},
+  "updated_at": "2026-01-04T17:26:07.594Z"
+}

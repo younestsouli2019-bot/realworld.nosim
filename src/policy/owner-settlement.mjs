@@ -1,6 +1,15 @@
 // src/policy/owner-settlement.mjs
 
 export class OwnerSettlementEnforcer {
+    static getOwnerIdentity() {
+      return {
+        name: 'Younes Tsouli',
+        cin: 'A337773',
+        verification_sources: ['biometrics', 'gov_id', 'law_enforcement_db'],
+        status: 'VERIFIED_OWNER'
+      };
+    }
+
     static getOwnerAccounts() {
       return [
         { type: 'bank', identifier: '007810000448500030594182', label: 'Attijari', priority: 1 },
@@ -37,6 +46,48 @@ export class OwnerSettlementEnforcer {
       return mapping[type];
     }
 
+    static getPaymentConfiguration() {
+      return {
+        enabled: true,
+        supported_gateways: ['bank_transfer', 'payoneer', 'binance', 'stripe', 'paypal'],
+        settlement_priority: ['bank_transfer', 'payoneer', 'binance', 'stripe', 'paypal'], // Explicit Priority 1-5
+        auto_configuration: true,
+        proof_generation: true,
+        settlement_automation: true,
+        owner_only_settlement: true, // STRICT ENFORCEMENT
+        require_external_verification: true, // PROOF IT ALL POLICY
+        settlement_destinations: {
+          bank: '007810000448500030594182', // Priority 1: Attijari
+          payoneer: 'younestsouli2019@gmail.com', // Priority 2: Primary (Email preferred)
+          crypto: '0xA46225a984E2B2B5E5082E52AE8d8915A09fEfe7', // Priority 3: Trust Wallet (Primary)
+          crypto_bybit_erc20: '0xf6b9e2fcf43d41c778cba2bf46325cd201cc1a10', // Bybit (Secondary)
+          crypto_bybit_ton: 'UQDIrlJp7NmV-5mief8eNB0b0sYGO0L62Vu7oGX49UXtqlDQ', // Bybit (TON)
+          payoneer_secondary: 'younesdgc@gmail.com', // Priority 4: Payoneer Secondary
+          stripe: '007810000448500030594182', // Priority 4: Stripe (via Bank)
+          paypal: 'younestsouli2019@gmail.com' // Priority 5: Backup (Last Resort)
+        },
+        credentials: {
+          binance: {
+            api_key: process.env.BINANCE_API_KEY,
+            api_secret: process.env.BINANCE_API_SECRET ? '***SECURE***' : undefined,
+            has_secret: !!process.env.BINANCE_API_SECRET
+          },
+          paypal: {
+            client_id: process.env.PAYPAL_CLIENT_ID,
+            has_secret: !!process.env.PAYPAL_SECRET
+          },
+          payoneer: {
+            program_id: process.env.PAYONEER_PROGRAM_ID || '85538995',
+            has_token: !!process.env.PAYONEER_TOKEN
+          },
+          stripe: {
+            publishable_key: process.env.STRIPE_PUBLISHABLE_KEY,
+            has_secret: !!process.env.STRIPE_SECRET_KEY
+          }
+        }
+      };
+    }
+
     /**
      * Enforces that the settlement destination is strictly an Owner Account.
      * @param {Object} event - The revenue event
@@ -45,12 +96,16 @@ export class OwnerSettlementEnforcer {
     static enforceOwnerDestination(event) {
         const method = event.settlement_method || 'bank'; // Default to bank
         const destination = this.getOwnerAccountForType(method);
+        const identity = this.getOwnerIdentity();
 
         return {
             destination_account: destination,
             destination_type: method,
+            beneficiary_name: identity.name,
+            beneficiary_id: identity.cin,
             owner_verified: true,
             enforced_by: 'OwnerSettlementEnforcer',
+            proof_required: true, // PROOF IT ALL
             timestamp: new Date().toISOString()
         };
     }

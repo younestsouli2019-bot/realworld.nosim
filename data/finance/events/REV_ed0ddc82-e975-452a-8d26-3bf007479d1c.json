@@ -12,11 +12,19 @@
   },
   "amount": 100,
   "currency": "USD",
-  "status": "pending_reconciliation",
+  "status": "settled",
   "timestamp": "2026-01-04T15:27:37.945Z",
   "metadata": {
     "schedule_id": "SCHED_1f7da5b3-6339-4669-bb4c-210dd632468c",
-    "recipient_id": "RCP_8aecede3-e9a3-428b-abbf-c8a58630ed39"
+    "recipient_id": "RCP_8aecede3-e9a3-428b-abbf-c8a58630ed39",
+    "proof_verified": true,
+    "proof_source": "paypal",
+    "proof_id": "PAYPAL_1767547142981_73oqdbd54",
+    "recovered_at": "2026-01-04T17:19:02.981Z"
   },
-  "updated_at": "2026-01-04T15:27:37.945Z"
+  "updated_at": "2026-01-04T17:19:02.982Z",
+  "settlement_info": {
+    "destination": "OWNER_ACCOUNTS",
+    "timestamp": "2026-01-04T17:19:02.982Z"
+  }
 }
