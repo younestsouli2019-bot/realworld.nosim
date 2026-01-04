@@ -9,23 +9,39 @@ import crypto from 'crypto';
 class FinancialStorage {
   constructor(baseDir = './data/finance') {
     this.baseDir = baseDir;
-    ['events', 'payouts', 'recipients', 'goals', 'rates', 'reconciliation'].forEach(dir => {
+    ['events', 'payouts', 'recipients', 'goals', 'rates', 'reconciliation', 'audit', 'idempotency', 'archive'].forEach(dir => {
       const fullPath = path.join(this.baseDir, dir);
       if (!fs.existsSync(fullPath)) fs.mkdirSync(fullPath, { recursive: true });
     });
+    this.cache = new Map(); // Simple LRU-like cache could be better, but Map is fine for now
+    this.cacheLimit = 1000;
   }
 
   save(type, id, data) {
     const filepath = path.join(this.baseDir, type, `${id}.json`);
     const record = { ...data, updated_at: new Date().toISOString() };
     fs.writeFileSync(filepath, JSON.stringify(record, null, 2));
+    
+    // Update cache
+    this.cache.set(`${type}:${id}`, record);
+    if (this.cache.size > this.cacheLimit) {
+      const firstKey = this.cache.keys().next().value;
+      this.cache.delete(firstKey);
+    }
+    
     return record;
   }
 
   load(type, id) {
+    const cacheKey = `${type}:${id}`;
+    if (this.cache.has(cacheKey)) return this.cache.get(cacheKey);
+
     const filepath = path.join(this.baseDir, type, `${id}.json`);
     if (!fs.existsSync(filepath)) return null;
-    return JSON.parse(fs.readFileSync(filepath, 'utf8'));
+    
+    const data = JSON.parse(fs.readFileSync(filepath, 'utf8'));
+    this.cache.set(cacheKey, data);
+    return data;
   }
 
   list(type) {
@@ -33,7 +49,198 @@ class FinancialStorage {
     if (!fs.existsSync(dir)) return [];
     return fs.readdirSync(dir)
       .filter(f => f.endsWith('.json'))
-      .map(f => JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8')));
+      .map(f => {
+        // Try to load from cache first if ID matches filename convention
+        const id = f.replace('.json', '');
+        return this.load(type, id);
+      });
+  }
+
+  archive(type, id) {
+    const src = path.join(this.baseDir, type, `${id}.json`);
+    const destDir = path.join(this.baseDir, 'archive', type);
+    if (!fs.existsSync(destDir)) fs.mkdirSync(destDir, { recursive: true });
+    
+    if (fs.existsSync(src)) {
+      const dest = path.join(destDir, `${id}.json`);
+      fs.renameSync(src, dest);
+      this.cache.delete(`${type}:${id}`);
+    }
+  }
+}
+
+// ============================================================================
+// 0. AUDIT & SAFETY CORE
+// ============================================================================
+
+class SystemAuditLogger {
+  constructor(storage) {
+    this.storage = storage;
+  }
+
+  log(action, entityId, oldState, newState, actor, context = {}) {
+    const auditId = `AUD_${Date.now()}_${crypto.randomUUID().slice(0, 8)}`;
+    const entry = {
+      id: auditId,
+      timestamp: new Date().toISOString(),
+      action,
+      entity_id: entityId,
+      actor,
+      changes: {
+        before: oldState,
+        after: newState
+      },
+      context
+    };
+    
+    this.storage.save('audit', auditId, entry);
+    console.log(`📝 [AUDIT] ${action} on ${entityId} by ${actor}`);
+  }
+}
+
+class IdempotencyManager {
+  constructor(storage) {
+    this.storage = storage;
+  }
+
+  get(key) {
+    return this.storage.load('idempotency', key);
+  }
+
+  lock(key) {
+    const existing = this.get(key);
+    if (existing && existing.status === 'completed') return existing;
+    if (existing && existing.status === 'pending') {
+      const age = Date.now() - new Date(existing.created_at).getTime();
+      if (age < 300000) throw new Error(`Transaction ${key} is currently in progress.`);
+    }
+
+    const record = {
+      id: key,
+      status: 'pending',
+      created_at: new Date().toISOString()
+    };
+    return this.storage.save('idempotency', key, record);
+  }
+
+  complete(key, result) {
+    const record = {
+      id: key,
+      status: 'completed',
+      result,
+      completed_at: new Date().toISOString()
+    };
+    return this.storage.save('idempotency', key, record);
+  }
+
+  fail(key, error) {
+    const record = {
+      id: key,
+      status: 'failed',
+      error: error.message || error,
+      failed_at: new Date().toISOString()
+    };
+    return this.storage.save('idempotency', key, record);
+  }
+}
+
+class TransactionExecutor {
+  constructor(idempotencyManager, auditLogger) {
+    this.idempotency = idempotencyManager;
+    this.audit = auditLogger;
+  }
+
+  async execute(idempotencyKey, taskFn, context) {
+    const existing = this.idempotency.get(idempotencyKey);
+    if (existing && existing.status === 'completed') {
+      console.log(`🔁 [IDEMPOTENCY] Returning cached result for ${idempotencyKey}`);
+      return existing.result;
+    }
+
+    this.idempotency.lock(idempotencyKey);
+
+    let attempt = 0;
+    const maxRetries = 3;
+    let lastError = null;
+
+    while (attempt < maxRetries) {
+      try {
+        attempt++;
+        const result = await taskFn();
+        this.idempotency.complete(idempotencyKey, result);
+        this.audit.log(context.action, idempotencyKey, null, result, context.actor, { ...context, status: 'success' });
+        return result;
+
+      } catch (error) {
+        lastError = error;
+        console.warn(`⚠️ [EXEC] Attempt ${attempt}/${maxRetries} failed for ${idempotencyKey}: ${error.message}`);
+        if (this.isUnrecoverable(error)) break;
+        await new Promise(r => setTimeout(r, 1000 * Math.pow(2, attempt)));
+      }
+    }
+
+    this.idempotency.fail(idempotencyKey, lastError);
+    this.audit.log(context.action, idempotencyKey, null, { error: lastError.message }, context.actor, { ...context, status: 'failed' });
+    throw new Error(`Transaction failed after ${attempt} attempts: ${lastError.message}`);
+  }
+
+  isUnrecoverable(error) {
+    const fatalErrors = ['INVALID_CREDENTIALS', 'INSUFFICIENT_FUNDS', 'ACCOUNT_SUSPENDED'];
+    return fatalErrors.some(code => error.message.includes(code));
+  }
+}
+
+// ============================================================================
+// 0.1 PERFORMANCE UTILITIES
+// ============================================================================
+
+class BatchProcessor {
+  constructor(batchSize = 10, timeoutMs = 5000, processFn) {
+    this.batchSize = batchSize;
+    this.timeoutMs = timeoutMs;
+    this.processFn = processFn; // async (items) => void
+    this.queue = [];
+    this.timer = null;
+  }
+
+  add(item) {
+    return new Promise((resolve, reject) => {
+      this.queue.push({ item, resolve, reject });
+      if (this.queue.length >= this.batchSize) {
+        this.flush();
+      } else if (!this.timer) {
+        this.timer = setTimeout(() => this.flush(), this.timeoutMs);
+      }
+    });
+  }
+
+  async flush() {
+    if (this.timer) {
+      clearTimeout(this.timer);
+      this.timer = null;
+    }
+    
+    if (this.queue.length === 0) return;
+
+    const currentBatch = this.queue.splice(0, this.batchSize);
+    const items = currentBatch.map(i => i.item);
+
+    try {
+      console.log(`📦 [BATCH] Processing ${items.length} items...`);
+      const results = await this.processFn(items);
+      
+      // Assuming results matches order of items, or processFn throws if whole batch fails
+      // If processFn returns array of results:
+      if (Array.isArray(results) && results.length === items.length) {
+         currentBatch.forEach((entry, idx) => entry.resolve(results[idx]));
+      } else {
+         // Fallback if generic success
+         currentBatch.forEach(entry => entry.resolve(results));
+      }
+    } catch (error) {
+      console.error(`❌ [BATCH] Failed: ${error.message}`);
+      currentBatch.forEach(entry => entry.reject(error));
+    }
   }
 }
 
@@ -42,34 +249,44 @@ class FinancialStorage {
 // ============================================================================
 
 class RecipientManager {
-  constructor(storage) {
+  constructor(storage, auditLogger) {
     this.storage = storage;
+    this.audit = auditLogger;
   }
 
-  createRecipient(data) {
+  createRecipient(data, actor = 'System') {
     const id = `RCP_${crypto.randomUUID()}`;
     const recipient = {
       id,
       name: data.name,
       email: data.email,
-      type: data.type || 'individual', // individual, business
+      type: data.type || 'individual',
       tax_id: data.tax_id,
-      payment_methods: data.payment_methods || [], // [{ type: 'paypal', details: ... }]
+      jurisdiction: data.jurisdiction || 'US', // Default to US for now
+      tax_form_status: 'pending', // pending, collected, verified
+      payment_methods: data.payment_methods || [],
       created_at: new Date().toISOString(),
       status: 'active'
     };
-    return this.storage.save('recipients', id, recipient);
+    
+    const saved = this.storage.save('recipients', id, recipient);
+    this.audit.log('CREATE_RECIPIENT', id, null, saved, actor);
+    return saved;
   }
 
   getRecipient(id) {
     return this.storage.load('recipients', id);
   }
 
-  updateRecipient(id, updates) {
+  updateRecipient(id, updates, actor = 'System') {
     const recipient = this.getRecipient(id);
     if (!recipient) throw new Error(`Recipient ${id} not found`);
+    
     const updated = { ...recipient, ...updates };
-    return this.storage.save('recipients', id, updated);
+    const saved = this.storage.save('recipients', id, updated);
+    
+    this.audit.log('UPDATE_RECIPIENT', id, recipient, saved, actor);
+    return saved;
   }
 }
 
@@ -78,15 +295,17 @@ class RecipientManager {
 // ============================================================================
 
 class CurrencyManager {
-  constructor(storage) {
+  constructor(storage, auditLogger) {
     this.storage = storage;
+    this.audit = auditLogger;
     this.baseCurrency = 'USD';
-    this.rates = { 'USD': 1.0 }; // Cache
+    this.rates = { 'USD': 1.0 };
   }
 
-  async updateExchangeRates() {
-    // Mock API call - in production, fetch from OpenExchangeRates or similar
+  async updateExchangeRates(actor = 'System') {
     console.log('🔄 Fetching real-time exchange rates...');
+    const oldRates = { ...this.rates };
+    
     const mockRates = {
       'USD': 1.0,
       'EUR': 0.92,
@@ -96,11 +315,14 @@ class CurrencyManager {
       'ETH': 0.00035
     };
     this.rates = mockRates;
-    this.storage.save('rates', 'latest', { 
+    
+    const saved = this.storage.save('rates', 'latest', { 
       base: this.baseCurrency, 
       rates: this.rates, 
       timestamp: Date.now() 
     });
+
+    this.audit.log('UPDATE_EXCHANGE_RATES', 'latest', oldRates, this.rates, actor);
     return this.rates;
   }
 
@@ -122,47 +344,60 @@ class CurrencyManager {
 // ============================================================================
 
 class RevenueManager {
-  constructor(storage) {
+  constructor(storage, auditLogger) {
     this.storage = storage;
+    this.audit = auditLogger;
+    // Example of using BatchProcessor for high-volume ingest if needed
+    // this.ingestBatcher = new BatchProcessor(50, 2000, this.processBatch.bind(this));
   }
 
-  ingestRawRevenue(data, sourceSystem) {
+  ingestRawRevenue(data, sourceSystem, actor = 'System') {
     const id = `REV_${crypto.randomUUID()}`;
-    // Canonicalize data
     const event = {
       id,
       source_system: sourceSystem,
       original_data: data,
       amount: parseFloat(data.amount),
       currency: data.currency || 'USD',
-      status: 'pending_reconciliation', // pending_reconciliation, verified, disputed, settled
+      status: 'pending_reconciliation',
       timestamp: data.timestamp || new Date().toISOString(),
-      metadata: data.metadata || {}
+      metadata: data.metadata || {},
+      // Attribution fields
+      attribution: {
+        agent_id: data.agent_id || 'unknown',
+        campaign_id: data.campaign_id || null,
+        source_url: data.source_url || null
+      }
     };
     
-    // Auto-verify if proof is present (integration with existing logic)
     if (data.proof_id || data.transaction_id) {
       event.status = 'verified';
     }
 
-    return this.storage.save('events', id, event);
+    const saved = this.storage.save('events', id, event);
+    this.audit.log('INGEST_REVENUE', id, null, saved, actor, { source: sourceSystem });
+    return saved;
   }
 
-  disputeEvent(id, reason) {
+  disputeEvent(id, reason, actor = 'System') {
     const event = this.storage.load('events', id);
     if (!event) throw new Error(`Event ${id} not found`);
     
+    const oldState = { ...event };
     event.status = 'disputed';
     event.dispute_reason = reason;
     event.dispute_date = new Date().toISOString();
     
-    return this.storage.save('events', id, event);
+    const saved = this.storage.save('events', id, event);
+    this.audit.log('DISPUTE_EVENT', id, oldState, saved, actor, { reason });
+    return saved;
   }
 
-  adjustEvent(id, newAmount, reason) {
+  adjustEvent(id, newAmount, reason, actor = 'System') {
     const event = this.storage.load('events', id);
     if (!event) throw new Error(`Event ${id} not found`);
 
+    const oldState = { ...event };
     const oldAmount = event.amount;
     event.amount = newAmount;
     event.adjustment_history = event.adjustment_history || [];
@@ -174,7 +409,9 @@ class RevenueManager {
     });
     event.status = 'adjusted';
 
-    return this.storage.save('events', id, event);
+    const saved = this.storage.save('events', id, event);
+    this.audit.log('ADJUST_EVENT', id, oldState, saved, actor, { reason, oldAmount, newAmount });
+    return saved;
   }
 }
 
@@ -183,37 +420,38 @@ class RevenueManager {
 // ============================================================================
 
 class FinancialGoalManager {
-  constructor(storage, revenueManager) {
+  constructor(storage, revenueManager, auditLogger) {
     this.storage = storage;
     this.revenueManager = revenueManager;
+    this.audit = auditLogger;
   }
 
-  createGoal(name, targetAmount, targetDate, type = 'revenue') {
+  createGoal(name, targetAmount, targetDate, type = 'revenue', actor = 'System') {
     const id = `GOAL_${crypto.randomUUID()}`;
     const goal = {
       id,
       name,
       target_amount: targetAmount,
       target_date: targetDate,
-      type, // revenue, profit, liquidity
+      type,
       status: 'active',
       created_at: new Date().toISOString()
     };
-    return this.storage.save('goals', id, goal);
+    const saved = this.storage.save('goals', id, goal);
+    this.audit.log('CREATE_GOAL', id, null, saved, actor);
+    return saved;
   }
 
   checkGoals() {
     const goals = this.storage.list('goals').filter(g => g.status === 'active');
-    const events = this.storage.list('events'); // In prod, optimize this query
+    const events = this.storage.list('events');
     
     const results = goals.map(goal => {
       let currentAmount = 0;
-      
       if (goal.type === 'revenue') {
-        // Sum verified revenue
         currentAmount = events
           .filter(e => e.status === 'verified' || e.status === 'settled')
-          .reduce((sum, e) => sum + e.amount, 0); // Assuming USD base for simplicity
+          .reduce((sum, e) => sum + e.amount, 0);
       }
       
       const progress = (currentAmount / goal.target_amount) * 100;
@@ -233,14 +471,12 @@ class FinancialGoalManager {
   }
 
   generateForecast(months = 3) {
-    // Simple linear regression forecast
     const events = this.storage.list('events')
       .filter(e => e.status === 'verified' || e.status === 'settled')
       .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
 
     if (events.length < 2) return { error: "Not enough data for forecast" };
 
-    // Calculate average daily revenue
     const firstDate = new Date(events[0].timestamp);
     const lastDate = new Date(events[events.length - 1].timestamp);
     const days = (lastDate - firstDate) / (1000 * 60 * 60 * 24);
@@ -253,7 +489,7 @@ class FinancialGoalManager {
     for (let i = 1; i <= months; i++) {
       currentDate.setMonth(currentDate.getMonth() + 1);
       forecast.push({
-        month: currentDate.toISOString().slice(0, 7), // YYYY-MM
+        month: currentDate.toISOString().slice(0, 7),
         projected_revenue: (dailyAvg * 30).toFixed(2)
       });
     }
@@ -263,17 +499,61 @@ class FinancialGoalManager {
 }
 
 // ============================================================================
+// 4.1 ANALYTICS ENGINE
+// ============================================================================
+
+class AnalyticsEngine {
+  constructor(storage) {
+    this.storage = storage;
+  }
+
+  detectAnomalies(thresholdMultiplier = 2.0) {
+    const events = this.storage.list('events')
+      .filter(e => e.status === 'verified' || e.status === 'settled')
+      .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+
+    if (events.length < 10) return []; // Need baseline
+
+    // Calculate mean and std dev of daily revenue
+    const dailyRevenue = {};
+    events.forEach(e => {
+      const day = e.timestamp.slice(0, 10);
+      dailyRevenue[day] = (dailyRevenue[day] || 0) + e.amount;
+    });
+
+    const values = Object.values(dailyRevenue);
+    const mean = values.reduce((sum, v) => sum + v, 0) / values.length;
+    const variance = values.reduce((sum, v) => sum + Math.pow(v - mean, 2), 0) / values.length;
+    const stdDev = Math.sqrt(variance);
+
+    const anomalies = [];
+    for (const [day, amount] of Object.entries(dailyRevenue)) {
+      if (amount > mean + (thresholdMultiplier * stdDev) || amount < mean - (thresholdMultiplier * stdDev)) {
+        anomalies.push({
+          date: day,
+          amount,
+          type: amount > mean ? 'SPIKE' : 'DROP',
+          deviation: ((amount - mean) / stdDev).toFixed(2)
+        });
+      }
+    }
+    
+    return anomalies;
+  }
+}
+
+// ============================================================================
 // 5. ADVANCED RECONCILIATION
 // ============================================================================
 
 class ReconciliationEngine {
-  constructor(storage, revenueManager) {
+  constructor(storage, revenueManager, auditLogger) {
     this.storage = storage;
     this.revenueManager = revenueManager;
+    this.audit = auditLogger;
   }
 
   importExternalStatement(fileData, source) {
-    // Mock parsing - assumes CSV string
     const lines = fileData.trim().split('\n');
     const transactions = lines.slice(1).map(line => {
       const [date, desc, amount, currency, ref] = line.split(',');
@@ -289,21 +569,22 @@ class ReconciliationEngine {
     const unmatched = [];
 
     externalTxns.forEach(ext => {
-      // Logic: Match by Reference ID or Amount + Date proximity
       const match = internalEvents.find(int => {
         const amountMatch = Math.abs(int.amount - ext.amount) < 0.01;
         const refMatch = int.id === ext.ref || (int.original_data && int.original_data.transaction_id === ext.ref);
-        return refMatch || amountMatch; // Simplified matching logic
+        return refMatch || amountMatch;
       });
 
       if (match) {
+        const oldState = { ...match };
         match.status = 'reconciled';
         match.reconciliation_data = {
           source,
           external_ref: ext.ref,
           matched_at: new Date().toISOString()
         };
-        this.storage.save('events', match.id, match);
+        const saved = this.storage.save('events', match.id, match);
+        this.audit.log('RECONCILE_MATCH', match.id, oldState, saved, 'ReconciliationEngine', { externalRef: ext.ref });
         matches.push({ internal: match.id, external: ext });
       } else {
         unmatched.push(ext);
@@ -319,56 +600,174 @@ class ReconciliationEngine {
 // ============================================================================
 
 class RecurringPayoutManager {
-  constructor(storage, revenueManager) {
+  constructor(storage, revenueManager, auditLogger, executor) {
     this.storage = storage;
     this.revenueManager = revenueManager;
+    this.audit = auditLogger;
+    this.executor = executor;
   }
 
-  createSchedule(recipientId, amount, currency, frequency, startDate) {
+  createSchedule(recipientId, amount, currency, frequency, startDate, actor = 'System') {
     const id = `SCHED_${crypto.randomUUID()}`;
     const schedule = {
       id,
       recipient_id: recipientId,
       amount,
       currency,
-      frequency, // 'daily', 'weekly', 'monthly'
+      frequency,
       start_date: startDate,
       next_run: startDate,
       status: 'active',
       created_at: new Date().toISOString()
     };
-    return this.storage.save('payouts', id, schedule); // Saving in payouts dir for now
+    const saved = this.storage.save('payouts', id, schedule);
+    this.audit.log('CREATE_PAYOUT_SCHEDULE', id, null, saved, actor);
+    return saved;
   }
 
-  processSchedules() {
+  async processSchedules(actor = 'System') {
     const schedules = this.storage.list('payouts').filter(s => s.status === 'active' && s.next_run);
     const now = new Date();
     const generatedEvents = [];
 
-    schedules.forEach(sched => {
+    for (const sched of schedules) {
       if (new Date(sched.next_run) <= now) {
-        // Generate Revenue Event (or Payout Request)
-        const event = this.revenueManager.ingestRawRevenue({
-          amount: sched.amount,
-          currency: sched.currency,
-          source: 'RecurringSchedule',
-          metadata: { schedule_id: sched.id, recipient_id: sched.recipient_id }
-        }, 'RecurringPayoutSystem');
+        // Use TransactionExecutor for idempotency
+        const idempotencyKey = `PAYOUT_RUN_${sched.id}_${sched.next_run}`;
         
-        generatedEvents.push(event);
+        try {
+          const event = await this.executor.execute(idempotencyKey, async () => {
+             // Generate Revenue Event (or Payout Request)
+            const newEvent = this.revenueManager.ingestRawRevenue({
+              amount: sched.amount,
+              currency: sched.currency,
+              source: 'RecurringSchedule',
+              metadata: { schedule_id: sched.id, recipient_id: sched.recipient_id }
+            }, 'RecurringPayoutSystem', actor);
+            
+            // Update next run
+            const oldState = { ...sched };
+            const nextDate = new Date(sched.next_run);
+            if (sched.frequency === 'daily') nextDate.setDate(nextDate.getDate() + 1);
+            if (sched.frequency === 'weekly') nextDate.setDate(nextDate.getDate() + 7);
+            if (sched.frequency === 'monthly') nextDate.setMonth(nextDate.getMonth() + 1);
+            
+            sched.next_run = nextDate.toISOString();
+            this.storage.save('payouts', sched.id, sched);
+            this.audit.log('UPDATE_SCHEDULE_NEXT_RUN', sched.id, oldState, sched, actor);
 
-        // Update next run
-        const nextDate = new Date(sched.next_run);
-        if (sched.frequency === 'daily') nextDate.setDate(nextDate.getDate() + 1);
-        if (sched.frequency === 'weekly') nextDate.setDate(nextDate.getDate() + 7);
-        if (sched.frequency === 'monthly') nextDate.setMonth(nextDate.getMonth() + 1);
-        
-        sched.next_run = nextDate.toISOString();
-        this.storage.save('payouts', sched.id, sched);
+            return newEvent;
+          }, { action: 'PROCESS_RECURRING_PAYOUT', actor });
+
+          generatedEvents.push(event);
+
+        } catch (e) {
+          console.error(`Failed to process schedule ${sched.id}:`, e);
+        }
+      }
+    }
+
+    return generatedEvents;
+  }
+}
+
+// ============================================================================
+// 7. COMPLIANCE MANAGER
+// ============================================================================
+
+class ComplianceManager {
+  constructor(storage, auditLogger) {
+    this.storage = storage;
+    this.audit = auditLogger;
+  }
+
+  generateTaxReport(year, jurisdiction = 'US') {
+    const startDate = new Date(`${year}-01-01`);
+    const endDate = new Date(`${year}-12-31`);
+    
+    // Scan all recipients and their payouts
+    // Note: This logic assumes we have 'payouts' recorded as events or separate entities
+    // For now, we scan 'events' that are marked as payouts or revenue paid out
+    // In a real system, we'd query a 'Payouts' table. Using 'events' for simplicity here.
+    
+    const recipients = this.storage.list('recipients');
+    const events = this.storage.list('events'); // Assuming events track money movement
+
+    const report = {
+      year,
+      jurisdiction,
+      generated_at: new Date().toISOString(),
+      recipients: []
+    };
+
+    recipients.forEach(rcp => {
+      if (jurisdiction && rcp.jurisdiction !== jurisdiction) return;
+
+      const totalPaid = events
+        .filter(e => {
+          const date = new Date(e.timestamp);
+          return date >= startDate && date <= endDate && 
+                 e.metadata && e.metadata.recipient_id === rcp.id;
+        })
+        .reduce((sum, e) => sum + e.amount, 0);
+
+      if (totalPaid > 0) {
+        report.recipients.push({
+          id: rcp.id,
+          name: rcp.name,
+          tax_id: rcp.tax_id,
+          total_paid: totalPaid,
+          form_required: totalPaid > 600 // Example threshold
+        });
       }
     });
 
-    return generatedEvents;
+    return report;
+  }
+
+  enforceRetentionPolicy(daysToRetain = 365) {
+    console.log('🧹 Enforcing Data Retention Policy...');
+    const now = new Date();
+    const cutoff = new Date(now.setDate(now.getDate() - daysToRetain));
+
+    ['events', 'audit', 'idempotency'].forEach(type => {
+      const items = this.storage.list(type);
+      let archivedCount = 0;
+      
+      items.forEach(item => {
+        const itemDate = new Date(item.timestamp || item.created_at);
+        if (itemDate < cutoff) {
+          this.storage.archive(type, item.id);
+          archivedCount++;
+        }
+      });
+      
+      if (archivedCount > 0) {
+        console.log(`   - Archived ${archivedCount} ${type} items older than ${daysToRetain} days.`);
+      }
+    });
+  }
+}
+
+// ============================================================================
+// 8. INTEGRATION HUB
+// ============================================================================
+
+class IntegrationHub {
+  constructor(storage) {
+    this.storage = storage;
+  }
+
+  async syncToCRM(entityType, entityId) {
+    // Stub: Would connect to Salesforce/HubSpot
+    console.log(`🔌 [CRM] Syncing ${entityType}:${entityId}...`);
+    return { status: 'synced', external_id: `CRM_${entityId}` };
+  }
+
+  async exportToERP(batchId) {
+    // Stub: Would connect to SAP/Oracle
+    console.log(`🔌 [ERP] Exporting batch ${batchId}...`);
+    return { status: 'exported', erp_ref: `ERP_BATCH_${Date.now()}` };
   }
 }
 
@@ -379,17 +778,40 @@ class RecurringPayoutManager {
 export class AdvancedFinancialManager {
   constructor() {
     this.storage = new FinancialStorage();
-    this.recipients = new RecipientManager(this.storage);
-    this.currency = new CurrencyManager(this.storage);
-    this.revenue = new RevenueManager(this.storage);
-    this.goals = new FinancialGoalManager(this.storage, this.revenue);
-    this.reconciliation = new ReconciliationEngine(this.storage, this.revenue);
-    this.recurring = new RecurringPayoutManager(this.storage, this.revenue);
+    this.audit = new SystemAuditLogger(this.storage);
+    this.idempotency = new IdempotencyManager(this.storage);
+    this.executor = new TransactionExecutor(this.idempotency, this.audit);
+    
+    // Utils
+    this.batcher = new BatchProcessor();
+
+    // Managers
+    this.recipients = new RecipientManager(this.storage, this.audit);
+    this.currency = new CurrencyManager(this.storage, this.audit);
+    this.revenue = new RevenueManager(this.storage, this.audit);
+    this.goals = new FinancialGoalManager(this.storage, this.revenue, this.audit);
+    this.reconciliation = new ReconciliationEngine(this.storage, this.revenue, this.audit);
+    this.recurring = new RecurringPayoutManager(this.storage, this.revenue, this.audit, this.executor);
+    
+    // New Modules
+    this.compliance = new ComplianceManager(this.storage, this.audit);
+    this.analytics = new AnalyticsEngine(this.storage);
+    this.integration = new IntegrationHub(this.storage);
   }
 
   async initialize() {
     console.log('🚀 Initializing Advanced Financial Manager...');
+    console.log('   - Audit System: Active');
+    console.log('   - Idempotency Manager: Active');
+    console.log('   - Caching: Active');
     await this.currency.updateExchangeRates();
     console.log('✅ Financial Manager Ready');
+  }
+
+  /**
+   * Helper to execute a secure financial transaction from external callers
+   */
+  async executeTransaction(key, taskFn, context) {
+    return this.executor.execute(key, taskFn, context);
   }
 }
