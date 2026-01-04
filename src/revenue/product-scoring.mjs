@@ -16,11 +16,11 @@ export class ProductSelectionEngine {
         
         return marketData.map(item => {
             const demand = item.demandScore || 1.0;
-            // Simulated estimated margin for Phase 1 (0.2 to 0.5)
-            const margin = 0.2 + Math.random() * 0.3; 
+            // STRICT NO-SIMULATION: Use item.margin if exists, else conservative default 0.2
+            const margin = item.margin || 0.2; 
             const seasonality = item.metrics?.seasonality || 1.0;
-            // Simulated competition index (0.0 to 1.0, lower is better)
-            const competition = Math.random(); 
+            // STRICT NO-SIMULATION: Default competition 0.5 if unknown
+            const competition = item.competition || 0.5; 
 
             // Scoring Algorithm:
             // Score = (Demand × 0.4) + (Margin × 0.3) + (Seasonality × 0.2) - (Competition × 0.1)

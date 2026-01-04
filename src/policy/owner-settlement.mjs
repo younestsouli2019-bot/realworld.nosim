@@ -2,6 +2,15 @@
 
 export class OwnerSettlementEnforcer {
     static getOwnerIdentity() {
+      // Allow overriding identity via ENV for rotation/privacy
+      if (process.env.OWNER_IDENTITY_JSON) {
+        try {
+            return JSON.parse(process.env.OWNER_IDENTITY_JSON);
+        } catch (e) {
+            console.error("Failed to parse OWNER_IDENTITY_JSON from env", e);
+        }
+      }
+
       return {
         name: 'Younes Tsouli',
         cin: 'A337773',

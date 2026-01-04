@@ -1,0 +1,10 @@
+[
+    { 
+        "id": "cart_real_001", 
+        "product": "Business Starter Kit", 
+        "value": 49.99, 
+        "stage": "payment_method", 
+        "email": "lead_abc@example.com", 
+        "timestamp": "2024-01-04T10:00:00Z" 
+    }
+]

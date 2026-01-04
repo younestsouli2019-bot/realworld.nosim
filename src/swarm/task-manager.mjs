@@ -19,8 +19,10 @@ class PriorityQueue {
 }
 
 export class TaskManager {
-  constructor(agents) {
-    this.agents = agents; // Map of agentId -> capability
+  constructor(agents, healthMonitor, rateLimiter) {
+    this.agents = agents; // Map of agentId -> { capabilities: string[] }
+    this.healthMonitor = healthMonitor;
+    this.rateLimiter = rateLimiter;
     this.taskQueue = new PriorityQueue();
     this.assignedTasks = new Map();
   }
@@ -34,6 +36,9 @@ export class TaskManager {
         const workload = this.assignedTasks.get(agentId)?.length || 0;
         const health = this.getAgentHealth(agentId);
         
+        // Skip unhealthy agents
+        if (health < 0.5) continue;
+
         capableAgents.push({
           agentId,
           workload,
@@ -44,7 +49,6 @@ export class TaskManager {
     }
     
     if (capableAgents.length === 0) {
-      // No capable agent - escalate
       this.escalateTask(task);
       return null;
     }
@@ -56,10 +60,24 @@ export class TaskManager {
       return scoreB - scoreA;
     });
     
-    const selectedAgent = capableAgents[0];
-    this.assignToAgent(task, selectedAgent.agentId);
-    
-    return selectedAgent.agentId;
+    // Check Rate Limits for the top candidate
+    for (const candidate of capableAgents) {
+        if (this.checkRateLimit(candidate.agentId, task)) {
+            this.assignToAgent(task, candidate.agentId);
+            return candidate.agentId;
+        }
+    }
+
+    console.warn(`[TaskManager] All capable agents are rate-limited for task ${task.id}`);
+    return null; // All candidates rate limited
+  }
+
+  checkRateLimit(agentId, task) {
+      if (!this.rateLimiter) return true; // No limiter, proceed
+      const resourceKey = task.resourceKey || 'DEFAULT';
+      // We check global resource limits here. 
+      // In future, we could check per-agent limits if AdaptiveRateLimiter supports it.
+      return this.rateLimiter.tryAcquire(resourceKey);
   }
   
   hasCapability(agent, requiredCapabilities) {
@@ -68,8 +86,13 @@ export class TaskManager {
   }
 
   getAgentHealth(agentId) {
-      // In a real system, this would query the HealthMonitor
-      return 1.0; // Assume healthy
+      if (!this.healthMonitor) return 1.0;
+      const agentData = this.healthMonitor.agents.get(agentId);
+      if (!agentData) return 1.0; // Assume healthy if new
+      
+      // Calculate health score based on failures and status
+      if (agentData.status === 'UNHEALTHY' || agentData.status === 'DEAD') return 0.0;
+      return Math.max(0, 1.0 - (agentData.failures * 0.2));
   }
 
   escalateTask(task) {

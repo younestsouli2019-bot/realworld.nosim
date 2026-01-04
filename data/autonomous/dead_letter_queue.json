@@ -1,0 +1,125 @@
+[
+  {
+    "task": {
+      "id": "FAILING_TASK",
+      "attempts": 6
+    },
+    "error": "503 Service Unavailable",
+    "timestamp": "2026-01-04T20:16:13.118Z"
+  },
+  {
+    "task": {
+      "type": "SCORE_AND_EXECUTE",
+      "payload": [
+        {
+          "id": "p1",
+          "name": "Customizable Canvas Tote Bag",
+          "category": "Accessories",
+          "metrics": {
+            "trend": 1.0514688425088916,
+            "seasonality": 1,
+            "sentiment": 0.7111516914196737
+          },
+          "demandScore": 0.7477538458252848,
+          "timestamp": "2026-01-04T20:25:50.498Z"
+        },
+        {
+          "id": "p2",
+          "name": "Monogram Ceramic Coffee Mug",
+          "category": "Home",
+          "metrics": {
+            "trend": 0.925889405103141,
+            "seasonality": 1,
+            "sentiment": 0.7885212194370279
+          },
+          "demandScore": 0.7300834427757531,
+          "timestamp": "2026-01-04T20:25:50.498Z"
+        },
+        {
+          "id": "p3",
+          "name": "Customizable Phone Case",
+          "category": "Electronics",
+          "metrics": {
+            "trend": 1.0976305452134052,
+            "seasonality": 1,
+            "sentiment": 0.7622572465687772
+          },
+          "demandScore": 0.836676837144156,
+          "timestamp": "2026-01-04T20:25:50.498Z"
+        },
+        {
+          "id": "p4",
+          "name": "FNTCASE iPhone 17 Case",
+          "category": "Electronics",
+          "metrics": {
+            "trend": 1.2771342740468732,
+            "seasonality": 1,
+            "sentiment": 0.846719777616661
+          },
+          "demandScore": 1.0813748485075843,
+          "timestamp": "2026-01-04T20:25:50.498Z"
+        },
+        {
+          "id": "dig_001",
+          "name": "Business Starter Kit (Templates)",
+          "category": "Digital",
+          "type": "digital_download",
+          "metrics": {
+            "trend": 1.3044890711372106,
+            "seasonality": 1,
+            "sentiment": 0.8859183668227189
+          },
+          "demandScore": 1.1556708274399632,
+          "timestamp": "2026-01-04T20:25:50.498Z"
+        },
+        {
+          "id": "dig_002",
+          "name": "AI Prompt Library (High Value)",
+          "category": "Digital",
+          "type": "digital_download",
+          "metrics": {
+            "trend": 1.0515148644578605,
+            "seasonality": 1,
+            "sentiment": 0.7370352687289498
+          },
+          "demandScore": 0.7750035406981843,
+          "timestamp": "2026-01-04T20:25:50.498Z"
+        },
+        {
+          "id": "dig_art_01",
+          "name": "Abstract AI Art Pack (50pcs)",
+          "category": "Digital Art",
+          "type": "digital_download",
+          "metrics": {
+            "trend": 1.485278438478757,
+            "seasonality": 1,
+            "sentiment": 0.9552877198095169
+          },
+          "demandScore": 1.4188682527766114,
+          "timestamp": "2026-01-04T20:25:50.498Z"
+        },
+        {
+          "id": "dig_ebook_01",
+          "name": "30-Day Mindfulness Challenge E-Book",
+          "category": "Digital Books",
+          "type": "digital_download",
+          "metrics": {
+            "trend": 1.0023345169300961,
+            "seasonality": 1,
+            "sentiment": 0.5044206163505622
+          },
+          "demandScore": 0.5055981948193221,
+          "timestamp": "2026-01-04T20:25:50.498Z"
+        }
+      ],
+      "requiredCapabilities": [
+        "TRADE_EXECUTION"
+      ],
+      "resourceKey": "BINANCE_API",
+      "id": "task_1767558350498",
+      "attempts": 1
+    },
+    "error": "this.settlementOrchestrator.routeSettlement is not a function",
+    "timestamp": "2026-01-04T20:25:50.502Z"
+  }
+]

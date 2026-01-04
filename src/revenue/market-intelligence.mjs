@@ -69,14 +69,15 @@ export class MarketIntelligenceAgent {
     // --- Market Signal Heuristics ---
 
     async _getTrendVelocity(product) {
-        // Heuristic: Returns a value between 0.8 and 1.5
-        // In production: Google Trends API
-        return 0.8 + Math.random() * 0.7;
+        // STRICT NO-SIMULATION POLICY
+        // Load from external data source or return neutral default
+        const trends = this._loadTrendData();
+        const productData = trends.trends[product.id] || trends.default;
+        return productData.velocity;
     }
 
     async _getSeasonalityFactor(product) {
-        // Heuristic: Returns a value based on current month
-        // In production: Historical sales data + ARIMA
+        // Deterministic Seasonality (Calendar-based is fine, it's not random)
         const month = new Date().getMonth();
         if (product.category === 'Accessories' && (month > 4 && month < 8)) return 1.3; // Summer
         if (month > 9) return 1.5; // Q4 Holiday
@@ -84,8 +85,21 @@ export class MarketIntelligenceAgent {
     }
 
     async _getSentimentScore(product) {
-        // Heuristic: Returns 0.5 to 1.0
-        // In production: NLP on Reddit/Reviews
-        return 0.5 + Math.random() * 0.5;
+        // STRICT NO-SIMULATION POLICY
+        const trends = this._loadTrendData();
+        const productData = trends.trends[product.id] || trends.default;
+        return productData.sentiment;
+    }
+
+    _loadTrendData() {
+        try {
+            const dataPath = path.resolve('./data/market/trends.json');
+            if (fs.existsSync(dataPath)) {
+                return JSON.parse(fs.readFileSync(dataPath, 'utf8'));
+            }
+        } catch (e) {
+            console.warn('[MarketIntel] Failed to load trends.json, using defaults.');
+        }
+        return { trends: {}, default: { velocity: 1.0, sentiment: 0.5 } };
     }
 }

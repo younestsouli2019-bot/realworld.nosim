@@ -1,6 +1,31 @@
 {
-  "daily_usage": {},
-  "transactions": [],
+  "daily_usage": {
+    "2026-01-04": {
+      "PAYONEER": 300
+    }
+  },
+  "transactions": [
+    {
+      "id": "tx_1767558432408_xjasr1mw1",
+      "timestamp": "2026-01-04T20:27:12.408Z",
+      "channel": "PAYONEER",
+      "amount": 150,
+      "status": "IN_TRANSIT",
+      "details": {
+        "destination": "younestsouli2019@gmail.com"
+      }
+    },
+    {
+      "id": "tx_1767558927397_dosnptbva",
+      "timestamp": "2026-01-04T20:35:27.397Z",
+      "channel": "PAYONEER",
+      "amount": 150,
+      "status": "IN_TRANSIT",
+      "details": {
+        "destination": "younestsouli2019@gmail.com"
+      }
+    }
+  ],
   "queued": [
     {
       "id": "queue_1767556757308_1tqac2dri",

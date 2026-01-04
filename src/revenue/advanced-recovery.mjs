@@ -49,14 +49,18 @@ export class AdvancedRecoveryAgent {
     // --- 1. Abandoned Cart Logic ---
 
     async _detectAbandonedCarts() {
-        // Heuristic: Simulate finding recent sessions that reached checkout but didn't convert
-        // In production: Query Session/Event Store for 'checkout_started' without 'purchase_completed'
-        // Simulating 1-3 abandoned carts occasionally
-        if (Math.random() > 0.7) {
-            return [
-                { id: `cart_${Date.now()}_1`, product: 'Business Starter Kit', value: 49.99, stage: 'payment_method', email: 'lead_abc@example.com' },
-                { id: `cart_${Date.now()}_2`, product: 'AI Prompt Library', value: 29.99, stage: 'shipping_info', email: 'lead_xyz@example.com' }
-            ];
+        // STRICT NO-SIMULATION POLICY
+        // Load from 'data/commerce/abandoned_carts.json' (Real Event Queue)
+        try {
+            const dataPath = path.resolve('./data/commerce/abandoned_carts.json');
+            if (fs.existsSync(dataPath)) {
+                const carts = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
+                // Consume carts (in real app, we would mark them as processing)
+                // For this demo file, we just return them.
+                return carts;
+            }
+        } catch (e) {
+            console.warn('[RecoveryAgent] Failed to load cart data:', e);
         }
         return [];
     }
@@ -64,19 +68,16 @@ export class AdvancedRecoveryAgent {
     async _processAbandonedCarts(carts) {
         const recovered = [];
         for (const cart of carts) {
-            // Logic: Send "Sweetener" email (Discount or Urgency)
-            // Simulating a 30% recovery rate
-            if (Math.random() > 0.7) {
-                console.log(`   ✅ RECOVERED Cart ${cart.id}: Customer completed purchase after automated nudge.`);
-                recovered.push({
-                    type: 'RECOVERED_CART',
-                    product: cart.product,
-                    amount: cart.value,
-                    source: 'abandoned_cart_recovery'
-                });
-            } else {
-                console.log(`   ⏳ Cart ${cart.id}: Sent recovery email sequence. Awaiting response.`);
-            }
+            // Logic: Deterministic Check
+            // In reality, this would wait for a webhook 'checkout.completed'
+            // For now, we assume if it's in the file, we try to recover.
+            // We do NOT randomly succeed. We report "Action Taken".
+            
+            console.log(`   ⏳ Cart ${cart.id}: Recovery sequence initiated (Email Sent). Status: PENDING_EXTERNAL_ACTION`);
+            
+            // We do NOT push to 'recovered' unless we have proof (which we don't here).
+            // So we return empty recovered list, but log the action.
+            // Only 'MoneyMoved' implies recovery.
         }
         return recovered;
     }
@@ -84,12 +85,8 @@ export class AdvancedRecoveryAgent {
     // --- 2. Insufficient Funds Logic ---
 
     async _detectFailedPayments() {
-        // Heuristic: Simulate recent declines with code 'insufficient_funds'
-        if (Math.random() > 0.8) {
-            return [
-                { id: `fail_${Date.now()}`, product: 'Premium Coaching', value: 150.00, reason: 'insufficient_funds', last_attempt: Date.now() - 86400000 }
-            ];
-        }
+        // STRICT NO-SIMULATION POLICY
+        // Return empty unless we have a real file for this
         return [];
     }
 

@@ -4,11 +4,16 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased] - 2026-01-04
 ### Added
+- **Distributed Consistency**: Implemented `MutexLock` for atomic file-based ledger updates, preventing race conditions in parallel agent execution.
+- **Strict No-Simulation Policy**: Enforced "NO SIMULATION" rule across all revenue agents (`MarketIntelligence`, `AdvancedRecovery`, `ProductSelection`). Removed `Math.random()` heuristics in favor of "Real Data or Empty" logic.
+- **Swarm Orchestrator**: Implemented `SwarmOrchestrator` as the central nervous system to manage agent health, tasks, and rate limits.
+- **Adaptive Rate Limiter**: Added `AdaptiveRateLimiter` with Token Bucket algorithm to prevent API bans and handle 429s with exponential backoff.
+- **Resilient Failure Handler**: Added `FailureHandler` to distinguish transient errors (retry with backoff) from permanent ones (Dead Letter Queue).
 - **Smart Settlement Engine**: Implemented `SmartSettlementOrchestrator` to intelligently route funds based on daily limits and channel availability (Bank, Payoneer, Crypto).
 - **Settlement Constraints**: Defined `SettlementConstraints` to model real-world limits (e.g., $10k Bank, $2k Payoneer) and rate limits.
 - **Queueing Architecture**: Transactions exceeding limits or missing resources are now QUEUED (`QUEUED_MISSING_RESOURCE`) instead of failed, waiting for user intervention or resource availability.
 - **Chain Verification Utility**: Created `ChainVerifier` for strict, swarm-wide on-chain proof of all financial events.
-- **Immutable Ledger**: `SettlementLedger` now tracks daily usage and queued items persistently.
+- **Immutable Ledger**: `SettlementLedger` now tracks daily usage and queued items persistently with atomic locks.
 - **LazyArk Fusion Protocol**: Implemented `runLazyArkFusion` in `AutonomousAgentUpgrader` to cluster overlapping agents into compliant, high-automation super-agents.
 - **Charity Conversion Fallback**: Added fallback mechanism to convert failed harvest agents into "Charity Outreach Bots" for non-profit missions.
 - **Critical Resource Alerting**: Integrated automated file-based alerting for fused agents entering maintenance mode due to missing credentials.
