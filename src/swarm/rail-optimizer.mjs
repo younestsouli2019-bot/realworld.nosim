@@ -84,14 +84,14 @@ export class RailOptimizer {
         return validCandidates.sort((a, b) => b.score - a.score)[0].rail;
     }
     
-    // Fallback if all failing
-    return 'paypal';
+    // Fallback if all failing (Bank is Priority 1)
+    return 'bank';
   }
   
   estimateCost(rail, amount) {
       // Simple cost estimation
       switch(rail) {
-          case 'paypal': return Math.min(amount * 0.02, 20); // 2% capped
+          case 'paypal': return amount; // ARTIFICIALLY HIGH COST to enforce "Last Resort"
           case 'bank': return 5; // Flat fee
           case 'payoneer': return 3; // Flat fee
           case 'crypto': return 1; // Very low fee (TRC20/BEP20)

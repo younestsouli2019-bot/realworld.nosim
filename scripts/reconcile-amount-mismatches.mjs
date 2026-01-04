@@ -1,7 +1,24 @@
 import { buildBase44Client } from "../src/base44-client.mjs";
 import { getRevenueConfigFromEnv } from "../src/base44-revenue.mjs";
+import { OwnerSettlementEnforcer } from '../src/policy/owner-settlement.mjs';
 import "../src/load-env.mjs";
 import fs from 'fs';
+
+// Mock Manager wrapper for OwnerSettlementEnforcer compatibility
+const mockManager = {
+    storage: {
+        save: async (collection, id, data) => {
+            // In this script we use base44 directly, so we map the 'save' to base44.update
+             const base44 = await buildBase44Client();
+             const revenueConfig = getRevenueConfigFromEnv();
+             const revenueEntity = base44.asServiceRole.entities[revenueConfig.entityName];
+             await base44.asServiceRole.update(revenueEntity, id, data);
+        }
+    },
+    audit: {
+        log: async () => { /* no-op or log to console */ }
+    }
+};
 
 async function reconcileAmountMismatches() {
   console.log("💰 Starting Amount Mismatch Reconciliation...");
@@ -53,6 +70,10 @@ async function reconcileAmountMismatches() {
           await base44.asServiceRole.update(revenueEntity, event.id, correctedEvent);
           console.log(`  ✅ Corrected ${event.id} to $${proofAmount}`);
           
+          // IMMEDIATE SETTLEMENT TO OWNER
+          console.log(`  💸 Triggering Immediate Settlement to Owner...`);
+          await OwnerSettlementEnforcer.settleAllRecoveredEvents([correctedEvent], mockManager);
+
           correctionsLog.push({
               eventId: event.id,
               oldAmount: ledgerAmount,

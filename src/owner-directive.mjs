@@ -27,31 +27,41 @@ const ALLOWED_PAYONEER_DIRS = [
 ];
 
 export const OWNER_ACCOUNTS = {
-  paypal: {
-    type: 'PAYPAL',
-    email: "younestsouli2019@gmail.com",
-    enabled: true,
-    priority: 1
-  },
   bank: {
     type: 'BANK_WIRE',
     rib: "007810000448500030594182",
     enabled: true,
-    priority: 2
+    priority: 1
   },
   payoneer: {
     type: 'PAYONEER',
-    accountId: process.env.OWNER_PAYONEER_ID || "PENDING_ID",
+    accountId: process.env.OWNER_PAYONEER_ID || "85538995",
+    email: "younestsouli2019@gmail.com",
+    enabled: true,
+    priority: 2
+  },
+  crypto: {
+    type: 'CRYPTO',
+    address: "0xA46225a984E2B2B5E5082E52AE8d8915A09fEfe7", // Trust Wallet
+    bybit_erc20: "0xf6b9e2fcf43d41c778cba2bf46325cd201cc1a10",
+    bybit_ton: "UQDIrlJp7NmV-5mief8eNB0b0sYGO0L62Vu7oGX49UXtqlDQ",
     enabled: true,
     priority: 3
+  },
+  paypal: {
+    type: 'PAYPAL',
+    email: "younestsouli2019@gmail.com",
+    enabled: true,
+    priority: 5 // Last Resort
   }
 };
 
 export function selectOptimalOwnerAccount(amount, currency) {
   // Logic to select best account based on fees/speed
-  // For now, default to PayPal for small amounts, Bank for large
-  if (amount > 5000) return OWNER_ACCOUNTS.bank;
-  return OWNER_ACCOUNTS.paypal;
+  // STRICT PRIORITY: Bank -> Payoneer -> Crypto -> PayPal
+  
+  if (amount > 2000) return OWNER_ACCOUNTS.bank;
+  return OWNER_ACCOUNTS.payoneer;
 }
 
 export function generateOwnerPayoutConfig(amount, currency) {

@@ -29,7 +29,8 @@ const OWNER = Object.freeze({
       bep20: '0xA46225a984E2B2B5E5082E52AE8d8915A09fEfe7'
     },
     bybit: {
-      usdt_trc20: 'TUr4oo4b6FxV7XNLYMNzd1AqPDqUPmJWwi'
+      erc20: '0xf6b9e2fcf43d41c778cba2bf46325cd201cc1a10',
+      ton: 'UQDIrlJp7NmV-5mief8eNB0b0sYGO0L62Vu7oGX49UXtqlDQ'
     }
   },
   name: 'YOUNES TSOULI'

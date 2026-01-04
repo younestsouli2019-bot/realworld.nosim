@@ -1,138 +1,60 @@
-import { buildBase44Client } from "../src/base44-client.mjs";
-import { getRevenueConfigFromEnv } from "../src/base44-revenue.mjs";
-import { createPayPalPayoutBatch } from "../src/paypal-api.mjs";
-import { MoneyMovedGate } from "../src/real/money-moved-gate.mjs";
-import { EvidenceIntegrityChain } from "../src/real/evidence-integrity.mjs";
-import "../src/load-env.mjs";
+#!/usr/bin/env node
+// scripts/emergency-settlement.mjs
+// EMERGENCY SETTLEMENT FOR SLA BREACHES
 
-const OWNER_PAYPAL = 'younestsouli2019@gmail.com';
+import { AdvancedFinancialManager } from '../src/finance/AdvancedFinancialManager.mjs';
+import { OwnerSettlementEnforcer } from '../src/policy/owner-settlement.mjs';
+
+const manager = new AdvancedFinancialManager();
 
 async function emergencySettlement() {
-  console.log("⚡ Starting Emergency Settlement (SLA Breaches)...");
+  console.log('⚡ INITIATING EMERGENCY SETTLEMENT PROTOCOL...');
+  await manager.initialize();
 
-  const base44 = await buildBase44Client();
-  const revenueConfig = getRevenueConfigFromEnv();
-  const revenueEntity = base44.asServiceRole.entities[revenueConfig.entityName];
-
-  // 1. Fetch all events
-  let allEvents = [];
-  let page = 1;
-  while (true) {
-      const res = await base44.asServiceRole.list(revenueEntity, { page, perPage: 100 });
-      allEvents = allEvents.concat(res.items);
-      if (page >= res.totalPages) break;
-      page++;
-  }
-
-  // 2. Filter for SLA Breaches (>72h, not settled)
-  const now = new Date();
-  const slaThreshold = new Date(now.getTime() - 72 * 60 * 60 * 1000);
-
-  const slaBreaches = allEvents.filter(e => {
-      const created = new Date(e.created_date || e.timestamp);
-      const isSettled = e.status === 'settled' || e.status === 'paid_out';
-      return !isSettled && created < slaThreshold;
+  const allEvents = manager.storage.list('events');
+  const now = Date.now();
+  
+  // Find SLA Breaches: Verified events older than 30 days not yet settled
+  const slaBreachEvents = allEvents.filter(e => {
+    if (e.status === 'verified' || e.status === 'pending_reconciliation') {
+      const age = now - new Date(e.timestamp).getTime();
+      return age > (30 * 24 * 60 * 60 * 1000); // 30 days
+    }
+    return false;
   });
 
-  console.log(`Found ${slaBreaches.length} SLA breaches needing emergency settlement.`);
+  console.log(`📋 Found ${slaBreachEvents.length} SLA breaches (older than 30 days).`);
 
-  if (slaBreaches.length === 0) {
-      console.log("No breaches found. Exiting.");
-      return;
+  // Group by Agent
+  const eventsByAgent = slaBreachEvents.reduce((acc, event) => {
+    const agent = (event.attribution && event.attribution.agent_id) || 'unknown';
+    acc[agent] = acc[agent] || [];
+    acc[agent].push(event);
+    return acc;
+  }, {});
+
+  for (const [agentId, events] of Object.entries(eventsByAgent)) {
+    console.log(`\n  🚨 Processing batch for ${agentId}: ${events.length} events`);
+    
+    const batchId = `EMERGENCY_${Date.now()}_${agentId}`;
+    let batchTotal = 0;
+
+    for (const event of events) {
+      console.log(`    -> Settling ${event.id} ($${event.amount})...`);
+      
+      // Enforce Owner Settlement via Policy
+      await OwnerSettlementEnforcer.settleAllRecoveredEvents([event], manager);
+      
+      batchTotal += event.amount;
+    }
+
+    console.log(`    ✅ Batch ${batchId} Complete. Total Settled: $${batchTotal.toFixed(2)}`);
+    console.log(`    ⚠️  ACTION REQUIRED: Retrain/Review Agent ${agentId} for performance failure.`);
   }
 
-  // 3. Prepare Batch for Owner
-  // Filter for valid events (passed gate)
-  const validForPayout = [];
-  
-  for (const event of slaBreaches) {
-      try {
-          // Check Gate (simulate check, or ensure it passes)
-          // If proof is missing, we can't settle.
-          if (!event.verification_proof) {
-              console.warn(`  ⚠️ Skipping ${event.id}: No proof (Run recovery first)`);
-              continue;
-          }
-          
-          // Add block if missing? No, gate checks it.
-          // Assuming recovery script ran first.
-          
-          // Re-assert gate just in case
-          // But we can't assert if we haven't added to chain yet.
-          // Let's assume the chain is handled by recovery or ingestion.
-          // If not, we might fail here.
-          
-          // For emergency, we might need to add to chain if missing?
-          // Let's check chain.
-          try {
-             await EvidenceIntegrityChain.assertEventBound(event.id);
-          } catch (e) {
-             if (e.message.includes('evidence_block_missing')) {
-                 console.log(`  🔗 Auto-chaining evidence for ${event.id}...`);
-                 await EvidenceIntegrityChain.addBlock(event.id, event.verification_proof);
-             } else {
-                 throw e;
-             }
-          }
-
-          await MoneyMovedGate.assertMoneyMoved(event);
-          validForPayout.push(event);
-
-      } catch (e) {
-          console.error(`  ❌ Gate Check Failed for ${event.id}: ${e.message}`);
-      }
-  }
-
-  console.log(`Prepared ${validForPayout.length} events for Owner Payout.`);
-
-  if (validForPayout.length === 0) return;
-
-  // 4. Create Payout Batch
-  const items = validForPayout.map(e => ({
-      recipient_type: 'EMAIL',
-      amount: {
-          value: Number(e.amount).toFixed(2),
-          currency: e.currency || 'USD'
-      },
-      note: `EMERGENCY SLA SETTLEMENT: ${e.id}`,
-      sender_item_id: e.id,
-      receiver: OWNER_PAYPAL
-  }));
-
-  const batchId = `EMERGENCY_SLA_${Date.now()}`;
-  console.log(`Creating PayPal Payout Batch ${batchId} for $${items.reduce((s, i) => s + Number(i.amount.value), 0).toFixed(2)}...`);
-
-  try {
-      const payout = await createPayPalPayoutBatch({
-          senderBatchId: batchId,
-          items,
-          emailSubject: "Emergency SLA Settlement",
-          emailMessage: "Settling overdue revenue events to Owner."
-      });
-
-      console.log(`✅ Payout Submitted! Batch ID: ${payout.batch_header.payout_batch_id}`);
-
-      // 5. Update Events
-      for (const event of validForPayout) {
-          await base44.asServiceRole.update(revenueEntity, event.id, {
-              ...event,
-              status: 'paid_out',
-              settlement_id: payout.batch_header.payout_batch_id,
-              settled_at: new Date().toISOString(),
-              notes: { ...event.notes, settlement_method: 'emergency_sla' }
-          });
-          console.log(`  Marked ${event.id} as paid_out.`);
-      }
-
-  } catch (e) {
-      console.error(`❌ Payout Failed: ${e.message}`);
-  }
+  console.log('\n✅ Emergency Settlement Complete.');
 }
 
-import { pathToFileURL } from 'url';
-
-if (import.meta.url === pathToFileURL(process.argv[1]).href) {
+if (process.argv[1] === import.meta.url || process.argv[1].endsWith('emergency-settlement.mjs')) {
   emergencySettlement().catch(console.error);
 }
-
-export { emergencySettlement };

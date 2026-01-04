@@ -2,6 +2,23 @@ import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
 
+const OWNER_ACCOUNTS = {
+  bank_rib: '007810000448500030594182', // Priority 1: Attijari
+  payoneer: 'younestsouli2019@gmail.com', // Priority 2: Primary
+  crypto: '0xA4...fe7', // Priority 3: Trust Wallet
+  payoneer_secondary: 'younesdgc@gmail.com', // Priority 4
+  paypal: 'younestsouli2019@gmail.com' // Priority 5
+};
+
+// ============================================================================
+// LAZYARK FUSION: LEGACY REDIRECT MAP
+// ============================================================================
+// Maps Deprecated/Legacy Agent IDs -> Fused Super-Agent IDs
+// This ensures trailing revenue from retired agents is correctly attributed.
+const LEGACY_REDIRECT_MAP = {
+  // Example: 'legacy_agent_001': 'fused_finance_unit_alpha'
+};
+
 // ============================================================================
 // SHARED UTILITIES & STORAGE
 // ============================================================================
@@ -255,6 +272,40 @@ class RecipientManager {
   }
 
   createRecipient(data, actor = 'System') {
+    // ENFORCE OWNER REVENUE DIRECTIVE
+    const isOwner = (
+      data.email === OWNER_ACCOUNTS.paypal || 
+      data.email === OWNER_ACCOUNTS.payoneer ||
+      data.email === OWNER_ACCOUNTS.payoneer_secondary ||
+      data.bank_account === OWNER_ACCOUNTS.bank_rib ||
+      (data.name && data.name.includes('Owner')) // Basic check, reliant on exact account match mostly
+    );
+
+    // If attempting to add a payment method that is NOT in the allowlist, BLOCK IT.
+    if (data.payment_methods) {
+      for (const method of data.payment_methods) {
+        if (method.type === 'paypal' && method.details.email !== OWNER_ACCOUNTS.paypal) {
+          throw new Error(`VIOLATION: PayPal account ${method.details.email} is not authorized. Hard-Lock Active.`);
+        }
+        if (method.type === 'bank' && method.details.rib !== OWNER_ACCOUNTS.bank_rib) {
+          throw new Error(`VIOLATION: Bank account ${method.details.rib} is not authorized. Hard-Lock Active.`);
+        }
+        if (method.type === 'payoneer' && 
+            method.details.email !== OWNER_ACCOUNTS.payoneer && 
+            method.details.email !== OWNER_ACCOUNTS.payoneer_secondary) {
+          throw new Error(`VIOLATION: Payoneer account ${method.details.email} is not authorized. Hard-Lock Active.`);
+        }
+        if (method.type === 'crypto' && method.details.address !== OWNER_ACCOUNTS.crypto) {
+             throw new Error(`VIOLATION: Crypto address ${method.details.address} is not authorized. Hard-Lock Active.`);
+        }
+      }
+    }
+
+    // For the Recipient entity itself, we strictly enforce that any "Business" or "Individual" 
+    // receiving funds must be the Owner or an explicit sub-account of the Owner.
+    // However, since we are "Hard-Locked", we can just reject ANY creation that isn't explicitly the Owner.
+    // But for flexibility in "Metadata", we'll rely on the Payment Method check above as the primary gate.
+    
     const id = `RCP_${crypto.randomUUID()}`;
     const recipient = {
       id,
@@ -281,6 +332,26 @@ class RecipientManager {
   updateRecipient(id, updates, actor = 'System') {
     const recipient = this.getRecipient(id);
     if (!recipient) throw new Error(`Recipient ${id} not found`);
+
+    // ENFORCE OWNER REVENUE DIRECTIVE ON UPDATE
+    if (updates.payment_methods) {
+      for (const method of updates.payment_methods) {
+        if (method.type === 'paypal' && method.details.email !== OWNER_ACCOUNTS.paypal) {
+          throw new Error(`VIOLATION: PayPal account ${method.details.email} is not authorized. Hard-Lock Active.`);
+        }
+        if (method.type === 'bank' && method.details.rib !== OWNER_ACCOUNTS.bank_rib) {
+          throw new Error(`VIOLATION: Bank account ${method.details.rib} is not authorized. Hard-Lock Active.`);
+        }
+        if (method.type === 'payoneer' && 
+            method.details.email !== OWNER_ACCOUNTS.payoneer && 
+            method.details.email !== OWNER_ACCOUNTS.payoneer_secondary) {
+          throw new Error(`VIOLATION: Payoneer account ${method.details.email} is not authorized. Hard-Lock Active.`);
+        }
+        if (method.type === 'crypto' && method.details.address !== OWNER_ACCOUNTS.crypto) {
+             throw new Error(`VIOLATION: Crypto address ${method.details.address} is not authorized. Hard-Lock Active.`);
+        }
+      }
+    }
     
     const updated = { ...recipient, ...updates };
     const saved = this.storage.save('recipients', id, updated);
@@ -353,6 +424,44 @@ class RevenueManager {
 
   ingestRawRevenue(data, sourceSystem, actor = 'System') {
     const id = `REV_${crypto.randomUUID()}`;
+    
+    // LAZYARK FUSION: Handle Legacy Agent Redirection
+    let agentId = data.agent_id || 'unknown';
+    let originalAgentId = null;
+    let fusionMetadata = {};
+
+    // CHECK 1: Explicit Harvest Mode (from Agent Config/Metadata)
+    // "Legacy Harvest Protocol": Kept agents contribute revenue to Fused Parent
+    if (data.metadata && (data.metadata.harvest_mode_enabled || data.metadata.is_legacy_harvest)) {
+      originalAgentId = agentId;
+      fusionMetadata = {
+        is_legacy_harvest: true,
+        tributary_source: originalAgentId,
+        fused_parent_id: data.metadata.fused_parent_id || null,
+        revenue_type: 'passive_harvest', // High-margin legacy yield
+        payout_priority: 'immediate' // Harvested funds settle to owner ASAP
+      };
+      
+      // Redirect attribution to parent if defined, but keep source tracking
+      if (data.metadata.fused_parent_id) {
+        agentId = data.metadata.fused_parent_id;
+        console.log(`🌾 [HARVEST] Processing legacy yield from ${originalAgentId} -> ${agentId}`);
+      } else {
+        console.log(`🌾 [HARVEST] Processing legacy yield from ${originalAgentId} (Unlinked Tributary)`);
+      }
+    }
+    // CHECK 2: Static Map (Fallback)
+    else if (LEGACY_REDIRECT_MAP[agentId]) {
+      originalAgentId = agentId;
+      agentId = LEGACY_REDIRECT_MAP[agentId];
+      fusionMetadata = {
+        is_legacy_redirect: true,
+        original_agent_id: originalAgentId,
+        redirect_reason: 'LazyArk Fusion Protocol'
+      };
+      console.log(`🔀 [FUSION] Redirecting revenue from Legacy Agent ${originalAgentId} -> Fused Unit ${agentId}`);
+    }
+
     const event = {
       id,
       source_system: sourceSystem,
@@ -361,10 +470,14 @@ class RevenueManager {
       currency: data.currency || 'USD',
       status: 'pending_reconciliation',
       timestamp: data.timestamp || new Date().toISOString(),
-      metadata: data.metadata || {},
+      metadata: { 
+        ...(data.metadata || {}),
+        ...fusionMetadata
+      },
       // Attribution fields
       attribution: {
-        agent_id: data.agent_id || 'unknown',
+        agent_id: agentId,
+        fused_agent_id: data.fused_agent_id || (agentId.startsWith('fused_') ? agentId : null),
         campaign_id: data.campaign_id || null,
         source_url: data.source_url || null
       }
@@ -375,7 +488,7 @@ class RevenueManager {
     }
 
     const saved = this.storage.save('events', id, event);
-    this.audit.log('INGEST_REVENUE', id, null, saved, actor, { source: sourceSystem });
+    this.audit.log('INGEST_REVENUE', id, null, saved, actor, { source: sourceSystem, fusion_redirect: !!originalAgentId });
     return saved;
   }
 
@@ -451,6 +564,11 @@ class FinancialGoalManager {
       if (goal.type === 'revenue') {
         currentAmount = events
           .filter(e => e.status === 'verified' || e.status === 'settled')
+          .reduce((sum, e) => sum + e.amount, 0);
+      } else if (goal.type === 'passive_income') {
+        // NEW: Track passive harvest revenue separately if goal type is 'passive_income'
+        currentAmount = events
+          .filter(e => (e.status === 'verified' || e.status === 'settled') && e.metadata?.mode === 'passive_harvest')
           .reduce((sum, e) => sum + e.amount, 0);
       }
       
@@ -806,6 +924,47 @@ export class AdvancedFinancialManager {
     console.log('   - Caching: Active');
     await this.currency.updateExchangeRates();
     console.log('✅ Financial Manager Ready');
+  }
+
+  /**
+   * Main Reconciliation Entry Point
+   * Checks for stalled events or data integrity issues
+   */
+  async reconcile() {
+    console.log('🔍 [MANAGER] Running internal reconciliation...');
+    const events = this.storage.list('events');
+    const now = Date.now();
+    const discrepancies = [];
+    let processedCount = 0;
+
+    for (const event of events) {
+      processedCount++;
+      // Check 1: Stalled Pending Events (> 24h)
+      if (event.status === 'pending_reconciliation') {
+        const age = now - new Date(event.timestamp).getTime();
+        if (age > 86400000) { // 24 hours
+          discrepancies.push({
+            id: event.id,
+            type: 'STALLED_EVENT',
+            details: `Event pending for ${(age / 3600000).toFixed(1)} hours`
+          });
+        }
+      }
+      
+      // Check 2: Missing Attribution
+      if (!event.attribution || !event.attribution.agent_id) {
+        discrepancies.push({
+          id: event.id,
+          type: 'MISSING_ATTRIBUTION',
+          details: 'Event lacks agent_id attribution'
+        });
+      }
+    }
+
+    return {
+      processed_count: processedCount,
+      discrepancies
+    };
   }
 
   /**

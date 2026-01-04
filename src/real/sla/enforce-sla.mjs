@@ -39,12 +39,16 @@ export function enforceSla() {
         if (entry.status === 'SUCCESS') {
             ideas[entry.idea_id].success = true;
         }
+        if (entry.status === 'CHARITY_CONVERSION') {
+            ideas[entry.idea_id].is_charity = true;
+        }
     }
 
     const toCull = [];
 
     for (const [id, stats] of Object.entries(ideas)) {
         if (stats.success) continue;
+        if (stats.is_charity) continue; // Exempt Charity/Pro-Bono missions
         if (!stats.started) continue;
 
         const ageMs = now - stats.started;

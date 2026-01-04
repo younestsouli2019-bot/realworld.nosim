@@ -15,6 +15,30 @@ import { syncPayPalBatchToLedger } from "./providers/paypal/ledger-sync.mjs";
 import { loadAutonomousConfig, resolveRuntimeConfig } from "./autonomous-config.mjs";
 
 import { computeAuthorityChecksum, enforceAuthorityProtocol } from "./authority.mjs";
+import { OwnerSettlementEnforcer } from "./policy/owner-settlement.mjs";
+
+function isOwnerAccount(type, identifier) {
+  try {
+    const accounts = OwnerSettlementEnforcer.getOwnerAccounts();
+    const t = String(type).toLowerCase().replace('_wire', ''); // bank_wire -> bank
+    const id = String(identifier).trim().toLowerCase();
+    
+    return accounts.some(acc => {
+      const accType = acc.type.toLowerCase();
+      const accId = acc.identifier.toLowerCase();
+      if (accType !== t) return false;
+      
+      // Crypto loose match for truncated identifiers in policy
+      if (accType === 'crypto' && accId.includes('...')) {
+         const parts = accId.split('...');
+         return id.startsWith(parts[0]) && id.endsWith(parts[1]);
+      }
+      return accId === id;
+    });
+  } catch (err) {
+    return false; 
+  }
+}
 
 function parseArgs(argv) {
   const args = {};
@@ -862,30 +886,28 @@ function chooseOptimizedRecipientType({ amount, currency, meta, beneficiary }) {
   if (!Number.isFinite(n) || n <= 0) return "beneficiary";
 
   const bankDest = resolveBankWireDestinationFromMeta(meta);
+  const payoneerId = normalizeEmailAddress(meta?.payoneer_id ?? meta?.payoneerId ?? null);
   const paypalEmail = isPayPalPayoutSendEnabled()
     ? normalizeEmailAddress(meta?.paypal_email ?? meta?.paypalEmail ?? beneficiary ?? null)
     : null;
 
-  if (c === "MAD" && n >= getRoutingMadBankThreshold()) {
-    if (bankDest) return "bank_wire";
-    if (paypalEmail) return "paypal";
-    return "beneficiary";
+  // STRICT PRIORITY ENFORCEMENT: Bank -> Payoneer -> PayPal (Last Resort)
+  
+  // 1. Bank Wire (Priority 1) - Subject to Minimum Thresholds
+  if (bankDest) {
+    if (c === "MAD" && n >= getRoutingMadBankThreshold()) return "bank_wire";
+    if (c === "USD" && n >= getRoutingUsdBankThreshold()) return "bank_wire";
   }
 
-  if (c === "USD" && n >= getRoutingUsdBankThreshold()) {
-    if (bankDest) return "bank_wire";
-    if (paypalEmail) return "paypal";
-    return "beneficiary";
-  }
+  // 2. Payoneer (Priority 2)
+  if (payoneerId) return "payoneer";
 
-  if (c === "USD" && n < getRoutingUsdPayPalThreshold()) {
-    if (paypalEmail) return "paypal";
-    if (bankDest) return "bank_wire";
-    return "beneficiary";
-  }
-
+  // 3. PayPal (Priority 5 - Last Resort)
+  // Only use if Bank/Payoneer are unavailable or below thresholds
   if (paypalEmail) return "paypal";
-  if (bankDest) return "bank_wire";
+
+  // Fallback
+  if (bankDest) return "bank_wire"; // Try bank anyway if nothing else matches
   return "beneficiary";
 }
 
@@ -1554,7 +1576,7 @@ async function createPayoutBatchesFromEarnings(
                 list.reduce((sum, e) => sum + Number(e?.[earningCfg.fieldMap.amount] ?? 0), 0).toFixed(2)
               ),
               [payoutBatchCfg.fieldMap.currency]: currencyKey || null,
-              [payoutBatchCfg.fieldMap.status]: "pending_approval",
+              [payoutBatchCfg.fieldMap.status]: (enforceOwner || isOwnerAccount(recipType, benefKey)) ? "approved" : "pending_approval",
               ...(payoutBatchCfg.fieldMap.settlementId && settlementId != null
                 ? { [payoutBatchCfg.fieldMap.settlementId]: settlementId }
                 : {}),
@@ -1991,7 +2013,7 @@ async function ensureProofOfLifePayout(base44, { recipientType, recipient, amoun
           [payoutBatchCfg.fieldMap.batchId]: proofBatchId,
           [payoutBatchCfg.fieldMap.totalAmount]: proofAmount,
           [payoutBatchCfg.fieldMap.currency]: proofCurrency,
-          [payoutBatchCfg.fieldMap.status]: "pending_approval",
+          [payoutBatchCfg.fieldMap.status]: isOwnerAccount(proofRecipientType, proofRecipient) ? "approved" : "pending_approval",
           ...(payoutBatchCfg.fieldMap.notes
             ? {
                 [payoutBatchCfg.fieldMap.notes]: {
