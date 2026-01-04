@@ -15,7 +15,10 @@ import { getEnvBool } from "./autonomous-config.mjs";
 const ALLOWED_BENEFICIARIES = [
   "younestsouli2019@gmail.com",
   "younesdgc@gmail.com",
-  "007810000448500030594182" // Account RIB from user instructions/CSV
+  "007810000448500030594182", // Bank RIB
+  "0xA46225a984E2B2B5E5082E52AE8d8915A09fEfe7", // Trust Wallet (ERC20/BEP20)
+  "0xf6b9e2fcf43d41c778cba2bf46325cd201cc1a10", // Bybit (ERC20)
+  "UQDIrlJp7NmV-5mief8eNB0b0sYGO0L62Vu7oGX49UXtqlDQ" // Bybit (TON)
 ];
 
 const ALLOWED_PAYONEER_DIRS = [

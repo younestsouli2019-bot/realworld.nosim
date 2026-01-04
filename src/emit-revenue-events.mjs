@@ -3070,7 +3070,15 @@ async function main() {
   }
 
   if (args["repair-payout-truth"] === true || args.repairPayoutTruth === true) {
-    if (!base44) throw new Error("Missing Base44 client; set BASE44_APP_ID/BASE44_SERVICE_TOKEN or use --offline");
+    if (!base44) {
+      console.warn("⚠️ Base44 client missing. Defaulting to OFFLINE mode for payout truth repair.");
+      console.warn("   (Use --offline explicitly to suppress this warning)");
+      // Force offline mode behavior
+      args.offline = true;
+      const out = await repairSubmittedWithoutProviderId(null, { limit, dryRun: !!dryRun }); // Pass null as base44
+      process.stdout.write(`${JSON.stringify(out)}\n`);
+      return;
+    }
     const out = await repairSubmittedWithoutProviderId(base44, { limit, dryRun: !!dryRun });
     process.stdout.write(`${JSON.stringify(out)}\n`);
     return;
