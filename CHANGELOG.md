@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased] - 2026-01-04
+### Security & Integrity
+- **Simulation Purge**: Deleted `src/revenue-sources/blog-adsense.mjs` and `data/restored-missions.json` to eliminate all "Simulated" logic and data.
+- **Fulfillment System**: Implemented `FulfillmentManager` to log real order obligations to `logs/fulfillment_queue.log` instead of using `// TODO` placeholders.
+- **Dependency Handling**: Converted `@base44/sdk` to a dynamic import in `base44-client.mjs`, enabling graceful fallback to "Offline Mode" if the SDK is missing.
+- **Test Suite Fixes**: Updated `scripts/test-revenue-flow.mjs` to skip the final PayPal API call if secrets are missing, allowing CI/CD verification without exposing live keys.
+
 ### Documentation & Operations
 - **Comprehensive Documentation Suite**: Created `docs/` directory covering:
   - **Testing**: `TESTING_STRATEGY.md` with new consolidated runner `scripts/run-full-suite.mjs`.

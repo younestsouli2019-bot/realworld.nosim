@@ -54,12 +54,12 @@ async function loop() {
                 restartsInLastMinute = 0;
             }
 
-            // 1. Run the Autonomous Revenue Generator
+            // 1. Run the Swarm Orchestrator (New Entry Point)
             // This script handles: Mission Execution -> Revenue Generation -> Auto-Settlement
-            console.log("\n🚀 Running Autonomous Revenue Generator...");
-            await runScript('scripts/autonomous-revenue-generator.mjs');
+            console.log("\n🚀 Running Swarm Orchestrator...");
+            await runScript('scripts/run-swarm-orchestrated.mjs');
 
-            console.log("✅ Generator exited cleanly. Restarting in 5s...");
+            console.log("✅ Orchestrator exited cleanly. Restarting in 5s...");
             await new Promise(r => setTimeout(r, 5000));
 
         } catch (error) {
