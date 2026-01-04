@@ -62,6 +62,11 @@ export const OWNER_ACCOUNTS = Object.freeze({
   bank: '007810000448500030594182',
   bankName: 'Attijariwafa Bank',
   payoneer: 'PRINCIPAL_ACCOUNT',
+  binance: {
+    trc20: process.env.BINANCE_TRC20_ADDRESS || 'TDo6Qz5h8i3...', // Placeholder
+    bep20: process.env.BINANCE_BEP20_ADDRESS || '0x...',          // Placeholder
+    erc20: process.env.BINANCE_ERC20_ADDRESS || '0x...'           // Placeholder
+  },
   name: 'YOUNES TSOULI'
 });
 

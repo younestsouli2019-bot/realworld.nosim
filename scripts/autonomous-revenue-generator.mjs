@@ -144,6 +144,7 @@ class SwarmEngine {
     
     console.log(`   💰 Batch Generated: $${batchRevenue.toLocaleString()} USD`);
     console.log(`   📈 Session Total: $${this.stats.totalRevenue.toLocaleString()} (${this.stats.missionsCompleted} missions)`);
+    console.log(`   ⚠️  NOTE: Funds are held in './exports'. Upload artifacts to Bank/Wallet to receive actual money.`);
   }
 }
 
