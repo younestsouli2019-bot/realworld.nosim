@@ -1,42 +1,38 @@
 {
-  "name": "swarm-base44-revenue-events",
-  "private": true,
+  "name": "autonomous-revenue-system",
+  "version": "2.0.0",
+  "description": "Autonomous revenue generation and settlement system with REAL work execution",
   "type": "module",
+  "main": "scripts/autonomous-revenue-generator.mjs",
   "scripts": {
-    "emit:revenue": "node ./src/emit-revenue-events.mjs",
-    "status:reality-check": "node ./src/autonomous-daemon.mjs --reality-check",
-    "approve:batch": "node ./src/emit-revenue-events.mjs --approve-payout-batch",
-    "rollback:batch": "node ./src/emit-revenue-events.mjs --cancel-payout-batch",
-    "prepare:sweep": "node ./src/prepare-revenue-sweep.mjs",
-    "ap2:verify": "node ./src/ap2-verify.mjs",
-    "ap2:orchestrate": "node ./src/orchestrate-settlement.mjs",
-    "prepare:external:settlement": "node ./src/prepare-external-settlement.mjs",
-    "paypal:webhook": "node ./src/paypal-webhook-server.mjs",
-    "paypal:webhook:check": "node ./src/paypal-webhook-server.mjs --check",
-    "paypal:sync:payout": "node ./src/sync-paypal-payout-batch.mjs",
-    "paypal:create:order": "node ./src/create-paypal-order.mjs",
-    "monitor:health": "node ./src/monitor-health.mjs",
-    "monitor:once": "node ./src/monitor-health.mjs --once",
-    "live:readiness": "node ./src/monitor-health.mjs --readiness",
-    "live:readiness:ping": "node ./src/monitor-health.mjs --readiness --ping",
-    "autonomous:daemon": "node ./src/autonomous-daemon.mjs",
-    "autonomous:once": "node ./src/autonomous-daemon.mjs --once",
-    "deploy:permanent": "node ./src/autonomous-daemon.mjs --permanent-deploy",
-    "deploy:all": "npm run deploy:permanent",
-    "check:all-good": "node ./src/autonomous-daemon.mjs --all-good",
-    "check:simulation": "node ./src/emit-revenue-events.mjs --check-simulation",
-    "prove:money-moved": "node ./src/prove-money-moved.mjs",
-    "migrate:audit": "node migrate/audit-tracked-revenue.mjs",
-    "migrate:create": "node migrate/create-migration-batches.mjs",
-    "migrate:approve": "node migrate/approve-migration-batches.mjs",
-    "migrate:execute": "node migrate/execute-migration.mjs",
-    "migrate:all": "node migrate/all-in-one.mjs",
-    "migrate:status": "type migrate\\migration-summary.md",
-    "start": "node ./scripts/auto-restart-loop.js",
-    "test": "node --test",
-    "start:autonomous": "node ./scripts/autonomous-revenue-generator.mjs"
+    "start": "node scripts/autonomous-revenue-generator.mjs",
+    "test": "node scripts/test-real-revenue.mjs",
+    "test:blog": "node scripts/test-blog-writer.mjs",
+    "verify-env": "node scripts/verify-env.mjs",
+    "monitor": "node scripts/monitor-revenue-health.mjs"
   },
   "dependencies": {
-    "@base44/sdk": "^0.8.5"
-  }
+    "@base44/sdk": "^1.0.0",
+    "@paypal/payouts-sdk": "^1.1.1",
+    "openai": "^4.24.1",
+    "stripe": "^14.10.0",
+    "googleapis": "^129.0.0"
+  },
+  "devDependencies": {
+    "dotenv": "^16.3.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "autonomous",
+    "revenue",
+    "settlement",
+    "automation",
+    "ai",
+    "blog",
+    "adsense"
+  ],
+  "author": "Younes Tsouli",
+  "license": "PRIVATE"
 }

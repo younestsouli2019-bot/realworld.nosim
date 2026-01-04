@@ -4574,3 +4574,60 @@
 {"timestamp":"2026-01-04T10:17:26.094Z","level":"money","message":"   Amount: $321905 USD","data":null,"autonomous":true}
 {"timestamp":"2026-01-04T10:17:26.459Z","level":"money","message":"   Amount: $321905 USD","data":null,"autonomous":true}
 {"timestamp":"2026-01-04T10:17:26.529Z","level":"money","message":"   Amount: $321905 USD","data":null,"autonomous":true}
+{"timestamp":"2026-01-04T11:19:43.469Z","level":"owner","message":"\n🔒 OWNER ACCOUNTS:","data":null,"autonomous":true}
+{"timestamp":"2026-01-04T11:19:43.471Z","level":"owner","message":"   Bank: Attijariwafa Bank","data":null,"autonomous":true}
+{"timestamp":"2026-01-04T11:19:43.472Z","level":"owner","message":"   Payoneer: PRINCIPAL_ACCOUNT","data":null,"autonomous":true}
+{"timestamp":"2026-01-04T11:19:43.473Z","level":"owner","message":"   Crypto: Binance (TRC20/BEP20)","data":null,"autonomous":true}
+{"timestamp":"2026-01-04T11:19:43.474Z","level":"owner","message":"   PayPal: younestsouli2019@gmail.com","data":null,"autonomous":true}
+{"timestamp":"2026-01-04T11:19:43.714Z","level":"money","message":"   Amount: $321905 USD","data":null,"autonomous":true}
+{"timestamp":"2026-01-04T11:19:43.715Z","level":"error","message":"Rail bank failed: validateAuthority is not defined","data":null,"autonomous":true}
+{"timestamp":"2026-01-04T11:19:43.716Z","level":"error","message":"Rail payoneer failed: validateAuthority is not defined","data":null,"autonomous":true}
+{"timestamp":"2026-01-04T11:19:43.717Z","level":"error","message":"Rail crypto failed: validateAuthority is not defined","data":null,"autonomous":true}
+{"timestamp":"2026-01-04T11:19:43.718Z","level":"error","message":"Rail paypal failed: validateAuthority is not defined","data":null,"autonomous":true}
+{"timestamp":"2026-01-04T11:19:43.719Z","level":"error","message":"❌ ALL SETTLEMENT RAILS FAILED","data":null,"autonomous":true}
+{"timestamp":"2026-01-04T11:19:43.720Z","level":"error","message":"   Revenue remains in PENDING state.","data":null,"autonomous":true}
+{"timestamp":"2026-01-04T11:19:43.724Z","level":"money","message":"   Amount: $850 USD","data":null,"autonomous":true}
+{"timestamp":"2026-01-04T11:20:43.845Z","level":"money","message":"   Amount: $321905 USD","data":null,"autonomous":true}
+{"timestamp":"2026-01-04T11:20:43.847Z","level":"error","message":"Rail bank failed: validateAuthority is not defined","data":null,"autonomous":true}
+{"timestamp":"2026-01-04T11:20:43.848Z","level":"error","message":"Rail payoneer failed: validateAuthority is not defined","data":null,"autonomous":true}
+{"timestamp":"2026-01-04T11:20:43.848Z","level":"error","message":"Rail crypto failed: validateAuthority is not defined","data":null,"autonomous":true}
+{"timestamp":"2026-01-04T11:20:43.849Z","level":"error","message":"Rail paypal failed: validateAuthority is not defined","data":null,"autonomous":true}
+{"timestamp":"2026-01-04T11:20:43.849Z","level":"error","message":"❌ ALL SETTLEMENT RAILS FAILED","data":null,"autonomous":true}
+{"timestamp":"2026-01-04T11:20:43.850Z","level":"error","message":"   Revenue remains in PENDING state.","data":null,"autonomous":true}
+{"timestamp":"2026-01-04T11:21:43.854Z","level":"money","message":"   Amount: $321905 USD","data":null,"autonomous":true}
+{"timestamp":"2026-01-04T11:21:43.856Z","level":"error","message":"Rail bank failed: validateAuthority is not defined","data":null,"autonomous":true}
+{"timestamp":"2026-01-04T11:21:43.857Z","level":"error","message":"Rail payoneer failed: validateAuthority is not defined","data":null,"autonomous":true}
+{"timestamp":"2026-01-04T11:21:43.858Z","level":"error","message":"Rail crypto failed: validateAuthority is not defined","data":null,"autonomous":true}
+{"timestamp":"2026-01-04T11:21:43.859Z","level":"error","message":"Rail paypal failed: validateAuthority is not defined","data":null,"autonomous":true}
+{"timestamp":"2026-01-04T11:21:43.860Z","level":"error","message":"❌ ALL SETTLEMENT RAILS FAILED","data":null,"autonomous":true}
+{"timestamp":"2026-01-04T11:21:43.860Z","level":"error","message":"   Revenue remains in PENDING state.","data":null,"autonomous":true}
+{"timestamp":"2026-01-04T11:22:43.856Z","level":"money","message":"   Amount: $321905 USD","data":null,"autonomous":true}
+{"timestamp":"2026-01-04T11:22:43.857Z","level":"error","message":"Rail bank failed: validateAuthority is not defined","data":null,"autonomous":true}
+{"timestamp":"2026-01-04T11:22:43.858Z","level":"error","message":"Rail payoneer failed: validateAuthority is not defined","data":null,"autonomous":true}
+{"timestamp":"2026-01-04T11:22:43.859Z","level":"error","message":"Rail crypto failed: validateAuthority is not defined","data":null,"autonomous":true}
+{"timestamp":"2026-01-04T11:22:43.860Z","level":"error","message":"Rail paypal failed: validateAuthority is not defined","data":null,"autonomous":true}
+{"timestamp":"2026-01-04T11:22:43.861Z","level":"error","message":"❌ ALL SETTLEMENT RAILS FAILED","data":null,"autonomous":true}
+{"timestamp":"2026-01-04T11:22:43.861Z","level":"error","message":"   Revenue remains in PENDING state.","data":null,"autonomous":true}
+{"timestamp":"2026-01-04T11:23:43.868Z","level":"money","message":"   Amount: $321905 USD","data":null,"autonomous":true}
+{"timestamp":"2026-01-04T11:23:43.868Z","level":"error","message":"Rail bank failed: validateAuthority is not defined","data":null,"autonomous":true}
+{"timestamp":"2026-01-04T11:23:43.869Z","level":"error","message":"Rail payoneer failed: validateAuthority is not defined","data":null,"autonomous":true}
+{"timestamp":"2026-01-04T11:23:43.870Z","level":"error","message":"Rail crypto failed: validateAuthority is not defined","data":null,"autonomous":true}
+{"timestamp":"2026-01-04T11:23:43.871Z","level":"error","message":"Rail paypal failed: validateAuthority is not defined","data":null,"autonomous":true}
+{"timestamp":"2026-01-04T11:23:43.871Z","level":"error","message":"❌ ALL SETTLEMENT RAILS FAILED","data":null,"autonomous":true}
+{"timestamp":"2026-01-04T11:23:43.871Z","level":"error","message":"   Revenue remains in PENDING state.","data":null,"autonomous":true}
+{"timestamp":"2026-01-04T11:24:43.894Z","level":"money","message":"   Amount: $321905 USD","data":null,"autonomous":true}
+{"timestamp":"2026-01-04T11:24:43.895Z","level":"error","message":"Rail bank failed: validateAuthority is not defined","data":null,"autonomous":true}
+{"timestamp":"2026-01-04T11:24:43.896Z","level":"error","message":"Rail payoneer failed: validateAuthority is not defined","data":null,"autonomous":true}
+{"timestamp":"2026-01-04T11:24:43.896Z","level":"error","message":"Rail crypto failed: validateAuthority is not defined","data":null,"autonomous":true}
+{"timestamp":"2026-01-04T11:24:43.897Z","level":"error","message":"Rail paypal failed: validateAuthority is not defined","data":null,"autonomous":true}
+{"timestamp":"2026-01-04T11:24:43.898Z","level":"error","message":"❌ ALL SETTLEMENT RAILS FAILED","data":null,"autonomous":true}
+{"timestamp":"2026-01-04T11:24:43.898Z","level":"error","message":"   Revenue remains in PENDING state.","data":null,"autonomous":true}
+{"timestamp":"2026-01-04T11:25:43.903Z","level":"money","message":"   Amount: $321905 USD","data":null,"autonomous":true}
+{"timestamp":"2026-01-04T11:25:43.904Z","level":"error","message":"Rail bank failed: validateAuthority is not defined","data":null,"autonomous":true}
+{"timestamp":"2026-01-04T11:25:43.905Z","level":"error","message":"Rail payoneer failed: validateAuthority is not defined","data":null,"autonomous":true}
+{"timestamp":"2026-01-04T11:25:43.907Z","level":"error","message":"Rail crypto failed: validateAuthority is not defined","data":null,"autonomous":true}
+{"timestamp":"2026-01-04T11:25:43.909Z","level":"error","message":"Rail paypal failed: validateAuthority is not defined","data":null,"autonomous":true}
+{"timestamp":"2026-01-04T11:25:43.911Z","level":"error","message":"❌ ALL SETTLEMENT RAILS FAILED","data":null,"autonomous":true}
+{"timestamp":"2026-01-04T11:25:43.912Z","level":"error","message":"   Revenue remains in PENDING state.","data":null,"autonomous":true}
+{"timestamp":"2026-01-04T11:27:43.591Z","level":"money","message":"   Amount: $850 USD","data":null,"autonomous":true}
+{"timestamp":"2026-01-04T12:04:14.634Z","level":"money","message":"   Amount: $850 USD","data":null,"autonomous":true}

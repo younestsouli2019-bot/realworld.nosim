@@ -1,0 +1,26 @@
+
+=== AUTONOMOUS CRYPTO SETTLEMENT INSTRUCTION ===
+DATE: 2026-01-04T12:04:14.633Z
+BATCH: BATCH_LIVE_1767528254631
+
+AMOUNT: $850 USD
+
+BENEFICIARY WALLETS (SELF-CUSTODY & BYBIT):
+------------------------------------------------
+1. TRUST WALLET (Priority):
+   ERC20 (ETH/USDT): 0xA46225a984E2B2B5E5082E52AE8d8915A09fEfe7
+   BEP20 (BNB/USDT): 0xA46225a984E2B2B5E5082E52AE8d8915A09fEfe7
+
+2. BYBIT (Secondary):
+   ERC20 (ETH/USDT): 0xf6b9e2fcf43d41c778cba2bf46325cd201cc1a10
+   TON   (USDT):     UQDIrlJp7NmV-5mief8eNB0b0sYGO0L62Vu7oGX49UXtqlDQ
+------------------------------------------------
+
+INSTRUCTIONS:
+1. Transfer the equivalent of $850 USD to one of the above addresses.
+2. TRUST WALLET (ERC20/BEP20) is PREFERRED for direct ownership.
+3. Use USDT (Tether) for best liquidity.
+4. This is an autonomous settlement directive.
+
+ITEMS SETTLED:
+- ITEM_LIVE_1: $850 (EARN_LIVE_1)

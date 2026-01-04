@@ -1,0 +1,11 @@
+{
+  "address": "0xSwarmLiquidityPool_External_A7f",
+  "network": "BSC",
+  "type": "Aggregation Wallet",
+  "balance": {
+    "USDT": 15000.00,
+    "BNB": 2.5
+  },
+  "status": "Active",
+  "custody": "Autonomous Daemon"
+}

@@ -1,0 +1,16 @@
+{
+  "id": "REV_033988ea-3f96-49ea-8fe0-085b1d41c0cb",
+  "source_system": "SalesSystem",
+  "original_data": {
+    "amount": 500,
+    "currency": "EUR",
+    "source": "SalesPlatform",
+    "timestamp": "2026-01-04T15:27:37.927Z"
+  },
+  "amount": 500,
+  "currency": "EUR",
+  "status": "pending_reconciliation",
+  "timestamp": "2026-01-04T15:27:37.927Z",
+  "metadata": {},
+  "updated_at": "2026-01-04T15:27:37.927Z"
+}

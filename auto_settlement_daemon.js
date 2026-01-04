@@ -24,26 +24,49 @@ import './src/load-env.mjs';
 // ============================================================================
 
 const CONFIG = {
-  // Settlement frequency
-  CHECK_INTERVAL_MS: 60 * 1000, // Check every 1 minute
-  
-  // Auto-approval thresholds (no manual approval needed)
-  AUTO_APPROVE_THRESHOLD: 5000, // USD - auto-approve up to this amount
-  
+  // Settlement frequency - start conservative
+  CHECK_INTERVAL_MS: Number(process.env.SETTLEMENT_CHECK_INTERVAL_MS) || 5 * 60 * 1000, // Check every 5 minutes
+
+  // Gradual auto-approval thresholds (increases over time)
+  AUTO_APPROVE_THRESHOLD: {
+    week1: Number(process.env.AUTO_APPROVE_THRESHOLD_WEEK1) || 100,    // $100 max for first week
+    week2: Number(process.env.AUTO_APPROVE_THRESHOLD_WEEK2) || 500,    // $500 max for second week
+    week3: Number(process.env.AUTO_APPROVE_THRESHOLD_WEEK3) || 1000,   // $1,000 max for third week
+    default: Number(process.env.AUTO_APPROVE_THRESHOLD_DEFAULT) || 5000 // $5,000 max after 3 weeks
+  },
+
   // Batch configuration
   MIN_BATCH_SIZE: 1, // Settle even single events
   MAX_BATCH_SIZE: 100, // Max events per batch
-  
-  // Settlement urgency
-  MAX_SETTLEMENT_DELAY_HOURS: 0.25, // 15 minutes max from verification to settlement
-  
+
+  // Settlement urgency - gradual release (batch small amounts)
+  MAX_SETTLEMENT_DELAY_HOURS: Number(process.env.MAX_SETTLEMENT_DELAY_HOURS) || 24, // Wait up to 24h to batch
+  MIN_SETTLEMENT_AMOUNT: Number(process.env.MIN_SETTLEMENT_AMOUNT) || 10, // Don't settle amounts under $10
+
   // Rail preferences (in order)
   RAIL_PRIORITY: ['PAYPAL', 'BANK_WIRE', 'PAYONEER'],
-  
+
   // Modes
-  ENABLE_IMMEDIATE_SETTLEMENT: true, // Settle as soon as verified
+  ENABLE_IMMEDIATE_SETTLEMENT: false, // Start with batching for safety
   ENABLE_EMERGENCY_MODE: false, // Bypass all checks (use with caution)
+
+  // Deployment tracking
+  DEPLOYMENT_START_DATE: new Date(process.env.DEPLOYMENT_START_DATE || '2026-01-04'),
 };
+
+// Helper function to get current auto-approve threshold based on deployment age
+function getCurrentAutoApproveThreshold() {
+  const now = new Date();
+  const daysSinceDeployment = Math.floor(
+    (now - CONFIG.DEPLOYMENT_START_DATE) / (1000 * 60 * 60 * 24)
+  );
+
+  if (daysSinceDeployment < 7) return CONFIG.AUTO_APPROVE_THRESHOLD.week1;
+  if (daysSinceDeployment < 14) return CONFIG.AUTO_APPROVE_THRESHOLD.week2;
+  if (daysSinceDeployment < 21) return CONFIG.AUTO_APPROVE_THRESHOLD.week3;
+  return CONFIG.AUTO_APPROVE_THRESHOLD.default;
+}
+
 
 // ============================================================================
 // STATE MANAGEMENT
@@ -151,7 +174,7 @@ export async function performSettlementCycle() {
   try {
     // Step 1: Fetch verified revenue events ready for settlement
     const readyEvents = await fetchReadyForSettlement();
-    
+
     if (readyEvents.length === 0) {
       console.log('✅ No events ready for settlement');
       return;
@@ -165,7 +188,7 @@ export async function performSettlementCycle() {
     // Step 3: Process each rail batch
     for (const [rail, events] of Object.entries(batchesByRail)) {
       console.log(`\n💰 Processing ${rail} batch: ${events.length} events`);
-      
+
       try {
         await processRailBatch(rail, events);
       } catch (error) {
@@ -198,23 +221,23 @@ async function fetchReadyForSettlement() {
     let allEvents = [];
     let offset = 0;
     const limit = 100;
-    
+
     while (true) {
-        // list(sort, limit, offset)
-        const items = await revenueEntity.list("-created_date", limit, offset);
-        if (!items || !Array.isArray(items) || items.length === 0) break;
-        
-        allEvents = allEvents.concat(items);
-        
-        if (items.length < limit) break;
-        offset += limit;
+      // list(sort, limit, offset)
+      const items = await revenueEntity.list("-created_date", limit, offset);
+      if (!items || !Array.isArray(items) || items.length === 0) break;
+
+      allEvents = allEvents.concat(items);
+
+      if (items.length < limit) break;
+      offset += limit;
     }
 
-    const events = allEvents.filter(e => 
-      e.status === 'VERIFIED' && 
-      !e.settled && 
+    const events = allEvents.filter(e =>
+      e.status === 'VERIFIED' &&
+      !e.settled &&
       !e.paid_out &&
-      e.verification_proof && 
+      e.verification_proof &&
       Object.keys(e.verification_proof).length > 0
     );
 
@@ -222,7 +245,7 @@ async function fetchReadyForSettlement() {
     const urgentEvents = events.filter(event => {
       // If immediate settlement is enabled, we take everything verified
       if (CONFIG.ENABLE_IMMEDIATE_SETTLEMENT) return true;
-      
+
       const ageHours = (Date.now() - new Date(event.created_at || event.timestamp).getTime()) / (1000 * 60 * 60);
       return ageHours < CONFIG.MAX_SETTLEMENT_DELAY_HOURS;
     });
@@ -267,18 +290,18 @@ async function processRailBatch(rail, events) {
   // Step 1: Gate Check (Hard-Binding)
   const validEvents = [];
   for (const event of events) {
-      try {
-          await MoneyMovedGate.assertMoneyMoved(event);
-          validEvents.push(event);
-      } catch (e) {
-          console.error(`❌ Gate Check Failed for ${event.id}: ${e.message}`);
-          state.addError(new Error(`Gate Check Failed for ${event.id}: ${e.message}`));
-      }
+    try {
+      await MoneyMovedGate.assertMoneyMoved(event);
+      validEvents.push(event);
+    } catch (e) {
+      console.error(`❌ Gate Check Failed for ${event.id}: ${e.message}`);
+      state.addError(new Error(`Gate Check Failed for ${event.id}: ${e.message}`));
+    }
   }
 
   if (validEvents.length === 0) {
-      console.log('⚠️ No valid events after gate check.');
-      return;
+    console.log('⚠️ No valid events after gate check.');
+    return;
   }
 
   // Step 2: Create payout batch
@@ -287,8 +310,11 @@ async function processRailBatch(rail, events) {
 
   // Step 3: Auto-approve (if under threshold)
   const totalAmount = validEvents.reduce((sum, e) => sum + Number(e.amount), 0);
-  
-  if (totalAmount <= CONFIG.AUTO_APPROVE_THRESHOLD || CONFIG.ENABLE_EMERGENCY_MODE) {
+  const currentThreshold = getCurrentAutoApproveThreshold();
+
+  console.log(`💰 Batch amount: $${totalAmount.toFixed(2)}, Current threshold: $${currentThreshold}`);
+
+  if (totalAmount <= currentThreshold || CONFIG.ENABLE_EMERGENCY_MODE) {
     console.log(`✅ Auto-approving batch ($${totalAmount.toFixed(2)} ${validEvents[0]?.currency || 'USD'})`);
     await approveBatch(batch.batch_id);
   } else {
@@ -307,7 +333,7 @@ async function processRailBatch(rail, events) {
 
   // Step 5: Execute settlement
   const executionResult = await executeSettlement(rail, batch);
-  
+
   // Step 6: Mark events as settled
   await markEventsSettled(validEvents, batch.batch_id, executionResult);
 
@@ -334,8 +360,8 @@ async function createPayoutBatch(rail, events) {
     status: 'pending_approval',
     revenue_event_ids: events.map(e => e.id),
     items: events.map(e => ({
-        ...generateOwnerPayoutConfig(Number(e.amount), e.currency),
-        sender_item_id: e.id
+      ...generateOwnerPayoutConfig(Number(e.amount), e.currency),
+      sender_item_id: e.id
     })),
     created_at: new Date().toISOString(),
     owner_directive_enforced: true
@@ -356,7 +382,7 @@ async function createPayoutBatch(rail, events) {
   // NOTE: We don't have a specific PayoutBatch entity in Base44 setup yet based on previous files.
   // We usually store this state in the RevenueEvent itself (payout_batch_id) or a local JSON.
   // For now, we'll return the object and rely on marking events.
-  
+
   return batch;
 }
 
@@ -378,13 +404,13 @@ async function executeSettlement(rail, batch) {
   switch (rail) {
     case 'PAYPAL':
       return await executePayPalSettlement(batch);
-    
+
     case 'BANK_WIRE':
       return await executeBankWireSettlement(batch);
-    
+
     case 'PAYONEER':
       return await executePayoneerSettlement(batch);
-    
+
     default:
       throw new Error(`Unsupported rail: ${rail}`);
   }
@@ -397,26 +423,26 @@ async function executePayPalSettlement(batch) {
   console.log('💳 Executing PayPal payout...');
 
   const items = batch.items.map(item => ({
-      recipient_type: item.recipient_type,
-      amount: { value: Number(item.amount).toFixed(2), currency: item.currency },
-      receiver: item.recipient, // Ensure this matches generateOwnerPayoutConfig output
-      note: item.note,
-      sender_item_id: item.sender_item_id
+    recipient_type: item.recipient_type,
+    amount: { value: Number(item.amount).toFixed(2), currency: item.currency },
+    receiver: item.recipient, // Ensure this matches generateOwnerPayoutConfig output
+    note: item.note,
+    sender_item_id: item.sender_item_id
   }));
 
   try {
-      const payout = await createPayPalPayoutBatch({
-          senderBatchId: batch.batch_id,
-          items,
-          emailSubject: "Owner Revenue Settlement",
-          emailMessage: "Autonomous settlement of verified revenue."
-      });
-      
-      console.log(`✅ PayPal payout submitted! Batch ID: ${payout.batch_header.payout_batch_id}`);
-      return { provider_batch_id: payout.batch_header.payout_batch_id };
+    const payout = await createPayPalPayoutBatch({
+      senderBatchId: batch.batch_id,
+      items,
+      emailSubject: "Owner Revenue Settlement",
+      emailMessage: "Autonomous settlement of verified revenue."
+    });
+
+    console.log(`✅ PayPal payout submitted! Batch ID: ${payout.batch_header.payout_batch_id}`);
+    return { provider_batch_id: payout.batch_header.payout_batch_id };
   } catch (e) {
-      console.error(`❌ PayPal Payout Failed: ${e.message}`);
-      throw e;
+    console.error(`❌ PayPal Payout Failed: ${e.message}`);
+    throw e;
   }
 }
 
@@ -431,7 +457,7 @@ async function executeBankWireSettlement(batch) {
   const filename = `bank_wire_${batch.batch_id}.csv`;
   const exportDir = path.resolve(process.cwd(), 'exports');
   if (!fs.existsSync(exportDir)) {
-      fs.mkdirSync(exportDir, { recursive: true });
+    fs.mkdirSync(exportDir, { recursive: true });
   }
   const filePath = path.join(exportDir, filename);
 
@@ -466,7 +492,7 @@ async function executePayoneerSettlement(batch) {
 
 function generateBankWireCSV(batch) {
   const headers = 'Beneficiary RIB,Amount,Currency,Reference,Date';
-  const rows = batch.items.map(item => 
+  const rows = batch.items.map(item =>
     `${OWNER_ACCOUNTS.bank.rib},${item.amount},${item.currency},${item.sender_item_id},${new Date().toISOString()}`
   );
   return [headers, ...rows].join('\n');
@@ -495,19 +521,19 @@ async function markEventsSettled(events, batchId, executionResult) {
   const revenueEntity = base44.asServiceRole.entities[revenueConfig.entityName];
 
   for (const event of events) {
-      try {
-          await base44.asServiceRole.update(revenueEntity, event.id, {
-              ...event,
-              status: executionResult.method === 'manual_csv' ? 'export_ready' : 'paid_out',
-              settled: true, // We mark as settled because we've either paid or exported for payment
-              settled_at: new Date().toISOString(),
-              payout_batch_id: batchId,
-              settlement_details: executionResult
-          });
-          console.log(`  Marked ${event.id} as settled.`);
-      } catch (e) {
-          console.error(`  ❌ Failed to update ${event.id}: ${e.message}`);
-      }
+    try {
+      await base44.asServiceRole.update(revenueEntity, event.id, {
+        ...event,
+        status: executionResult.method === 'manual_csv' ? 'export_ready' : 'paid_out',
+        settled: true, // We mark as settled because we've either paid or exported for payment
+        settled_at: new Date().toISOString(),
+        payout_batch_id: batchId,
+        settlement_details: executionResult
+      });
+      console.log(`  Marked ${event.id} as settled.`);
+    } catch (e) {
+      console.error(`  ❌ Failed to update ${event.id}: ${e.message}`);
+    }
   }
 }
 
@@ -554,20 +580,20 @@ export async function triggerManualSettlement() {
 
 if (import.meta.url === pathToFileURL(process.argv[1]).href) {
   if (process.argv.includes('--once')) {
-      console.log('🎯 Starting single settlement cycle...');
-      performSettlementCycle().then(() => {
-          console.log('✅ Single cycle complete.');
-          process.exit(0);
-      }).catch(error => {
-          console.error('💥 Cycle failed:', error);
-          process.exit(1);
-      });
+    console.log('🎯 Starting single settlement cycle...');
+    performSettlementCycle().then(() => {
+      console.log('✅ Single cycle complete.');
+      process.exit(0);
+    }).catch(error => {
+      console.error('💥 Cycle failed:', error);
+      process.exit(1);
+    });
   } else {
-      console.log('🎯 Starting as standalone daemon...');
-      startAutoSettlementDaemon().catch(error => {
-        console.error('💥 Daemon startup failed:', error);
-        process.exit(1);
-      });
+    console.log('🎯 Starting as standalone daemon...');
+    startAutoSettlementDaemon().catch(error => {
+      console.error('💥 Daemon startup failed:', error);
+      process.exit(1);
+    });
   }
 }
 

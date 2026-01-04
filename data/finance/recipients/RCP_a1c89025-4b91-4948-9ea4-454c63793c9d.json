@@ -1,0 +1,15 @@
+{
+  "id": "RCP_a1c89025-4b91-4948-9ea4-454c63793c9d",
+  "name": "John Doe",
+  "email": "john@example.com",
+  "type": "individual",
+  "payment_methods": [
+    {
+      "type": "paypal",
+      "details": "john@paypal.com"
+    }
+  ],
+  "created_at": "2026-01-04T15:26:56.026Z",
+  "status": "active",
+  "updated_at": "2026-01-04T15:26:56.026Z"
+}

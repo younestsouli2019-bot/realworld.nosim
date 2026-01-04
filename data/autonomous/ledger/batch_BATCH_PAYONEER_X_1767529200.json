@@ -1,0 +1,16 @@
+{
+  "id": "BATCH_PAYONEER_X_1767529200",
+  "type": "batch",
+  "data": {
+    "batch_id": "BATCH_PAYONEER_X_1767529200",
+    "amount": 1200,
+    "currency": "USD",
+    "rail": "payoneer",
+    "status": "pending_platform_hold",
+    "created_at": "2026-01-04T12:30:36.101Z",
+    "metadata": {
+      "documentation": "exports\\payoneer\\PAYONEER_REMITTANCE_BATCH_PAYONEER_X_1767529200.txt",
+      "note": "User requested details for email to Payoneer"
+    }
+  }
+}

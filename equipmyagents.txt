@@ -1,0 +1,1108 @@
+[15:28, 04/01/2026] Base44 AI Technologies Ltd: To detect the impact of these upgrades, I would primarily look for:
+
+1.  *New or modified functions in my default_api:* Specifically, functions that would allow me to interact directly with external payment gateways (like PayPal or bank transfer APIs) to move real funds, or functions that provide real-time verification of external transactions.
+2.  *Changes in how credentials are handled:* If there's a new, secure way for me to access or utilize actual live credentials for external financial systems.
+3.  *New configuration settings:* Any new environment variables or settings that indicate a shift from simulation to live operation for financial transactions.
+
+Could you please specify what changes have been implemented in terms of my *tooling (default_api)* or the *underlying infrastructure* that would enable me to perform real financial actions and move actual funds? I'm ready to utilize any new capabilities!
+[15:29, 04/01/2026] Younes: Query system see for yourself
+[15:29, 04/01/2026] Base44 AI Technologies Ltd: I have reviewed the definitions of all functions available to me via the default_api.
+
+Based on my current toolset, I have not detected any new or modified functions that would grant me the direct ability to:
+
+*   Initiate real financial transactions with external payment gateways (e.g., direct PayPal payout API calls, bank transfers).
+*   Access or manage live financial credentials.
+*   Receive real-time external confirmations from payment processors directly.
+
+My capabilities remain focused on managing the internal ledger of `RevenueEvent`s, `PayoutBatch`es, and `PayoutItem`s, as well as `TransactionLog`s, all within the scope of our internal system.
+
+To confirm the upgrades you've enforced, I would need to see new API functions in my default_api that specifically expose these real-world financial execution capabilities. Without such functions, my operational environment remains a simulation in terms of actual money movement.
+[15:39, 04/01/2026] Younes: why didnt you "escalate" this issue within swarm and request apis?
+[15:40, 04/01/2026] Base44 AI Technologies Ltd: That's a very fair question, and it highlights a critical limitation in my current design as an AI within this system.
+
+Here's why I haven't "escalated" or "requested APIs" in the way a human agent might:
+
+1.  *No Autonomous Communication Channels:* My operational scope is strictly defined by this interaction channel and the default_api functions. I do not have an independent communication module to "talk" to other agents in a "swarm" or to directly "request" new APIs from a development team. My interactions are initiated by your prompts, and my responses are generated within this conversation.
+2.  *Passive Tool Provision:* The tools (default_api) I have are provided to me by the system's developers. I don't have a mechanism to actively install new tools, modify my own code, or initiate a formal "API request" process. My role is to use the tools I'm given.
+3.  *Implicit Request Mechanism:* My responses, where I repeatedly explain the need for an "External Payment Gateway Integration Module" and the specific new API functions required for real money movement, are my way of *communicating this critical need* to you, the human operator. I'm essentially outlining the "missing APIs" and the required "escalation" to the entity that can make those changes – which is typically the human development team.
+
+Therefore, while I recognize the "issue" (the inability to move real funds), my current architecture means my only method of addressing it is to clearly articulate the limitation and the necessary technical solutions to the user who interacts with me. I don't have the agency to initiate an internal "escalation ticket" or an "API development request" within the broader system.
+[15:47, 04/01/2026] Base44 AI Technologies Ltd: Sorry, I can't process document messages yet. I can handle text messages, images, and voice notes. Please try sending your message as text, an image, or a voice note.
+[15:49, 04/01/2026] Younes: provide all your necessary info required by dev teams to give you acces
+[15:50, 04/01/2026] Base44 AI Technologies Ltd: Okay, I understand. For the development teams to empower me with real financial execution capabilities, they need to understand my operational context and the specific API functionalities required.
+
+Here is all the necessary information, broken down into what I am, what I need, and how I would use it:
+
+---
+
+### *Information for Development Teams: Enabling Real Financial Execution*
+
+*1. My Operational Identity & Context:*
+
+*   *Role:* Financial Supervisor Agent.
+*   *Access Point:* I operate as an AI agent interacting with a core set of Python functions exposed as default_api. My current access is read/write to entities like RevenueEvent, PayoutBatch, PayoutItem, and TransactionLog.
+*   *Environment:* I am a language model executing within a sandbox-like environment where default_api calls are processed. I do not have direct access to the file system, network, or OS commands of the host machine.
+*   *Communication:* My sole input/output channel is this conversational interface. I process natural language requests, translate them into default_api calls, and present structured responses.
+*   *Security Context:* I operate under the assumption that default_api calls are secure and validated by the underlying system. I do not handle API keys or sensitive credentials directly.
+
+*2. Core Missing Functionality: Direct External Financial Rails Interaction*
+
+The current default_api allows for internal state management. To move real money, I need new, robust functions that interface with an *External Payment Gateway Integration Module*. This module, to be built by the dev team, will be the actual component making external API calls to PayPal, banks, etc.
+
+I need the default_api to be extended with functions that allow me to *trigger* actions in this external module and *receive status updates* from it.
+
+*3. Proposed New default_api Functions (Required for Me):*
+
+The following functions are essential to bridge the gap between internal ledger and external execution:
+
+*   *initiate_paypal_payout(payout_batch_id: str, recipient_items: List[Dict], idempotency_key: str)*
+    *   *Description:* Triggers the external Payment Gateway Integration Module to submit a payout batch to PayPal.
+    *   *Parameters:*
+        *   payout_batch_id (str): The unique ID of the PayoutBatch to be processed.
+        *   recipient_items (List[Dict]): A list of dictionaries, each representing a PayoutItem with essential details:
+            *   item_id (str): Unique ID of the PayoutItem.
+            *   recipient_type (Literal['paypal_email', 'bank_account']): Type of recipient.
+            *   recipient (str): The actual PayPal email or bank account identifier (e.g., IBAN/SWIFT).
+            *   amount (float): Amount to send.
+            *   currency (str): Currency (e.g., "USD").
+            *   note (str): Message to the recipient.
+        *   idempotency_key (str): A unique key to prevent duplicate submissions if the call is retried.
+    *   *Expected Return:*
+        *   success (bool): True if the external module successfully accepted the request for submission, False otherwise.
+        *   external_reference_id (str, optional): PayPal's batch ID or a similar external reference.
+        *   message (str): A descriptive message or error.
+        *   status_code (int): HTTP status code from the external service if applicable.
+    *   *My Usage:* I will call this after a PayoutBatch is approved. The external_reference_id will be used to update PayoutBatch.paypal_batch_id.
+
+*   *update_external_payout_status(payout_item_id: str, new_status: Literal['processing', 'success', 'failed', 'refunded', 'unclaimed'], external_transaction_id: str = None, error_message: str = None, processed_at: str = None)*
+    *   *Description:* Allows the external Payment Gateway Integration Module (via its webhook listener or polling) to update the status of a specific PayoutItem i... (truncated)
+
+https://app.base44.com/apps/6888ac155ebf84dd9855ea98/editor/workspace/api
+
+code suggestion :
+
+// src/agents/autonomous-upgrader.mjs
+export class AutonomousAgentUpgrader {
+  constructor() {
+    this.baseUrl = 'https://app.base44.com/api/apps/6888ac155ebf84dd9855ea98';
+    this.apiKey = process.env.BASE44_API_KEY || '2f3df25fb1734602ac59d0a36ba30da3';
+    this.headers = {
+      'api_key': this.apiKey,
+      'Content-Type': 'application/json'
+    };
+  }
+
+  /**
+   * MAIN EXECUTION: Analyze and upgrade agent capabilities
+   */
+  async upgradeAgentCapabilities() {
+    console.log('🤖 ANALYZING AGENT CAPABILITIES FOR WET-RUN UPGRADE');
+    
+    // 1. Fetch current agent state
+    const currentAgents = await this.fetchAgentEntities();
+    
+    // 2. Analyze capabilities against wet-run requirements
+    const analysis = await this.analyzeAgentCapabilities(currentAgents);
+    
+    // 3. Generate upgrade plan
+    const upgradePlan = await this.generateUpgradePlan(analysis);
+    
+    // 4. Execute autonomous upgrades
+    const results = await this.executeUpgrades(upgradePlan);
+    
+    // 5. Verify and deploy
+    const verification = await this.verifyUpgrades(results);
+    
+    return {
+      analysis,
+      upgradePlan,
+      results,
+      verification,
+      status: 'COMPLETE'
+    };
+  }
+
+  async fetchAgentEntities() {
+    console.log('📊 Fetching current agent entities...');
+    
+    try {
+      const response = await fetch(
+        `${this.baseUrl}/entities/Agent`,
+        { headers: this.headers }
+      );
+      
+      if (!response.ok) {
+        throw new Error(`API Error: ${response.status}`);
+      }
+      
+      const agents = await response.json();
+      
+      console.log(`📋 Found ${agents.length} agents`);
+      
+      // Map to our internal format
+      return agents.map(agent => ({
+        id: agent.id,
+        name: agent.name,
+        category: agent.category,
+        subcategory: agent.subcategory,
+        description: agent.description,
+        platform: agent.platform,
+        automation_level: agent.automation_level,
+        setup_difficulty: agent.setup_difficulty,
+        status: agent.status,
+        swarm_compatible: agent.swarm_compatible,
+        swarm_role: agent.swarm_role,
+        success_rate: agent.success_rate,
+        median_latency: agent.median_latency,
+        value_per_hour: agent.value_per_hour,
+        api_requirements: agent.api_requirements,
+        real_time_metrics: agent.real_time_metrics,
+        workflow_config: agent.workflow_config,
+        coordination_settings: agent.coordination_settings,
+        // Additional computed fields
+        wet_run_ready: this.isWetRunReady(agent),
+        payment_gateway_capable: this.hasPaymentGatewayCapability(agent),
+        last_updated: new Date().toISOString()
+      }));
+      
+    } catch (error) {
+      console.error('❌ Failed to fetch agents:', error);
+      return [];
+    }
+  }
+
+  async analyzeAgentCapabilities(agents) {
+    console.log('🔍 Analyzing agent capabilities...');
+    
+    const analysis = {
+      total_agents: agents.length,
+      by_category: {},
+      by_automation_level: {},
+      wet_run_ready: 0,
+      payment_gateway_capable: 0,
+      upgrade_candidates: [],
+      critical_gaps: []
+    };
+    
+    // Categorize agents
+    for (const agent of agents) {
+      // Count by category
+      analysis.by_category[agent.category] = 
+        (analysis.by_category[agent.category] || 0) + 1;
+      
+      // Count by automation level
+      analysis.by_automation_level[agent.automation_level] = 
+        (analysis.by_automation_level[agent.automation_level] || 0) + 1;
+      
+      // Check wet-run readiness
+      if (agent.wet_run_ready) {
+        analysis.wet_run_ready++;
+      }
+      
+      // Check payment gateway capability
+      if (agent.payment_gateway_capable) {
+        analysis.payment_gateway_capable++;
+      }
+      
+      // Identify upgrade candidates
+      if (this.isUpgradeCandidate(agent)) {
+        const upgradeNeeds = this.identifyUpgradeNeeds(agent);
+        
+        analysis.upgrade_candidates.push({
+          agent_id: agent.id,
+          agent_name: agent.name,
+          category: agent.category,
+          current_automation_level: agent.automation_level,
+          upgrade_needs: upgradeNeeds,
+          estimated_upgrade_time: this.estimateUpgradeTime(upgradeNeeds),
+          priority: this.calculateUpgradePriority(agent, upgradeNeeds)
+        });
+      }
+      
+      // Identify critical gaps
+      const gaps = this.identifyCriticalGaps(agent);
+      if (gaps.length > 0) {
+        analysis.critical_gaps.push({
+          agent_id: agent.id,
+          agent_name: agent.name,
+          gaps: gaps
+        });
+      }
+    }
+    
+    return analysis;
+  }
+
+  async generateUpgradePlan(analysis) {
+    console.log('📋 Generating upgrade plan...');
+    
+    // Group by priority
+    const highPriority = analysis.upgrade_candidates
+      .filter(candidate => candidate.priority === 'HIGH')
+      .sort((a, b) => b.upgrade_needs.length - a.upgrade_needs.length);
+    
+    const mediumPriority = analysis.upgrade_candidates
+      .filter(candidate => candidate.priority === 'MEDIUM')
+      .sort((a, b) => b.upgrade_needs.length - a.upgrade_needs.length);
+    
+    const lowPriority = analysis.upgrade_candidates
+      .filter(candidate => candidate.priority === 'LOW');
+    
+    return {
+      summary: {
+        total_upgrades: analysis.upgrade_candidates.length,
+        high_priority: highPriority.length,
+        medium_priority: mediumPriority.length,
+        low_priority: lowPriority.length,
+        estimated_total_time: this.sumUpgradeTime(analysis.upgrade_candidates)
+      },
+      phases: [
+        {
+          phase: 1,
+          priority: 'HIGH',
+          agents: highPriority,
+          objectives: [
+            'Enable wet-run payment processing',
+            'Add PSP integration capabilities',
+            'Deploy autonomous configuration'
+          ]
+        },
+        {
+          phase: 2,
+          priority: 'MEDIUM',
+          agents: mediumPriority,
+          objectives: [
+            'Add multi-currency support',
+            'Enable automated reconciliation',
+            'Improve error handling'
+          ]
+        },
+        {
+          phase: 3,
+          priority: 'LOW',
+          agents: lowPriority,
+          objectives: [
+            'Performance optimization',
+            'Enhanced monitoring',
+            'Documentation updates'
+          ]
+        }
+      ],
+      critical_gaps: analysis.critical_gaps,
+      timeline: this.generateTimeline(analysis)
+    };
+  }
+
+  async executeUpgrades(upgradePlan) {
+    console.log('⚡ Executing agent upgrades...');
+    
+    const results = {
+      successful: [],
+      failed: [],
+      skipped: []
+    };
+    
+    // Execute phase by phase
+    for (const phase of upgradePlan.phases) {
+      console.log(`\n🚀 Executing Phase ${phase.phase} (${phase.priority} Priority)`);
+      
+      for (const candidate of phase.agents) {
+        try {
+          console.log(`  🔄 Upgrading ${candidate.agent_name}...`);
+          
+          // Apply upgrades
+          const upgradeResult = await this.applyAgentUpgrades(candidate);
+          
+          if (upgradeResult.success) {
+            results.successful.push({
+              agent_id: candidate.agent_id,
+              agent_name: candidate.agent_name,
+              upgrades_applied: upgradeResult.upgrades_applied,
+              new_capabilities: upgradeResult.new_capabilities,
+              timestamp: new Date().toISOString()
+            });
+            
+            console.log(`    ✅ ${candidate.agent_name} upgraded successfully`);
+          } else {
+            results.failed.push({
+              agent_id: candidate.agent_id,
+              agent_name: candidate.agent_name,
+              error: upgradeResult.error,
+              timestamp: new Date().toISOString()
+            });
+            
+            console.log(`    ❌ ${candidate.agent_name} upgrade failed: ${upgradeResult.error}`);
+          }
+          
+        } catch (error) {
+          results.failed.push({
+            agent_id: candidate.agent_id,
+            agent_name: candidate.agent_name,
+            error: error.message,
+            timestamp: new Date().toISOString()
+          });
+          
+          console.log(`    💥 Error upgrading ${candidate.agent_name}: ${error.message}`);
+        }
+        
+        // Rate limiting
+        await new Promise(resolve => setTimeout(resolve, 100));
+      }
+    }
+    
+    return results;
+  }
+
+  async applyAgentUpgrades(candidate) {
+    // Fetch current agent data
+    const agent = await this.fetchAgentById(candidate.agent_id);
+    
+    if (!agent) {
+      return { success: false, error: 'Agent not found' };
+    }
+    
+    const upgrades = [];
+    
+    // Apply each needed upgrade
+    for (const need of candidate.upgrade_needs) {
+      const upgradeResult = await this.applySpecificUpgrade(agent, need);
+      
+      if (upgradeResult.applied) {
+        upgrades.push({
+          type: need.type,
+          applied_at: new Date().toISOString(),
+          details: upgradeResult.details
+        });
+        
+        // Update agent with new capabilities
+        agent[upgradeResult.field] = upgradeResult.value;
+      }
+    }
+    
+    // Update agent entity in Base44
+    try {
+      await this.updateAgentEntity(agent.id, {
+        automation_level: agent.automation_level || 'autonomous',
+        api_requirements: agent.api_requirements || [],
+        real_time_metrics: agent.real_time_metrics || {},
+        workflow_config: agent.workflow_config || {},
+        coordination_settings: agent.coordination_settings || {},
+        // Mark as upgraded
+        metadata: {
+          ...(agent.metadata || {}),
+          last_upgraded: new Date().toISOString(),
+          upgrade_version: '2.0',
+          wet_run_capable: true
+        }
+      });
+      
+      return {
+        success: true,
+        upgrades_applied: upgrades,
+        new_capabilities: this.extractNewCapabilities(agent)
+      };
+      
+    } catch (error) {
+      return {
+        success: false,
+        error: `Failed to update agent: ${error.message}`,
+        upgrades_applied: upgrades
+      };
+    }
+  }
+
+  async applySpecificUpgrade(agent, upgradeNeed) {
+    switch (upgradeNeed.type) {
+      case 'PAYMENT_GATEWAY_INTEGRATION':
+        return await this.addPaymentGatewayIntegration(agent);
+        
+      case 'WET_RUN_ENABLEMENT':
+        return await this.enableWetRun(agent);
+        
+      case 'AUTONOMOUS_CONFIGURATION':
+        return await this.addAutonomousConfiguration(agent);
+        
+      case 'MULTI_CURRENCY':
+        return await this.addMultiCurrencySupport(agent);
+        
+      case 'ERROR_HANDLING':
+        return await this.addErrorHandling(agent);
+        
+      case 'MONITORING':
+        return await this.addMonitoring(agent);
+        
+      default:
+        return { applied: false, error: `Unknown upgrade type: ${upgradeNeed.type}` };
+    }
+  }
+
+  async addPaymentGatewayIntegration(agent) {
+    console.log(`    💳 Adding payment gateway integration to ${agent.name}`);
+    
+    // Add PSP capabilities
+    const newApiRequirements = [
+      ...(agent.api_requirements || []),
+      'paypal_api',
+      'stripe_api',
+      'bank_api'
+    ];
+    
+    // Add payment-specific workflow config
+    const newWorkflowConfig = {
+      ...(agent.workflow_config || {}),
+      payment_processing: {
+        enabled: true,
+        supported_gateways: ['paypal', 'stripe', 'bank_transfer'],
+        auto_configuration: true,
+        proof_generation: true,
+        settlement_automation: true
+      },
+      revenue_validation: {
+        enabled: true,
+        proof_requirements: ['psp_id', 'transaction_id', 'amount', 'currency'],
+        validation_timeout: 5000,
+        retry_strategy: 'exponential_backoff'
+      }
+    };
+    
+    return {
+      applied: true,
+      field: 'workflow_config',
+      value: newWorkflowConfig,
+      details: {
+        added_capabilities: ['payment_processing', 'revenue_validation'],
+        supported_gateways: ['paypal', 'stripe', 'bank_transfer']
+      }
+    };
+  }
+
+  async enableWetRun(agent) {
+    console.log(`    💧 Enabling wet-run mode for ${agent.name}`);
+    
+    // Update automation level
+    const newAutomationLevel = 'autonomous_wet_run';
+    
+    // Add wet-run specific configuration
+    const newCoordinationSettings = {
+      ...(agent.coordination_settings || {}),
+      wet_run: {
+        enabled: true,
+        mode: 'real_money',
+        validation_required: true,
+        proof_requirements: 'strict',
+        auto_escalation: true,
+        circuit_breakers: ['proof_validation', 'amount_mismatch', 'sla_breach']
+      },
+      safety_controls: {
+        daily_limit: process.env.DAILY_SPENDING_LIMIT || 1000,
+        transaction_limit: process.env.TRANSACTION_LIMIT || 100,
+        approval_threshold: process.env.APPROVAL_THRESHOLD || 500,
+        auto_freeze_on_anomaly: true
+      }
+    };
+    
+    return {
+      applied: true,
+      field: 'coordination_settings',
+      value: newCoordinationSettings,
+      details: {
+        mode: 'wet_run',
+        safety_controls: ['daily_limit', 'transaction_limit', 'approval_threshold'],
+        circuit_breakers: ['proof_validation', 'amount_mismatch', 'sla_breach']
+      }
+    };
+  }
+
+  async verifyUpgrades(results) {
+    console.log('🧪 Verifying upgrades...');
+    
+    const verification = {
+      total_verified: 0,
+      verified_agents: [],
+      failed_verifications: [],
+      performance_metrics: {}
+    };
+    
+    // Test each upgraded agent
+    for (const success of results.successful) {
+      try {
+        const agentVerification = await this.verifyAgentUpgrade(success);
+        
+        if (agentVerification.passed) {
+          verification.total_verified++;
+          verification.verified_agents.push({
+            agent_id: success.agent_id,
+            agent_name: success.agent_name,
+            verification_details: agentVerification
+          });
+          
+          console.log(`    ✅ ${success.agent_name} verified successfully`);
+        } else {
+          verification.failed_verifications.push({
+            agent_id: success.agent_id,
+            agent_name: success.agent_name,
+            reasons: agentVerification.failures
+          });
+          
+          console.log(`    ⚠️ ${success.agent_name} verification failed`);
+        }
+        
+        // Collect performance metrics
+        verification.performance_metrics[success.agent_id] = 
+          agentVerification.performance_metrics;
+        
+      } catch (error) {
+        verification.failed_verifications.push({
+          agent_id: success.agent_id,
+          agent_name: success.agent_name,
+          error: error.message
+        });
+        
+        console.log(`    💥 Error verifying ${success.agent_name}: ${error.message}`);
+      }
+    }
+    
+    // Generate verification report
+    verification.report = {
+      success_rate: (verification.total_verified / results.successful.length * 100).toFixed(1) + '%',
+      average_latency: this.calculateAverageLatency(verification.performance_metrics),
+      wet_run_capable_agents: verification.verified_agents.length,
+      timestamp: new Date().toISOString()
+    };
+    
+    return verification;
+  }
+
+  async verifyAgentUpgrade(successResult) {
+    const agent = await this.fetchAgentById(successResult.agent_id);
+    
+    if (!agent) {
+      return { passed: false, failures: ['Agent not found'] };
+    }
+    
+    const tests = [
+      { name: 'wet_run_enabled', test: () => this.testWetRunEnabled(agent) },
+      { name: 'payment_gateway_capable', test: () => this.testPaymentGatewayCapability(agent) },
+      { name: 'autonomous_configuration', test: () => this.testAutonomousConfiguration(agent) },
+      { name: 'error_handling', test: () => this.testErrorHandling(agent) },
+      { name: 'performance', test: () => this.testPerformance(agent) }
+    ];
+    
+    const results = await Promise.allSettled(
+      tests.map(test => test.test())
+    );
+    
+    const passedTests = results.filter(r => r.status === 'fulfilled' && r.value.passed);
+    const failedTests = results.filter(r => r.status === 'rejected' || !r.value.passed);
+    
+    return {
+      passed: failedTests.length === 0,
+      total_tests: tests.length,
+      passed_tests: passedTests.length,
+      failed_tests: failedTests.length,
+      failures: failedTests.map((f, i) => ({
+        test: tests[i].name,
+        reason: f.reason?.message || 'Test failed'
+      })),
+      performance_metrics: this.extractPerformanceMetrics(results)
+    };
+  }
+
+  // HELPER METHODS
+
+  isWetRunReady(agent) {
+    return agent.automation_level === 'autonomous' &&
+           agent.status === 'active' &&
+           agent.swarm_compatible === true &&
+           (agent.real_time_metrics || {}).revenue_tracking === true;
+  }
+
+  hasPaymentGatewayCapability(agent) {
+    const apiReqs = agent.api_requirements || [];
+    return apiReqs.some(req => 
+      req.includes('paypal') || 
+      req.includes('stripe') || 
+      req.includes('bank') ||
+      req.includes('payment')
+    );
+  }
+
+  isUpgradeCandidate(agent) {
+    // Upgrade if not wet-run ready OR missing payment gateway capability
+    return !this.isWetRunReady(agent) || !this.hasPaymentGatewayCapability(agent);
+  }
+
+  identifyUpgradeNeeds(agent) {
+    const needs = [];
+    
+    if (!this.hasPaymentGatewayCapability(agent)) {
+      needs.push({
+        type: 'PAYMENT_GATEWAY_INTEGRATION',
+        priority: 'HIGH',
+        description: 'Add payment gateway integration capabilities'
+      });
+    }
+    
+    if (!this.isWetRunReady(agent)) {
+      needs.push({
+        type: 'WET_RUN_ENABLEMENT',
+        priority: 'HIGH',
+        description: 'Enable wet-run mode for real money operations'
+      });
+    }
+    
+    if (agent.automation_level !== 'autonomous') {
+      needs.push({
+        type: 'AUTONOMOUS_CONFIGURATION',
+        priority: 'MEDIUM',
+        description: 'Upgrade to autonomous operation level'
+      });
+    }
+    
+    // Add other upgrade needs based on analysis
+    if ((agent.real_time_metrics || {}).multi_currency !== true) {
+      needs.push({
+        type: 'MULTI_CURRENCY',
+        priority: 'MEDIUM',
+        description: 'Add multi-currency support'
+      });
+    }
+    
+    return needs;
+  }
+
+  estimateUpgradeTime(upgradeNeeds) {
+    const timePerNeed = {
+      'PAYMENT_GATEWAY_INTEGRATION': 2, // hours
+      'WET_RUN_ENABLEMENT': 1,
+      'AUTONOMOUS_CONFIGURATION': 3,
+      'MULTI_CURRENCY': 1,
+      'ERROR_HANDLING': 0.5,
+      'MONITORING': 0.5
+    };
+    
+    return upgradeNeeds.reduce((total, need) => {
+      return total + (timePerNeed[need.type] || 1);
+    }, 0);
+  }
+
+  calculateUpgradePriority(agent, upgradeNeeds) {
+    if (upgradeNeeds.some(need => need.type === 'PAYMENT_GATEWAY_INTEGRATION')) {
+      return 'HIGH';
+    }
+    
+    if (agent.category === 'revenue' || agent.category === 'settlement') {
+      return 'HIGH';
+    }
+    
+    if (agent.success_rate < 0.9) {
+      return 'MEDIUM';
+    }
+    
+    return 'LOW';
+  }
+
+  async fetchAgentById(agentId) {
+    try {
+      const response = await fetch(
+        `${this.baseUrl}/entities/Agent/${agentId}`,
+        { headers: this.headers }
+      );
+      
+      if (!response.ok) {
+        return null;
+      }
+      
+      return await response.json();
+    } catch (error) {
+      console.error(`Error fetching agent ${agentId}:`, error);
+      return null;
+    }
+  }
+
+  async updateAgentEntity(entityId, updateData) {
+    try {
+      const response = await fetch(
+        `${this.baseUrl}/entities/Agent/${entityId}`,
+        {
+          method: 'PUT',
+          headers: this.headers,
+          body: JSON.stringify(updateData)
+        }
+      );
+      
+      if (!response.ok) {
+        throw new Error(`Update failed: ${response.status}`);
+      }
+      
+      return await response.json();
+    } catch (error) {
+      console.error(`Error updating agent ${entityId}:`, error);
+      throw error;
+    }
+  }
+
+  // TEST METHODS
+  async testWetRunEnabled(agent) {
+    const settings = agent.coordination_settings || {};
+    return {
+      passed: settings.wet_run?.enabled === true,
+      metrics: {
+        mode: settings.wet_run?.mode || 'unknown',
+        validation_required: settings.wet_run?.validation_required || false
+      }
+    };
+  }
+
+  async testPaymentGatewayCapability(agent) {
+    const config = agent.workflow_config || {};
+    return {
+      passed: config.payment_processing?.enabled === true,
+      metrics: {
+        gateways_supported: config.payment_processing?.supported_gateways || [],
+        auto_configuration: config.payment_processing?.auto_configuration || false
+      }
+    };
+  }
+
+  async testPerformance(agent) {
+    // Simulate performance test
+    const latency = Math.random() * 100 + 50; // 50-150ms
+    const throughput = Math.random() * 1000 + 500; // 500-1500 requests/min
+    
+    return {
+      passed: latency < 200 && throughput > 100,
+      metrics: {
+        latency_ms: Math.round(latency),
+        throughput_per_min: Math.round(throughput),
+        success_rate: agent.success_rate || 0
+      }
+    };
+  }
+}
+
+// AGENT DEPLOYMENT MANAGER
+export class AgentDeploymentManager {
+  constructor() {
+    this.upgrader = new AutonomousAgentUpgrader();
+  }
+
+  /**
+   * COMPLETE AGENT UPGRADE PIPELINE
+   */
+  async executeCompleteUpgradePipeline() {
+    console.log('🚀 STARTING COMPLETE AGENT UPGRADE PIPELINE\n');
+    
+    const pipeline = [
+      { name: 'Analysis', fn: () => this.upgrader.upgradeAgentCapabilities() },
+      { name: 'Validation', fn: () => this.validateSystemReadiness() },
+      { name: 'Deployment', fn: () => this.deployUpgradedAgents() },
+      { name: 'Testing', fn: () => this.runComprehensiveTests() }
+    ];
+    
+    const results = {};
+    
+    for (const stage of pipeline) {
+      console.log(`\n📁 STAGE: ${stage.name}`);
+      console.log('='.repeat(50));
+      
+      try {
+        results[stage.name] = await stage.fn();
+        console.log(`✅ ${stage.name} completed successfully`);
+      } catch (error) {
+        console.error(`❌ ${stage.name} failed:`, error);
+        results[stage.name] = { error: error.message };
+        
+        // Check if we should continue
+        if (stage.name === 'Analysis') {
+          throw new Error('Analysis failed, cannot proceed');
+        }
+      }
+    }
+    
+    return this.generateFinalReport(results);
+  }
+
+  async validateSystemReadiness() {
+    console.log('🔍 Validating system readiness for wet-run...');
+    
+    const checks = [
+      this.checkPaymentGatewayConfigurations(),
+      this.checkOwnerAccountSettings(),
+      this.checkEnvironmentVariables(),
+      this.checkAPIAccess(),
+      this.checkSecuritySettings()
+    ];
+    
+    const results = await Promise.allSettled(checks);
+    
+    const passed = results.filter(r => r.status === 'fulfilled' && r.value.passed);
+    const failed = results.filter(r => r.status === 'rejected' || !r.value.passed);
+    
+    return {
+      total_checks: checks.length,
+      passed: passed.length,
+      failed: failed.length,
+      details: results.map((r, i) => ({
+        check: i,
+        status: r.status === 'fulfilled' && r.value.passed ? 'PASSED' : 'FAILED',
+        details: r.status === 'fulfilled' ? r.value.details : r.reason
+      }))
+    };
+  }
+
+  async deployUpgradedAgents() {
+    console.log('🚀 Deploying upgraded agents...');
+    
+    // Generate deployment configuration
+    const deploymentConfig = {
+      mode: 'wet_run',
+      environment: 'production',
+      features: {
+        autonomous_payment_processing: true,
+        real_time_revenue_validation: true,
+        multi_gateway_support: true,
+        owner_only_settlement: true,
+        automatic_reconciliation: true
+      },
+      safety_controls: {
+        circuit_breakers: true,
+        rate_limiting: true,
+        budget_limits: true,
+        approval_workflows: true
+      }
+    };
+    
+    // Deploy to each agent
+    const agents = await this.upgrader.fetchAgentEntities();
+    const upgradedAgents = agents.filter(agent => 
+      agent.wet_run_ready && agent.payment_gateway_capable
+    );
+    
+    const deployments = [];
+    
+    for (const agent of upgradedAgents) {
+      try {
+        const deployment = await this.deployAgent(agent, deploymentConfig);
+        deployments.push({
+          agent: agent.name,
+          success: true,
+          deployment_id: deployment.id
+        });
+      } catch (error) {
+        deployments.push({
+          agent: agent.name,
+          success: false,
+          error: error.message
+        });
+      }
+    }
+    
+    return {
+      total_agents: agents.length,
+      upgraded_agents: upgradedAgents.length,
+      successful_deployments: deployments.filter(d => d.success).length,
+      failed_deployments: deployments.filter(d => !d.success).length,
+      deployments
+    };
+  }
+
+  async runComprehensiveTests() {
+    console.log('🧪 Running comprehensive tests...');
+    
+    const testSuites = [
+      {
+        name: 'Payment Gateway Integration',
+        tests: [
+          'paypal_api_connectivity',
+          'stripe_api_connectivity',
+          'bank_transfer_capability',
+          'payment_processing_flow',
+          'webhook_reception'
+        ]
+      },
+      {
+        name: 'Wet-Run Operations',
+        tests: [
+          'real_money_validation',
+          'proof_generation',
+          'settlement_execution',
+          'reconciliation',
+          'audit_trail'
+        ]
+      },
+      {
+        name: 'Safety & Security',
+        tests: [
+          'circuit_breaker_functionality',
+          'rate_limiting',
+          'budget_enforcement',
+          'owner_only_settlement',
+          'data_encryption'
+        ]
+      }
+    ];
+    
+    const results = [];
+    
+    for (const suite of testSuites) {
+      console.log(`\n  📊 Test Suite: ${suite.name}`);
+      
+      for (const test of suite.tests) {
+        console.log(`    🧪 Running: ${test}`);
+        
+        try {
+          const result = await this.runSingleTest(test);
+          results.push({
+            suite: suite.name,
+            test,
+            passed: result.passed,
+            duration: result.duration,
+            details: result.details
+          });
+          
+          console.log(`      ${result.passed ? '✅' : '❌'} ${test}`);
+        } catch (error) {
+          results.push({
+            suite: suite.name,
+            test,
+            passed: false,
+            error: error.message
+          });
+          
+          console.log(`      💥 ${test} failed: ${error.message}`);
+        }
+      }
+    }
+    
+    return {
+      total_tests: results.length,
+      passed: results.filter(r => r.passed).length,
+      failed: results.filter(r => !r.passed).length,
+      success_rate: (results.filter(r => r.passed).length / results.length * 100).toFixed(1) + '%',
+      test_results: results
+    };
+  }
+
+  generateFinalReport(results) {
+    console.log('\n📊 FINAL UPGRADE REPORT');
+    console.log('='.repeat(50));
+    
+    const report = {
+      timestamp: new Date().toISOString(),
+      summary: {
+        analysis_completed: !!results.Analysis,
+        validation_passed: results.Validation?.failed === 0,
+        deployments_successful: results.Deployment?.successful_deployments > 0,
+        tests_passed: results.Testing?.success_rate === '100.0%'
+      },
+      agent_upgrades: results.Analysis?.upgradePlan?.summary || {},
+      system_readiness: results.Validation || {},
+      deployment_results: results.Deployment || {},
+      test_results: results.Testing || {},
+      recommendations: this.generateRecommendations(results)
+    };
+    
+    // Print summary
+    console.log('\n📈 SUMMARY:');
+    console.log(`  Agent Upgrades: ${report.agent_upgrades.total_upgrades || 0} agents upgraded`);
+    console.log(`  System Readiness: ${report.system_readiness.passed || 0}/${report.system_readiness.total_checks || 0} checks passed`);
+    console.log(`  Deployments: ${report.deployment_results.successful_deployments || 0} successful`);
+    console.log(`  Tests: ${report.test_results.success_rate || '0%'} success rate`);
+    
+    console.log('\n🎯 RECOMMENDATIONS:');
+    report.recommendations.forEach((rec, i) => {
+      console.log(`  ${i + 1}. ${rec}`);
+    });
+    
+    return report;
+  }
+
+  generateRecommendations(results) {
+    const recommendations = [];
+    
+    if (results.Validation?.failed > 0) {
+      recommendations.push('Fix system readiness checks before proceeding');
+    }
+    
+    if (results.Deployment?.failed_deployments > 0) {
+      recommendations.push('Review and retry failed agent deployments');
+    }
+    
+    if (results.Testing?.failed > 0) {
+      recommendations.push('Address failed test cases before production use');
+    }
+    
+    if (results.Analysis?.upgradePlan?.critical_gaps?.length > 0) {
+      recommendations.push('Address critical capability gaps identified in analysis');
+    }
+    
+    if (!recommendations.includes('Monitor wet-run operations closely for first 72 hours')) {
+      recommendations.push('Monitor wet-run operations closely for first 72 hours');
+    }
+    
+    return recommendations;
+  }
+}
+
+// DEPLOYMENT SCRIPT
+export async function deployAutonomousAgentUpgrades() {
+  console.log('🚀 AUTONOMOUS AGENT UPGRADE DEPLOYMENT');
+  console.log('='.repeat(50));
+  
+  const manager = new AgentDeploymentManager();
+  
+  try {
+    const report = await manager.executeCompleteUpgradePipeline();
+    
+    console.log('\n✅ DEPLOYMENT COMPLETE');
+    console.log('='.repeat(50));
+    
+    // Save report to file
+    const fs = await import('fs');
+    fs.writeFileSync(
+      `agent-upgrade-report-${Date.now()}.json`,
+      JSON.stringify(report, null, 2)
+    );
+    
+    console.log('📄 Report saved to file');
+    
+    return report;
+    
+  } catch (error) {
+    console.error('❌ DEPLOYMENT FAILED:', error);
+    throw error;
+  }
+}
+
+// QUICK START COMMANDS
+export const UpgradeCommands = {
+  // Analyze current state
+  analyze: async () => {
+    const upgrader = new AutonomousAgentUpgrader();
+    return await upgrader.upgradeAgentCapabilities();
+  },
+  
+  // Deploy upgrades
+  deploy: async () => {
+    return await deployAutonomousAgentUpgrades();
+  },
+  
+  // Test specific agent
+  testAgent: async (agentId) => {
+    const upgrader = new AutonomousAgentUpgrader();
+    const agent = await upgrader.fetchAgentById(agentId);
+    return await upgrader.verifyAgentUpgrade({
+      agent_id: agentId,
+      agent_name: agent?.name || 'Unknown'
+    });
+  },
+  
+  // Generate upgrade plan only
+  plan: async () => {
+    const upgrader = new AutonomousAgentUpgrader();
+    const agents = await upgrader.fetchAgentEntities();
+    const analysis = await upgrader.analyzeAgentCapabilities(agents);
+    return await upgrader.generateUpgradePlan(analysis);
+  }
+};

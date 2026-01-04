@@ -1,0 +1,21 @@
+{
+  "id": "REV_abbb4766-cf28-4a89-a18b-750d1fd227f8",
+  "source_system": "MissionSystem",
+  "original_data": {
+    "amount": 1500,
+    "currency": "USD",
+    "source": "MissionManager",
+    "transaction_id": "TXN_12345"
+  },
+  "amount": 1500,
+  "currency": "USD",
+  "status": "reconciled",
+  "timestamp": "2026-01-04T15:27:37.925Z",
+  "metadata": {},
+  "updated_at": "2026-01-04T15:27:37.938Z",
+  "reconciliation_data": {
+    "source": "BankOfAmerica",
+    "external_ref": "TXN_12345",
+    "matched_at": "2026-01-04T15:27:37.938Z"
+  }
+}

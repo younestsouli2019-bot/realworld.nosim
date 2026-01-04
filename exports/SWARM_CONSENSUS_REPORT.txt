@@ -1,0 +1,19 @@
+
+=== SWARM CONSENSUS REPORT ===
+Date: 2026-01-04T11:46:39.164Z
+Topic: ALTERNATIVE_CRYPTO_RAILS
+Context: Binance API Failure
+
+RANKING:
+1. Self-Custody Wallet (Trust/MetaMask/Ledger) (Score: 98)
+   Reason: Eliminates Exchange Risk. Zero API dependency for receiving. Uncensorable.
+
+2. Bybit Exchange (Score: 75)
+   Reason: Strong liquidity, reliable API. Good alternative if CEX is mandatory.
+
+3. KuCoin Exchange (Score: 72)
+   Reason: Fallback CEX. API similar to Binance but higher regulatory friction recently.
+
+VERDICT:
+Switch to DIRECT_ON_CHAIN.
+System is ready to re-route pending settlements to this new destination.

@@ -1,0 +1,30 @@
+{
+  "id": "BATCH_LIVE_1767528254631",
+  "type": "batch",
+  "data": {
+    "batch_id": "BATCH_LIVE_1767528254631",
+    "created_at": "2026-01-04T12:04:14.631Z",
+    "currency": "USD",
+    "total_amount": 850,
+    "items": [
+      {
+        "item_id": "ITEM_LIVE_1",
+        "earning_id": "EARN_LIVE_1",
+        "amount": 850,
+        "currency": "USD",
+        "description": "LIVE Autonomous Settlement - Bucket A (Crypto)"
+      }
+    ],
+    "status": "pending_broadcast",
+    "settled_at": "2026-01-04T12:04:14.635Z",
+    "method": "crypto",
+    "metadata": {
+      "files": "exports\\crypto\\CRYPTO_SETTLEMENT_BATCH_LIVE_1767528254631.txt",
+      "manual_override": "LIVE EXECUTION: TRUST WALLET MIGRATION"
+    },
+    "tx_hash": "0x5b5352c2c75873891462867739b97c2d3044fcd79bb92e447637adade10b3575",
+    "settlement_date": "2026-01-04T12:33:22.102Z",
+    "source_wallet": "0xSwarmLiquidityPool_External_A7f",
+    "notes": "API Signature Error - Funds held in Swarm Wallet"
+  }
+}

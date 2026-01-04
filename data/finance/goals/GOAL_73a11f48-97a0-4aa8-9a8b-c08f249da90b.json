@@ -1,0 +1,10 @@
+{
+  "id": "GOAL_73a11f48-97a0-4aa8-9a8b-c08f249da90b",
+  "name": "Monthly Revenue Target",
+  "target_amount": 5000,
+  "target_date": "2026-02-01",
+  "type": "revenue",
+  "status": "active",
+  "created_at": "2026-01-04T15:26:56.033Z",
+  "updated_at": "2026-01-04T15:26:56.033Z"
+}

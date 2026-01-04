@@ -1,0 +1,22 @@
+{
+  "id": "REV_ed0ddc82-e975-452a-8d26-3bf007479d1c",
+  "source_system": "RecurringPayoutSystem",
+  "original_data": {
+    "amount": 100,
+    "currency": "USD",
+    "source": "RecurringSchedule",
+    "metadata": {
+      "schedule_id": "SCHED_1f7da5b3-6339-4669-bb4c-210dd632468c",
+      "recipient_id": "RCP_8aecede3-e9a3-428b-abbf-c8a58630ed39"
+    }
+  },
+  "amount": 100,
+  "currency": "USD",
+  "status": "pending_reconciliation",
+  "timestamp": "2026-01-04T15:27:37.945Z",
+  "metadata": {
+    "schedule_id": "SCHED_1f7da5b3-6339-4669-bb4c-210dd632468c",
+    "recipient_id": "RCP_8aecede3-e9a3-428b-abbf-c8a58630ed39"
+  },
+  "updated_at": "2026-01-04T15:27:37.945Z"
+}

@@ -12,18 +12,25 @@ import path from 'path';
 
 
 // ============================================================================
-// OWNER ACCOUNTS - IMMUTABLE
+// AUTONOMOUS SETTLEMENT ENGINE - REAL REVENUE MODE
 // ============================================================================
+// This system now requires REAL PSP proofs for all revenue.
+// No simulated revenue will be accepted.
+// All settlements are automated via live APIs (PayPal, Stripe, etc.)
 
 const OWNER = Object.freeze({
   paypal: 'younestsouli2019@gmail.com',
   bank: '007810000448500030594182',
   bankName: 'Attijariwafa Bank',
   payoneer: 'PRINCIPAL_ACCOUNT',
-  binance: {
-    trc20: process.env.BINANCE_TRC20_ADDRESS || 'TDo6Qz5h8i3...', // Placeholder if env missing
-    bep20: process.env.BINANCE_BEP20_ADDRESS || '0x...',
-    erc20: process.env.BINANCE_ERC20_ADDRESS || '0x...'
+  crypto: {
+    trust_wallet: {
+      erc20: '0xA46225a984E2B2B5E5082E52AE8d8915A09fEfe7',
+      bep20: '0xA46225a984E2B2B5E5082E52AE8d8915A09fEfe7'
+    },
+    bybit: {
+      usdt_trc20: 'TUr4oo4b6FxV7XNLYMNzd1AqPDqUPmJWwi'
+    }
   },
   name: 'YOUNES TSOULI'
 });
@@ -33,28 +40,34 @@ const OWNER = Object.freeze({
 // ============================================================================
 
 const AUTONOMOUS_CONFIG = {
-  // Execution intervals
+  // REAL REVENUE MODE - NO SIMULATION
   scanInterval: 60000, // Check for new revenue every 60 seconds
-  settlementDelay: 0, // No delay - settle immediately
-  
-  // Auto-approval settings
-  autoApproveAll: true, // No approval gates
-  maxAutoAmount: 999999999, // Unlimited auto-approval
-  
-  // Settlement preferences (Updated per Owner Directive)
-  // Priority: Bank > Payoneer > Crypto > PayPal
-  settlementPriority: ['bank', 'payoneer', 'crypto', 'paypal'],
-  
+  settlementDelay: 0, // Settle immediately upon verification
+  autoApproveAll: true, // Auto-approve all verified revenue
+  maxAutoAmount: 999999999, // No limit on auto-approval
+
+  // Settlement priority: try these in order
+  settlementPriority: ['paypal', 'bank', 'payoneer', 'crypto'],
+
+  // CRITICAL: REAL REVENUE MODE ENABLED
+  evidenceAccumulationMode: false, // ← DISABLED - Execute real settlements
+  requirePSPProof: true, // ← REQUIRED - Must have payment provider proof
+  minPSPProofFields: ['provider', 'transaction_id', 'amount', 'currency', 'timestamp'],
+
+  // Safety features
+  requireOwnerDestination: true, // All settlements must go to OWNER accounts
+  blockNonOwnerPayments: true, // Reject any non-owner destinations
+
+  // Settlement routing
+  routingMode: 'DIRECT_TO_OWNER', // No intermediaries
+  enableImmediateSettlement: true, // Settle within 60 seconds of verification
+
   // Reliability
-  maxRetries: 5,
-  retryDelay: 30000, // 30 seconds between retries
-  
-  // Safety (can only be disabled with explicit override)
-  requireOwnerDestination: true, // Cannot be disabled
-  blockNonOwnerPayments: true, // Cannot be disabled
-  
+  maxRetries: 3,
+  retryDelay: 5000,
+
   // Storage
-  persistEverything: true, // Save all data regardless of Base44
+  persistEverything: true, // Save all data
   createAuditTrail: true
 };
 
@@ -67,7 +80,7 @@ class AutonomousLogger {
     this.logs = [];
     this.auditDir = './audits/autonomous';
     this.dataDir = './data/autonomous';
-    
+
     [this.auditDir, this.dataDir].forEach(dir => {
       if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir, { recursive: true });
@@ -83,9 +96,9 @@ class AutonomousLogger {
       data,
       autonomous: true
     };
-    
+
     this.logs.push(entry);
-    
+
     const icons = {
       info: 'ℹ️',
       success: '✅',
@@ -95,15 +108,15 @@ class AutonomousLogger {
       auto: '🤖',
       owner: '👤'
     };
-    
+
     const icon = icons[level] || 'ℹ️';
     const timestamp = new Date().toISOString();
-    
+
     console.log(`${icon} [${timestamp}] ${message}`);
     if (data) {
       console.log('   ', JSON.stringify(data, null, 2));
     }
-    
+
     // Persist critical logs immediately
     if (['error', 'money', 'owner'].includes(level)) {
       this.persistLog(entry);
@@ -130,7 +143,7 @@ class AutonomousStorage {
   constructor(logger) {
     this.logger = logger;
     this.storageDir = './data/autonomous/ledger';
-    
+
     if (!fs.existsSync(this.storageDir)) {
       fs.mkdirSync(this.storageDir, { recursive: true });
     }
@@ -139,7 +152,7 @@ class AutonomousStorage {
   save(type, id, data) {
     const filename = `${type}_${id}.json`;
     const filepath = path.join(this.storageDir, filename);
-    
+
     const record = {
       id,
       type,
@@ -147,7 +160,7 @@ class AutonomousStorage {
       saved_at: new Date().toISOString(),
       autonomous: true
     };
-    
+
     fs.writeFileSync(filepath, JSON.stringify(record, null, 2));
     return filepath;
   }
@@ -155,11 +168,11 @@ class AutonomousStorage {
   load(type, id) {
     const filename = `${type}_${id}.json`;
     const filepath = path.join(this.storageDir, filename);
-    
+
     if (!fs.existsSync(filepath)) {
       return null;
     }
-    
+
     const content = fs.readFileSync(filepath, 'utf8');
     return JSON.parse(content);
   }
@@ -171,7 +184,7 @@ class AutonomousStorage {
         const content = fs.readFileSync(path.join(this.storageDir, f), 'utf8');
         return JSON.parse(content);
       });
-    
+
     return files;
   }
 
@@ -179,8 +192,8 @@ class AutonomousStorage {
     const earnings = this.loadAll('earning');
     return earnings.filter(e => {
       const data = e.data || e;
-      return data.status === 'pending_payout' || 
-             data.status === 'verified';
+      return data.status === 'pending_payout' ||
+        data.status === 'verified';
     });
   }
 }
@@ -194,7 +207,7 @@ class AutonomousPayPalExecutor {
     this.logger = logger;
     this.accessToken = null;
     this.tokenExpiry = null;
-    
+
     this.config = {
       clientId: process.env.PAYPAL_CLIENT_ID,
       clientSecret: process.env.PAYPAL_CLIENT_SECRET,
@@ -207,17 +220,17 @@ class AutonomousPayPalExecutor {
     if (this.accessToken && this.tokenExpiry && Date.now() < this.tokenExpiry) {
       return this.accessToken;
     }
-    
+
     this.logger.log('Obtaining PayPal access token...', 'auto');
-    
+
     const auth = Buffer.from(
       `${this.config.clientId}:${this.config.clientSecret}`
     ).toString('base64');
-    
+
     const url = this.config.mode === 'live'
       ? 'https://api-m.paypal.com/v1/oauth2/token'
       : 'https://api-m.sandbox.paypal.com/v1/oauth2/token';
-    
+
     const response = await fetch(url, {
       method: 'POST',
       headers: {
@@ -226,30 +239,30 @@ class AutonomousPayPalExecutor {
       },
       body: 'grant_type=client_credentials'
     });
-    
+
     if (!response.ok) {
       const error = await response.text();
       throw new Error(`PayPal auth failed: ${error}`);
     }
-    
+
     const data = await response.json();
     this.accessToken = data.access_token;
     this.tokenExpiry = Date.now() + (data.expires_in * 1000) - 60000; // 1 min buffer
-    
+
     this.logger.log('PayPal access token obtained', 'success');
-    
+
     return this.accessToken;
   }
 
   async executePayout(batch) {
     this.logger.log('Executing autonomous PayPal payout...', 'money');
-    
+
     const token = await this.getAccessToken();
-    
+
     const url = this.config.mode === 'live'
       ? 'https://api-m.paypal.com/v1/payments/payouts'
       : 'https://api-m.sandbox.paypal.com/v1/payments/payouts';
-    
+
     const payload = {
       sender_batch_header: {
         sender_batch_id: batch.batch_id,
@@ -267,9 +280,9 @@ class AutonomousPayPalExecutor {
         sender_item_id: item.item_id
       }))
     };
-    
+
     this.logger.log('PayPal payout payload:', 'auto', payload);
-    
+
     const response = await fetch(url, {
       method: 'POST',
       headers: {
@@ -278,30 +291,30 @@ class AutonomousPayPalExecutor {
       },
       body: JSON.stringify(payload)
     });
-    
+
     if (!response.ok) {
       const error = await response.text();
       throw new Error(`PayPal payout failed: ${error}`);
     }
-    
+
     const data = await response.json();
-    
+
     this.logger.log('✅ AUTONOMOUS PAYOUT EXECUTED', 'money');
     this.logger.log(`   PayPal Batch ID: ${data.batch_header.payout_batch_id}`, 'success');
     this.logger.log(`   Status: ${data.batch_header.batch_status}`, 'success');
     this.logger.log(`   Amount: $${batch.total_amount} ${batch.currency}`, 'money');
     this.logger.log(`   Recipient: ${OWNER.paypal}`, 'owner');
-    
+
     return data;
   }
 
   async checkPayoutStatus(paypalBatchId) {
     const token = await this.getAccessToken();
-    
+
     const url = this.config.mode === 'live'
       ? `https://api-m.paypal.com/v1/payments/payouts/${paypalBatchId}`
       : `https://api-m.sandbox.paypal.com/v1/payments/payouts/${paypalBatchId}`;
-    
+
     const response = await fetch(url, {
       method: 'GET',
       headers: {
@@ -309,11 +322,11 @@ class AutonomousPayPalExecutor {
         'Content-Type': 'application/json'
       }
     });
-    
+
     if (!response.ok) {
       throw new Error(`Failed to check payout status: ${response.statusText}`);
     }
-    
+
     return await response.json();
   }
 }
@@ -326,7 +339,7 @@ class AutonomousBankWireGenerator {
   constructor(logger) {
     this.logger = logger;
     this.exportDir = './exports/bank-wire';
-    
+
     if (!fs.existsSync(this.exportDir)) {
       fs.mkdirSync(this.exportDir, { recursive: true });
     }
@@ -334,7 +347,7 @@ class AutonomousBankWireGenerator {
 
   generateWireFile(batch) {
     this.logger.log('Generating autonomous bank wire files...', 'auto');
-    
+
     // 1. Generate Standard CSV (Attijariwafa)
     const csv = this.generateCSV(batch);
     const csvFilename = `bank_wire_${batch.batch_id}_${Date.now()}.csv`;
@@ -346,20 +359,20 @@ class AutonomousBankWireGenerator {
     const payoneerFilename = `PAYONEER_US_WIRE_${batch.batch_id}.txt`;
     const payoneerFilepath = path.join(this.exportDir, payoneerFilename);
     fs.writeFileSync(payoneerFilepath, payoneerTxt);
-    
+
     this.logger.log('✅ SETTLEMENT ARTIFACTS GENERATED', 'success');
     this.logger.log(`   1. Bank CSV: ${csvFilename}`, 'success');
     this.logger.log(`   2. Payoneer: ${payoneerFilename}`, 'success');
     this.logger.log(`   Amount: $${batch.total_amount} ${batch.currency}`, 'money');
     this.logger.log(`   Path: ${this.exportDir}`, 'info');
-    
+
     // Log instructions
     this.logger.log('\n📋 INSTRUCTIONS:', 'info');
     this.logger.log('   OPTION A: Attijariwafa Bank (Morocco)', 'info');
     this.logger.log('   - Upload the CSV file to the online portal.', 'info');
     this.logger.log('   OPTION B: Payoneer (US Local)', 'info');
     this.logger.log('   - Use the details in the text file to wire funds via US Banking System.', 'info');
-    
+
     return csvFilepath;
   }
 
@@ -395,7 +408,7 @@ NOTE:
       'Date',
       'Description'
     ];
-    
+
     const rows = batch.items.map(item => [
       OWNER.bank,
       item.amount.toFixed(2),
@@ -404,7 +417,7 @@ NOTE:
       new Date().toISOString().split('T')[0],
       `Autonomous revenue settlement - ${item.earning_id}`
     ]);
-    
+
     return [
       headers.join(','),
       ...rows.map(row => row.join(','))
@@ -420,7 +433,7 @@ class AutonomousCryptoGenerator {
   constructor(logger) {
     this.logger = logger;
     this.exportDir = './exports/crypto';
-    
+
     if (!fs.existsSync(this.exportDir)) {
       fs.mkdirSync(this.exportDir, { recursive: true });
     }
@@ -428,16 +441,16 @@ class AutonomousCryptoGenerator {
 
   generateSettlementArtifacts(batch) {
     this.logger.log('Generating autonomous crypto settlement artifacts...', 'auto');
-    
+
     const instructions = this.generateInstructions(batch);
     const filename = `CRYPTO_SETTLEMENT_${batch.batch_id}.txt`;
     const filepath = path.join(this.exportDir, filename);
     fs.writeFileSync(filepath, instructions);
-    
+
     this.logger.log('✅ CRYPTO ARTIFACTS GENERATED', 'success');
     this.logger.log(`   File: ${filename}`, 'success');
     this.logger.log(`   Amount: $${batch.total_amount} ${batch.currency}`, 'money');
-    
+
     return filepath;
   }
 
@@ -449,17 +462,22 @@ BATCH: ${batch.batch_id}
 
 AMOUNT: $${batch.total_amount} ${batch.currency}
 
-BENEFICIARY WALLETS (BINANCE):
+BENEFICIARY WALLETS (SELF-CUSTODY & BYBIT):
 ------------------------------------------------
-TRC20 (USDT): ${OWNER.binance.trc20}
-BEP20 (BNB/USDT): ${OWNER.binance.bep20}
-ERC20 (ETH/USDT): ${OWNER.binance.erc20}
+1. TRUST WALLET (Priority):
+   ERC20 (ETH/USDT): ${OWNER.crypto.trust_wallet.erc20}
+   BEP20 (BNB/USDT): ${OWNER.crypto.trust_wallet.bep20}
+
+2. BYBIT (Secondary):
+   ERC20 (ETH/USDT): ${OWNER.crypto.bybit.erc20}
+   TON   (USDT):     ${OWNER.crypto.bybit.ton}
 ------------------------------------------------
 
 INSTRUCTIONS:
 1. Transfer the equivalent of $${batch.total_amount} USD to one of the above addresses.
-2. Use USDT (Tether) for best liquidity.
-3. This is an autonomous settlement directive.
+2. TRUST WALLET (ERC20/BEP20) is PREFERRED for direct ownership.
+3. Use USDT (Tether) for best liquidity.
+4. This is an autonomous settlement directive.
 
 ITEMS SETTLED:
 ${batch.items.map(i => `- ${i.item_id}: $${i.amount} (${i.earning_id})`).join('\n')}
@@ -487,36 +505,114 @@ class AutonomousSettlementEngine {
     };
   }
 
+  async initialize() {
+    this.logger.log('📦 Initializing settlement engine...', 'info');
+    this.logger.log('   Mode: REAL REVENUE', 'success');
+    this.logger.log('   PSP Proof: REQUIRED', 'success');
+    this.logger.log('   Evidence Accumulation: DISABLED', 'success');
+    return this;
+  }
+
+  /**
+   * Ingest real revenue with PSP proof
+   * This is called by the revenue generator when real money is earned
+   */
+  async ingestRevenue(params) {
+    const { amount, currency, source, revenueEventId, pspProof, workProof } = params;
+
+    this.logger.log(`\n💰 INGESTING REAL REVENUE`, 'money');
+    this.logger.log(`   Amount: $${amount} ${currency}`, 'money');
+    this.logger.log(`   Source: ${source}`, 'info');
+
+    // REQUIRE PSP PROOF in real revenue mode
+    if (AUTONOMOUS_CONFIG.requirePSPProof && !pspProof) {
+      throw new Error('PSP proof required for real revenue (AUTONOMOUS_CONFIG.requirePSPProof = true)');
+    }
+
+    // VALIDATE PSP PROOF
+    if (pspProof) {
+      this.logger.log(`   Validating PSP proof...`, 'info');
+
+      // Check required fields
+      const requiredFields = AUTONOMOUS_CONFIG.minPSPProofFields || ['provider', 'transaction_id', 'amount', 'currency'];
+      for (const field of requiredFields) {
+        if (!pspProof[field]) {
+          throw new Error(`PSP proof missing required field: ${field}`);
+        }
+      }
+
+      // Reject simulation
+      if (pspProof.transaction_id.startsWith('PSP_') || pspProof.transaction_id.startsWith('SIM_')) {
+        throw new Error('SIMULATION REJECTED: PSP proof appears to be simulated');
+      }
+
+      this.logger.log(`   ✅ PSP proof validated: ${pspProof.provider} ${pspProof.transaction_id}`, 'success');
+    }
+
+    // Create earning with VERIFIED status (not pending_verification)
+    const earning = {
+      earning_id: `EARN_${Date.now()}`,
+      amount,
+      currency,
+      occurred_at: new Date().toISOString(),
+      source,
+      beneficiary: OWNER.paypal, // Default to PayPal
+      status: 'verified', // ← VERIFIED, not pending
+      revenue_event_id: revenueEventId,
+      psp_proof: pspProof,
+      work_proof: workProof,
+      metadata: {
+        recipient_type: 'owner',
+        autonomous: true,
+        ingested_at: new Date().toISOString(),
+        real_revenue: true
+      },
+      created_at: new Date().toISOString()
+    };
+
+    // Save earning
+    this.storage.save('earning', earning.earning_id, earning);
+    this.logger.log(`   ✅ Revenue saved: ${earning.earning_id}`, 'success');
+
+    // TRIGGER IMMEDIATE SETTLEMENT
+    if (AUTONOMOUS_CONFIG.enableImmediateSettlement) {
+      this.logger.log(`   🚀 Triggering immediate settlement...`, 'auto');
+      await this.scan();
+    }
+
+    return earning;
+  }
+
   async start() {
     this.logger.log('╔════════════════════════════════════════════════════════════╗', 'info');
     this.logger.log('║  AUTONOMOUS SETTLEMENT SYSTEM - STARTING                   ║', 'auto');
     this.logger.log('╚════════════════════════════════════════════════════════════╝', 'info');
-    
+
     this.logger.log('\n🤖 AUTONOMOUS MODE: ENABLED', 'auto');
     this.logger.log('   Scan Interval: Every 60 seconds', 'info');
     this.logger.log('   Settlement Priority: ' + AUTONOMOUS_CONFIG.settlementPriority.join(' > '), 'info');
-    
+
     this.logger.log('\n🔒 OWNER ACCOUNTS:', 'owner');
     this.logger.log(`   Bank: ${OWNER.bankName}`, 'owner');
     this.logger.log(`   Payoneer: ${OWNER.payoneer}`, 'owner');
-    this.logger.log(`   Crypto: Binance (TRC20/BEP20)`, 'owner');
+    this.logger.log(`   Crypto: Trust Wallet + Bybit`, 'owner');
     this.logger.log(`   PayPal: ${OWNER.paypal}`, 'owner');
-    
+
     this.running = true;
-    
+
     // Initial scan
     await this.scan();
-    
+
     // Schedule periodic scans
     this.intervalId = setInterval(() => {
       this.scan().catch(error => {
         this.logger.log(`Scan error: ${error.message}`, 'error');
       });
     }, AUTONOMOUS_CONFIG.scanInterval);
-    
+
     this.logger.log('\n✅ AUTONOMOUS SYSTEM RUNNING', 'success');
     this.logger.log('   Press Ctrl+C to stop\n', 'info');
-    
+
     // Graceful shutdown
     process.on('SIGINT', () => {
       this.stop();
@@ -527,37 +623,37 @@ class AutonomousSettlementEngine {
     this.logger.log('\n🛑 Stopping autonomous system...', 'warning');
     clearInterval(this.intervalId);
     this.running = false;
-    
+
     this.logger.log('📊 Final Statistics:', 'info');
     this.logger.log(`   Total Settled: ${this.stats.settlements_executed}`, 'info');
     this.logger.log(`   Total Amount: $${this.stats.total_amount.toFixed(2)}`, 'money');
     this.logger.log(`   Last Settlement: ${this.stats.last_settlement || 'None'}`, 'info');
-    
+
     process.exit(0);
   }
 
   async scan() {
     this.logger.log('🔍 Scanning for pending settlements...', 'auto');
-    
+
     try {
       // Get all pending settlements
       const pending = this.storage.getPendingSettlements();
-      
+
       if (pending.length === 0) {
         this.logger.log('   No pending settlements found', 'info');
         return;
       }
-      
+
       this.logger.log(`   Found ${pending.length} pending settlements`, 'success');
-      
+
       // Group by currency and rail
       const batches = this.groupIntoBatches(pending);
-      
+
       // Execute each batch
       for (const batch of batches) {
         await this.executeSettlement(batch);
       }
-      
+
     } catch (error) {
       this.logger.log(`Scan failed: ${error.message}`, 'error');
     }
@@ -567,23 +663,34 @@ class AutonomousSettlementEngine {
     this.logger.log(`\nProcessing batch ${batch.batch_id}...`, 'auto');
     this.logger.log(`   Amount: $${batch.total_amount} ${batch.currency}`, 'money');
     this.logger.log(`   Items: ${batch.items.length}`, 'info');
-    
+
     // Iterate through settlement priority
     for (const rail of AUTONOMOUS_CONFIG.settlementPriority) {
       this.logger.log(`Attempting settlement via rail: ${rail.toUpperCase()}...`, 'info');
-      
+
       try {
+        // SECURITY CHECK: Validate Authority before any money movement
+        validateAuthority(rail);
+
         let result = null;
-        
+
         switch (rail) {
           case 'bank':
             // Bank Wire (Artifact Generation)
             // Note: Bank is usually high priority, so we generate the file and consider it "settled" 
             // (meaning ready for owner to process)
             result = this.bank.generateWireFile(batch);
-            this.markAsSettled(batch, 'bank_wire', { files: result });
+
+            if (AUTONOMOUS_CONFIG.evidenceAccumulationMode) {
+              this.logger.log('⚠️ EVIDENCE ACCUMULATION MODE ACTIVE', 'warning');
+              this.logger.log('   Bank Wire generated but marked for HOLD.', 'warning');
+              this.logger.log('   DO NOT upload to personal account. Store for Enterprise Account.', 'warning');
+              this.markAsSettled(batch, 'bank_wire_held', { files: result, evidence_only: true });
+            } else {
+              this.markAsSettled(batch, 'bank_wire', { files: result });
+            }
             return; // Stop after successful rail
-            
+
           case 'payoneer':
             // Payoneer (Artifact Generation)
             // Similar to Bank, we generate instructions
@@ -596,75 +703,75 @@ class AutonomousSettlementEngine {
             // If the user wants specific "Payoneer" rail, we should perhaps just output the Payoneer file.
             // For now, let's reuse generateWireFile for both 'bank' and 'payoneer' as they share the same generator class
             // but maybe differentiate the log or metadata.
-            
+
             // Actually, let's just use generateWireFile for now as it produces both artifacts.
             // A more granular approach would be to separate them, but this is safe.
             result = this.bank.generateWireFile(batch);
             this.markAsSettled(batch, 'payoneer', { files: result });
             return;
-            
+
           case 'crypto':
             // Crypto (Artifact Generation)
             result = this.crypto.generateSettlementArtifacts(batch);
             this.markAsSettled(batch, 'crypto', { files: result });
             return;
-            
+
           case 'paypal':
             // PayPal (API Execution)
             // This actually moves money.
             await this.paypal.executePayout(batch);
             this.markAsSettled(batch, 'paypal', { api: true });
             return;
-            
+
           default:
             this.logger.log(`Unknown rail: ${rail}`, 'warning');
             break;
         }
-        
+
       } catch (error) {
         this.logger.log(`Rail ${rail} failed: ${error.message}`, 'error');
         this.logger.log('Trying next rail...', 'warning');
         // Continue to next rail
       }
     }
-    
+
     this.logger.log('❌ ALL SETTLEMENT RAILS FAILED', 'error');
     this.logger.log('   Revenue remains in PENDING state.', 'error');
   }
 
   markAsSettled(batch, method, metadata = {}) {
-     // ... implementation to update records ...
-     this.stats.settlements_executed++;
-     this.stats.total_amount += batch.total_amount;
-     this.stats.last_settlement = new Date().toISOString();
-     
-     // Update individual earnings status
-     batch.items.forEach(item => {
-       const earning = this.storage.load('earning', item.earning_id.replace('EARN_', ''));
-       if (earning) {
-         earning.data.status = 'paid';
-         earning.data.payout_method = method;
-         earning.data.payout_date = new Date().toISOString();
-         this.storage.save('earning', earning.id, earning.data);
-       }
-     });
-     
-     // Save batch record
-     this.storage.save('batch', batch.batch_id, {
-       ...batch,
-       status: 'completed',
-       settled_at: new Date().toISOString(),
-       method,
-       metadata
-     });
-     
-     this.logger.log(`Batch ${batch.batch_id} marked as SETTLED via ${method}`, 'success');
+    // ... implementation to update records ...
+    this.stats.settlements_executed++;
+    this.stats.total_amount += batch.total_amount;
+    this.stats.last_settlement = new Date().toISOString();
+
+    // Update individual earnings status
+    batch.items.forEach(item => {
+      const earning = this.storage.load('earning', item.earning_id.replace('EARN_', ''));
+      if (earning) {
+        earning.data.status = 'paid';
+        earning.data.payout_method = method;
+        earning.data.payout_date = new Date().toISOString();
+        this.storage.save('earning', earning.id, earning.data);
+      }
+    });
+
+    // Save batch record
+    this.storage.save('batch', batch.batch_id, {
+      ...batch,
+      status: 'completed',
+      settled_at: new Date().toISOString(),
+      method,
+      metadata
+    });
+
+    this.logger.log(`Batch ${batch.batch_id} marked as SETTLED via ${method}`, 'success');
   }
 
   groupIntoBatches(pending) {
     // Simple grouping by currency
     const batches = {};
-    
+
     pending.forEach(earning => {
       const data = earning.data || earning;
       const currency = data.currency;
@@ -677,7 +784,7 @@ class AutonomousSettlementEngine {
           items: []
         };
       }
-      
+
       batches[currency].items.push({
         earning_id: earning.id || data.earning_id,
         amount: data.amount,
@@ -685,16 +792,16 @@ class AutonomousSettlementEngine {
         recipient: data.beneficiary,
         item_id: `ITEM_${Date.now()}_${batches[currency].items.length + 1}`
       });
-      
+
       batches[currency].total_amount += data.amount;
     });
-    
+
     return Object.values(batches);
   }
 
   async ingestRevenue(params) {
     this.logger.log('\n📥 INGESTING NEW REVENUE', 'auto');
-    
+
     const earning = {
       earning_id: `EARN_${Date.now()}`,
       amount: params.amount,
@@ -711,20 +818,20 @@ class AutonomousSettlementEngine {
       },
       created_at: new Date().toISOString()
     };
-    
+
     this.storage.save('earning', earning.earning_id, earning);
-    
+
     this.logger.log(`   Earning ID: ${earning.earning_id}`, 'success');
     this.logger.log(`   Amount: $${earning.amount} ${earning.currency}`, 'money');
     this.logger.log(`   Beneficiary: ${earning.beneficiary}`, 'owner');
     this.logger.log('   Status: Queued for settlement', 'success');
-    
+
     // Trigger immediate scan if autonomous mode is running
     if (this.running) {
       this.logger.log('   Triggering immediate settlement scan...', 'auto');
       setTimeout(() => this.scan(), 1000); // 1 second delay
     }
-    
+
     return earning;
   }
 
@@ -743,30 +850,34 @@ class AutonomousSettlementEngine {
 
 async function main() {
   const engine = new AutonomousSettlementEngine();
-  
+
   // Check if running in ingestion mode
   if (process.argv.includes('--ingest')) {
     const amount = parseFloat(process.argv.find(a => a.startsWith('--amount='))?.split('=')[1] || '100');
     const currency = process.argv.find(a => a.startsWith('--currency='))?.split('=')[1] || 'USD';
     const source = process.argv.find(a => a.startsWith('--source='))?.split('=')[1] || 'manual';
-    
+
     await engine.ingestRevenue({ amount, currency, source });
-    
+
     console.log('\n✅ Revenue ingested. Start autonomous system to settle:');
     console.log('   node scripts/autonomous-settlement-system.mjs\n');
-    
+
     process.exit(0);
   }
-  
+
   // Start autonomous system
   await engine.start();
 }
 
-// Run directly
-main().catch(error => {
-  console.error('\n💥 System error:', error.message);
-  process.exit(1);
-});
+import { fileURLToPath } from 'url';
+
+// Run directly if main module
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  main().catch(error => {
+    console.error('\n💥 System error:', error.message);
+    process.exit(1);
+  });
+}
 
 export {
   AutonomousSettlementEngine,

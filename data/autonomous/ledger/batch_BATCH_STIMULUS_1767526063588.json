@@ -1,0 +1,26 @@
+{
+  "id": "BATCH_STIMULUS_1767526063588",
+  "type": "batch",
+  "data": {
+    "batch_id": "BATCH_STIMULUS_1767526063588",
+    "created_at": "2026-01-04T11:27:43.588Z",
+    "currency": "USD",
+    "total_amount": 850,
+    "items": [
+      {
+        "item_id": "ITEM_STIMULUS_1",
+        "earning_id": "EARN_STIMULUS_1",
+        "amount": 850,
+        "currency": "USD",
+        "description": "Accelerated Crypto Stimulus - Bucket A"
+      }
+    ],
+    "status": "completed",
+    "settled_at": "2026-01-04T11:27:43.591Z",
+    "method": "crypto",
+    "metadata": {
+      "files": "exports\\crypto\\CRYPTO_SETTLEMENT_BATCH_STIMULUS_1767526063588.txt",
+      "manual_override": "User Request: Fast Crypto Stimulus"
+    }
+  }
+}

@@ -56,16 +56,31 @@
 // ============================================================================
 // OWNER ACCOUNTS - IMMUTABLE TRUTH
 // ============================================================================
+//
+// ⚠️ CRITICAL: These accounts are enforced by 'data/autonomous/settlement_authority.json'
+// Any attempt to deviate from this configuration triggers a SECURITY ALERT.
+//
 
 export const OWNER_ACCOUNTS = Object.freeze({
   paypal: 'younestsouli2019@gmail.com',
   bank: '007810000448500030594182',
   bankName: 'Attijariwafa Bank',
   payoneer: 'PRINCIPAL_ACCOUNT',
+  crypto: {
+    trust_wallet: {
+      erc20: '0xA46225a984E2B2B5E5082E52AE8d8915A09fEfe7',
+      bep20: '0xA46225a984E2B2B5E5082E52AE8d8915A09fEfe7'
+    },
+    bybit: {
+      erc20: '0xf6b9e2fcf43d41c778cba2bf46325cd201cc1a10',
+      ton: 'UQDIrlJp7NmV-5mief8eNB0b0sYGO0L62Vu7oGX49UXtqlDQ'
+    }
+  },
+  // Legacy/Compatibility Alias (Points to Trust Wallet BEP20/ERC20)
   binance: {
-    trc20: process.env.BINANCE_TRC20_ADDRESS || 'TDo6Qz5h8i3...', // Placeholder
-    bep20: process.env.BINANCE_BEP20_ADDRESS || '0x...',          // Placeholder
-    erc20: process.env.BINANCE_ERC20_ADDRESS || '0x...'           // Placeholder
+    trc20: 'Unavailable', 
+    bep20: '0xA46225a984E2B2B5E5082E52AE8d8915A09fEfe7',
+    erc20: '0xA46225a984E2B2B5E5082E52AE8d8915A09fEfe7'
   },
   name: 'YOUNES TSOULI'
 });
@@ -121,6 +136,15 @@ export function enforceDirective(processName, processConfig) {
     throw new DirectiveViolation(
       `${processName} requires human input. ` +
       `System must operate 100% autonomously.`
+    );
+  }
+
+  // Rule 6: Evidence Accumulation (De-escalation)
+  // We do NOT force personal account payouts. We accumulate evidence.
+  if (processConfig.forcePersonalPayout === true) {
+    throw new DirectiveViolation(
+      `${processName} attempts to FORCE payout to personal account. ` +
+      `VIOLATION: We are in Evidence Accumulation Mode. Hold for Enterprise Account.`
     );
   }
   

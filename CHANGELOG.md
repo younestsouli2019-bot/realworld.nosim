@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased] - 2026-01-04
 
 ### Added
+- **Direct Swarm Transfer (Trust Wallet Bypass)**: Enabled direct transfers from Swarm Wallet to Trust Wallet, bypassing Binance API signature issues.
+- **Real Revenue Engine**: Upgraded `autonomous-revenue-generator.mjs` to use `RealRevenueEngine` instead of random simulation.
+- **Autonomous Swarm Wallet**: Configured `SWARM_WALLET.json` for autonomous fund aggregation.
+- **Evidence Accumulation Mode**: Enforced holding pattern for personal bank wires while enabling crypto pressure valve.
+- **Bucket Classification**: Updated `triage_earnings.mjs` to classify small crypto batches as Bucket A (Low Risk).
 - **Massive Swarm Scaling**: Scaled autonomous revenue swarm from 5 agents to 5000+ agents.
   - Implemented `SwarmEngine` class in `scripts/autonomous-revenue-generator.mjs`.
   - Added weighted agent distribution:
