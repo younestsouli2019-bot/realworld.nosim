@@ -5,8 +5,15 @@ import crypto from 'crypto';
 export class PayoneerGateway {
     constructor(config = {}) {
         this.programId = config.program_id || process.env.PAYONEER_PROGRAM_ID || '85538995';
-        this.clientId = process.env.PAYONEER_CLIENT_ID;
-        this.clientSecret = process.env.PAYONEER_CLIENT_SECRET;
+        
+        // Auto-Sanitize Credentials (Fix for RegEx errors)
+        this.clientId = process.env.PAYONEER_CLIENT_ID 
+            ? process.env.PAYONEER_CLIENT_ID.trim().replace(/['"]/g, '') 
+            : undefined;
+            
+        this.clientSecret = process.env.PAYONEER_CLIENT_SECRET 
+            ? process.env.PAYONEER_CLIENT_SECRET.trim().replace(/['"]/g, '') 
+            : undefined;
         
         // Base URLs
         this.authUrl = process.env.SWARM_LIVE === 'true' 
