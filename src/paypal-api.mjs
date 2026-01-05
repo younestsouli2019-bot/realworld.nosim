@@ -233,3 +233,10 @@ export async function searchTransactions({ startDate, endDate, transactionId, fi
 
   return paypalRequest(`/v1/reporting/transactions?${params.toString()}`, { token });
 }
+
+export async function getPayPalBalance() {
+  const token = await getPayPalAccessToken();
+  // https://developer.paypal.com/docs/api/reporting/v1/#balances_get
+  const result = await paypalRequest("/v1/reporting/balances?currency_code=USD", { token });
+  return result;
+}

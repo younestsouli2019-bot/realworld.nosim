@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
+import { ExternalGatewayManager } from './ExternalGatewayManager.mjs';
 
 const OWNER_ACCOUNTS = {
   bank_rib: '007810000448500030594182', // Priority 1: Attijari
@@ -915,6 +916,7 @@ export class AdvancedFinancialManager {
     this.compliance = new ComplianceManager(this.storage, this.audit);
     this.analytics = new AnalyticsEngine(this.storage);
     this.integration = new IntegrationHub(this.storage);
+    this.gateway = new ExternalGatewayManager(this.storage, this.audit, this.executor);
   }
 
   async initialize() {
