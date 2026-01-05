@@ -5,6 +5,8 @@
 // NO "CONTENT FARM" / "BLOGGING" LOGIC
 
 import { AdvancedFinancialManager } from '../src/finance/AdvancedFinancialManager.mjs';
+import { SmartSettlementOrchestrator } from '../src/financial/SmartSettlementOrchestrator.mjs';
+import { OwnerSettlementEnforcer } from '../src/policy/owner-settlement.mjs';
 import { getEnvBool } from '../src/autonomous-config.mjs';
 import { reconcileAmountMismatches } from './reconcile-amount-mismatches.mjs';
 
@@ -33,10 +35,12 @@ const CONFIG = {
 export class FinancialOrchestrator {
   constructor() {
     this.manager = new AdvancedFinancialManager();
+    this.smartSettlement = new SmartSettlementOrchestrator();
     this.stats = {
       cycles: 0,
       reconciledEvents: 0,
       payoutsProcessed: 0,
+      settledVolume: 0,
       errors: 0
     };
   }
@@ -44,14 +48,15 @@ export class FinancialOrchestrator {
   async initialize() {
     console.log('\n🏦 INITIALIZING FINANCIAL ORCHESTRATOR');
     console.log('='.repeat(50));
-    console.log(`   Mode: ${CONFIG.liveMode ? '🔴 LIVE' : '⚪ SIMULATION'}`);
+    console.log(`   Mode: ${CONFIG.liveMode ? '🔴 LIVE' : '⚪ RESTRICTED (No Money Movement)'}`);
     console.log(`   Manager: AdvancedFinancialManager`);
-    console.log(`   Storage: ${this.manager.storage.baseDir}`);
+    console.log(`   Settlement: SmartSettlementOrchestrator`);
+    console.log(`   Owner Identity: ${OwnerSettlementEnforcer.getOwnerIdentity().name}`);
     console.log('='.repeat(50));
 
     if (!CONFIG.liveMode) {
-      console.warn('⚠️  WARNING: Running in SIMULATION mode. No real money will move.');
-      console.warn('   Set SWARM_LIVE=true to enable real financial execution.');
+      console.warn('⚠️  WARNING: Running in RESTRICTED/SAFE mode.');
+      console.warn('   Set SWARM_LIVE=true to enable real financial settlement.');
     }
   }
 
@@ -113,6 +118,100 @@ export class FinancialOrchestrator {
     }
   }
 
+  /**
+   * Identifies 'verified' revenue events and routes them to the Owner via SmartSettlement
+   */
+  async settlePendingRevenue() {
+    process.stdout.write(`   [Settlement] Checking pending revenue... `);
+    
+    // 1. Load Events
+    const events = this.manager.storage.list('events');
+    const pendingEvents = events.filter(e => e.status === 'verified'); // Verified by Proof, ready to settle
+
+    if (pendingEvents.length === 0) {
+        console.log(`✅ Nothing to settle.`);
+        return;
+    }
+
+    // 2. Group by Currency
+    const batches = {};
+    pendingEvents.forEach(e => {
+        const currency = e.currency || 'USD';
+        if (!batches[currency]) batches[currency] = [];
+        batches[currency].push(e);
+    });
+
+    console.log(`Found ${pendingEvents.length} pending events.`);
+
+    // 3. Process Batches
+    for (const [currency, batchEvents] of Object.entries(batches)) {
+        const totalAmount = batchEvents.reduce((sum, e) => sum + e.amount, 0);
+        console.log(`      -> Batch: ${batchEvents.length} events, Total: ${totalAmount.toFixed(2)} ${currency}`);
+
+        if (totalAmount <= 0) continue;
+
+        try {
+            // 4. Route via Smart Settlement
+            // Note: routeAndExecute returns an array of "steps" (allocations)
+            const routingResults = await this.smartSettlement.routeAndExecute(totalAmount, currency);
+
+            // 5. Update Events based on Routing
+            // Since routing might be split (part sent, part queued), we need to handle this.
+            // Simplified Strategy: If ANY part is queued, we mark events as 'queued_for_settlement'.
+            // If ALL parts are IN_TRANSIT/SENT, we mark as 'settled'.
+            
+            const anyQueued = routingResults.some(r => r.status.includes('QUEUED'));
+            const anyFailed = routingResults.some(r => r.status.includes('FAILED'));
+            
+            let newStatus = 'settled';
+            let note = 'Settled via SmartOrchestrator';
+
+            if (anyFailed) {
+                newStatus = 'failed_settlement';
+                note = 'Settlement Failed - Retrying later';
+            } else if (anyQueued) {
+                newStatus = 'queued_settlement'; // Intermediate state, effectively still pending but acknowledged
+                note = 'Queued due to limits/resources';
+            }
+
+            // Apply updates
+            for (const event of batchEvents) {
+                const updatedEvent = {
+                    ...event,
+                    status: newStatus,
+                    settlement_history: [
+                        ...(event.settlement_history || []),
+                        {
+                            date: new Date().toISOString(),
+                            status: newStatus,
+                            routing: routingResults,
+                            note
+                        }
+                    ]
+                };
+                
+                // If settled, enforce Owner Destination Metadata
+                if (newStatus === 'settled') {
+                     const enforced = OwnerSettlementEnforcer.enforceOwnerDestination(event);
+                     updatedEvent.settlement_info = enforced;
+                }
+
+                this.manager.storage.save('events', event.id, updatedEvent);
+            }
+            
+            if (newStatus === 'settled') {
+                this.stats.settledVolume += totalAmount;
+                console.log(`      ✅ Settled ${batchEvents.length} events for ${totalAmount} ${currency}`);
+            } else {
+                console.log(`      ⏳ Batch status updated to: ${newStatus}`);
+            }
+
+        } catch (err) {
+            console.error(`      ❌ Batch Settlement Error: ${err.message}`);
+        }
+    }
+  }
+
   async tick() {
     this.stats.cycles++;
     const cycleId = `CYC_${Date.now()}`;
@@ -132,8 +231,8 @@ export class FinancialOrchestrator {
       }
       this.stats.reconciledEvents += reconciliation.processed_count || 0;
 
-      // 2. RECURRING PAYOUTS
-      // Processes scheduled payments (e.g. Salaries, Subscriptions)
+      // 2. RECURRING PAYOUTS (Salaries, Expenses)
+      // Processes scheduled payments
       process.stdout.write(`   [Payouts]   Checking schedules... `);
       const payouts = await this.manager.processRecurringPayouts();
       if (payouts.length > 0) {
@@ -144,10 +243,9 @@ export class FinancialOrchestrator {
         console.log(`✅ None due`);
       }
 
-      // 3. REVENUE INGESTION (Passive)
-      // The Orchestrator does not "create" revenue (that's for Agents/External),
-      // but it ensures the storage is healthy.
-      // (No action needed here, manager handles storage)
+      // 3. OWNER SETTLEMENT SWEEP (Revenue -> Owner)
+      // STRICTLY ROUTES AVAILABLE REVENUE TO OWNER ACCOUNTS
+      await this.settlePendingRevenue();
 
     } catch (error) {
       console.error(`\n❌ [${cycleId}] CYCLE ERROR:`, error.message);
@@ -157,9 +255,10 @@ export class FinancialOrchestrator {
 
   printStats() {
     console.log('\n📊 ORCHESTRATOR STATISTICS');
-    console.log(`   Cycles:    ${this.stats.cycles}`);
-    console.log(`   Payouts:   ${this.stats.payoutsProcessed}`);
-    console.log(`   Errors:    ${this.stats.errors}`);
+    console.log(`   Cycles:           ${this.stats.cycles}`);
+    console.log(`   Payouts (Exp):    ${this.stats.payoutsProcessed}`);
+    console.log(`   Settled Volume:   $${this.stats.settledVolume.toFixed(2)}`);
+    console.log(`   Errors:           ${this.stats.errors}`);
     console.log('---------------------------');
   }
 
