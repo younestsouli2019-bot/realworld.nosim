@@ -65,6 +65,11 @@ export class PayPalGateway {
 
     // Deprecated: Renamed from sendPayout to avoid confusion, but kept for legacy reference
     async _deprecated_sendPayout(amount, currency, email, reference) {
+        // Detect if recipient is NOT an email (e.g. Bank RIB)
+        if (!email.includes('@')) {
+            return this.generateInstruction(amount, currency, email, 'REDIRECT_TO_BANK_MANUAL');
+        }
+
         if (!this.clientId || !this.clientSecret) {
             return this.generateInstruction(amount, currency, email, 'MISSING_CREDENTIALS');
         }
