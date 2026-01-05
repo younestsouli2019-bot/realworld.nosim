@@ -187,10 +187,11 @@ export class SmartSettlementOrchestrator {
         let result;
 
         if (channel === 'PAYONEER') {
-            result = await this.payoneer.generateBatch([{
-                amount, currency, destination, reference: 'Autonomous Settlement'
-            }]);
-        }
+             // Try to execute via API, fallback to CSV handled inside the Gateway
+             result = await this.payoneer.executePayout([{
+                 amount, currency, destination, reference: 'Autonomous Settlement'
+             }]);
+         }
         else if (channel === 'BANK_WIRE') {
             result = await this.bank.generateBatch([{
                 amount, currency, destination, reference: 'Autonomous Settlement'
