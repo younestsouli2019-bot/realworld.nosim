@@ -3,12 +3,20 @@ import { SETTLEMENT_CONSTRAINTS, SettlementConstraints } from '../policy/Settlem
 import { SettlementLedger } from './SettlementLedger.mjs';
 import { OwnerSettlementEnforcer } from '../policy/owner-settlement.mjs';
 import { ChainVerifier } from '../verification/ChainVerifier.mjs';
+import { PayoneerGateway } from './gateways/PayoneerGateway.mjs';
+import { BankGateway } from './gateways/BankGateway.mjs';
+import { CryptoGateway } from './gateways/CryptoGateway.mjs';
+import { PayPalGateway } from './gateways/PayPalGateway.mjs';
 
 export class SmartSettlementOrchestrator {
   constructor() {
     this.ledger = new SettlementLedger();
     this.ownerPolicy = OwnerSettlementEnforcer;
     this.verifier = new ChainVerifier();
+    this.payoneer = new PayoneerGateway();
+    this.bank = new BankGateway();
+    this.crypto = new CryptoGateway();
+    this.paypal = new PayPalGateway();
   }
 
   /**
@@ -26,7 +34,7 @@ export class SmartSettlementOrchestrator {
     const channels = this.identifyChannels(currency);
     
     // 2. Calculate Allocation (Split Logic)
-    const plan = await this.calculateAllocation(totalAmount, channels);
+    const plan = await this.calculateAllocation(totalAmount, channels, currency);
     
     // 3. Execute Flight Plan
     console.log('\n✈️  EXECUTING FLIGHT PLAN:');
@@ -105,7 +113,7 @@ export class SmartSettlementOrchestrator {
     return ['BANK_WIRE', 'PAYONEER', 'PAYPAL'];
   }
 
-  async calculateAllocation(amount, channels) {
+  async calculateAllocation(amount, channels, currency) {
     let remaining = amount;
     const steps = [];
 
@@ -134,7 +142,8 @@ export class SmartSettlementOrchestrator {
         steps.push({
           channel,
           amount: alloc,
-          destination: this.ownerPolicy.getOwnerAccountForType(this.mapChannelToType(channel))
+          destination: this.ownerPolicy.getOwnerAccountForType(this.mapChannelToType(channel)),
+          currency
         });
         
         remaining -= alloc;
@@ -164,6 +173,7 @@ export class SmartSettlementOrchestrator {
 
   async executeStep(step) {
     const { channel, amount, destination } = step;
+    const currency = step.currency || 'USD';
     
     if (channel === 'QUEUE_OVERFLOW') {
       console.log(`   ⏳ QUEUED: ${amount} (Daily Limits Reached or No Route)`);
@@ -171,31 +181,41 @@ export class SmartSettlementOrchestrator {
       return { status: 'QUEUED', channel, amount };
     }
 
-    console.log(`   👉 Routing ${amount} via ${channel} -> ${destination}`);
+    console.log(`   👉 Routing ${amount} ${currency} via ${channel} -> ${destination}`);
 
-    // CHECK CAPABILITY (Do we have keys?)
-    const canExecute = this.checkCapability(channel);
-    
-    if (!canExecute.possible) {
-      console.log(`      ⚠️  Capability Missing: ${canExecute.reason}`);
-      console.log(`      📥 Action: QUEUEING for Resource Availability`);
-      await this.ledger.queueTransaction(channel, amount, canExecute.reason);
-      return { status: 'QUEUED_MISSING_RESOURCE', channel, amount, reason: canExecute.reason };
-    }
-
-    // SIMULATE EXECUTION (Since we are "Working for the user", we track it as IN_TRANSIT if we initiate)
-    // In a real API call, we would await the result.
-    // Here, if we had keys, we would call them.
-    
-    // Since we know keys are missing (based on previous turns), this block might not run if checkCapability works right.
-    // But if we add keys later, this will run.
-    
     try {
-        // Real Execution Logic would go here.
-        // For now, we assume if checkCapability passed, we initiated.
-        console.log(`      ✅ Signal Sent to ${channel}`);
-        await this.ledger.recordTransaction(channel, amount, 'IN_TRANSIT', null, { destination });
-        return { status: 'IN_TRANSIT', channel, amount };
+        let result;
+
+        if (channel === 'PAYONEER') {
+            result = await this.payoneer.generateBatch([{
+                amount, currency, destination, reference: 'Autonomous Settlement'
+            }]);
+        }
+        else if (channel === 'BANK_WIRE') {
+            result = await this.bank.generateBatch([{
+                amount, currency, destination, reference: 'Autonomous Settlement'
+            }]);
+        }
+        else if (channel === 'BINANCE_API' || channel === 'TRUST_WALLET_DIRECT') {
+            result = await this.crypto.sendTransaction(amount, currency, destination);
+        }
+        else if (channel === 'PAYPAL') {
+            result = await this.paypal.sendPayout(amount, currency, destination, 'Autonomous Settlement');
+        }
+        else {
+            console.warn(`      ⚠️ Unknown Channel ${channel}, falling back to Ledger Record only.`);
+            result = { status: 'MANUAL_CHECK_REQUIRED', reason: 'UNKNOWN_CHANNEL' };
+        }
+
+        // Handle Result
+        const status = result.status;
+        console.log(`      ✅ Execution Status: ${status}`);
+        if (result.filePath) console.log(`      📄 Output: ${result.filePath}`);
+        if (result.txHash) console.log(`      🔗 TxHash: ${result.txHash}`);
+        
+        await this.ledger.recordTransaction(channel, amount, status, null, { ...result, destination });
+        return { status, channel, amount, details: result };
+
     } catch (e) {
         console.error(`      ❌ Execution Error: ${e.message}`);
         await this.ledger.queueTransaction(channel, amount, 'EXECUTION_ERROR');
