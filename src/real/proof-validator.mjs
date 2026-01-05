@@ -34,11 +34,14 @@ export class ProofValidator {
     }
 
     this.#assertBasicShape(proof);
-    await this.#assertPSPConfirmation(proof);
+    if (proof.type === 'onchain_tx') {
+      await this.#assertOnChain(proof, event);
+    } else {
+      await this.#assertPSPConfirmation(proof);
+    }
     this.#assertAmountMatch(event, proof);
-    // this.#assertRecipientMatch(proof); // Disabled for legacy compatibility if recipient not in proof
     if (proof.recipient) {
-        this.#assertRecipientMatch(proof);
+      this.#assertRecipientMatch(proof);
     }
     this.#assertTemporalConsistency(event, proof);
   }
@@ -51,14 +54,23 @@ export class ProofValidator {
     if (!proof.type) {
       throw new Error('INVARIANT_FAIL: proof_type_missing');
     }
-    if (!proof.psp_id) {
-      throw new Error('INVARIANT_FAIL: psp_id_missing');
-    }
     if (typeof proof.amount !== 'number') {
       throw new Error('INVARIANT_FAIL: proof_amount_invalid');
     }
     if (!proof.currency) {
       throw new Error('INVARIANT_FAIL: currency_missing');
+    }
+    if (proof.type === 'onchain_tx') {
+      if (!proof.tx_hash) {
+        throw new Error('INVARIANT_FAIL: tx_hash_missing');
+      }
+      if (!proof.recipient) {
+        throw new Error('INVARIANT_FAIL: recipient_missing');
+      }
+    } else {
+      if (!proof.psp_id) {
+        throw new Error('INVARIANT_FAIL: psp_id_missing');
+      }
     }
   }
 
@@ -70,6 +82,17 @@ export class ProofValidator {
         `INVARIANT_FAIL: psp_confirmation_missing (${proof.psp_id})`
       );
     }
+  }
+
+  static async #assertOnChain(proof, event) {
+    const mod = await import('../verification/ChainVerifier.mjs');
+    const verifier = new mod.ChainVerifier();
+    await verifier.verifyTransaction(
+      proof.tx_hash,
+      Number(proof.amount),
+      proof.recipient,
+      proof.currency
+    );
   }
 
   static #assertAmountMatch(event, proof) {

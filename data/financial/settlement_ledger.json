@@ -116,6 +116,30 @@
       "amount": 850,
       "reason": "MISSING_API_KEY",
       "status": "QUEUED"
+    },
+    {
+      "id": "queue_1767629221402_okldu4du1",
+      "timestamp": "2026-01-05T16:07:01.402Z",
+      "channel": "PAYPAL",
+      "amount": 100,
+      "reason": "BUNKER_MODE",
+      "status": "QUEUED"
+    },
+    {
+      "id": "queue_1767629221405_67smri4sx",
+      "timestamp": "2026-01-05T16:07:01.405Z",
+      "channel": "BANK_WIRE",
+      "amount": 200,
+      "reason": "BUNKER_MODE",
+      "status": "QUEUED"
+    },
+    {
+      "id": "queue_1767629221409_tt7utf31t",
+      "timestamp": "2026-01-05T16:07:01.409Z",
+      "channel": "PAYONEER",
+      "amount": 300,
+      "reason": "MISSING_CREDENTIALS",
+      "status": "QUEUED"
     }
   ]
 }

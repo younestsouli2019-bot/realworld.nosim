@@ -1,0 +1,41 @@
+{
+  "batch_id": "MIGRATION_USD_1767324969425",
+  "total_amount": 159.45,
+  "currency": "USD",
+  "status": "exported_for_bank_wire",
+  "revenue_event_ids": [
+    "6956c069dcdfb13c43803684"
+  ],
+  "earning_ids": [],
+  "notes": {
+    "migration": true,
+    "source_audit": "2026-01-01T23:33:23.534Z",
+    "original_tracked_total": 309.45,
+    "batch_type": "tracked_revenue_migration",
+    "bank_wire_exported": "2026-01-02T15:57:34.184Z",
+    "export_file": "migrate/bank-wire-export.csv",
+    "instructions": "Manual execution required via bank portal"
+  },
+  "id": "MIGRATION_USD_1767324969425",
+  "_local": true,
+  "items": [
+    {
+      "item_id": "MIGRATION_USD_1767324969425_ITEM_001",
+      "batch_id": "MIGRATION_USD_1767324969425",
+      "recipient": "0004485000305941",
+      "recipient_type": "bank",
+      "amount": 159.45,
+      "currency": "USD",
+      "status": "pending",
+      "revenue_event_ids": [
+        "6956c069dcdfb13c43803684"
+      ],
+      "notes": {
+        "migration_batch": true,
+        "destination": "owner_account",
+        "original_events_count": 1
+      }
+    }
+  ],
+  "approved_at": "2026-01-02T11:07:07.215Z"
+}
