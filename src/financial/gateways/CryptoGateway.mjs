@@ -4,7 +4,20 @@ import path from 'path';
 
 export class CryptoGateway {
     constructor() {
-        this.privateKey = process.env.WALLET_PRIVATE_KEY;
+        // Auto-Sanitize Private Key
+        this.privateKey = process.env.WALLET_PRIVATE_KEY
+            ? process.env.WALLET_PRIVATE_KEY.trim().replace(/['"]/g, '')
+            : undefined;
+
+        // Auto-Sanitize API Keys for Binance
+        this.binanceApiKey = process.env.BINANCE_API_KEY
+            ? process.env.BINANCE_API_KEY.trim().replace(/['"]/g, '')
+            : undefined;
+
+        this.binanceSecret = process.env.BINANCE_API_SECRET
+            ? process.env.BINANCE_API_SECRET.trim().replace(/['"]/g, '')
+            : undefined;
+
         // Default to BSC for low fees, fallback to ETH
         this.rpcUrl = process.env.BSC_RPC_URL || 'https://bsc-dataseed.binance.org/'; 
         this.outputDir = path.join(process.cwd(), 'settlements', 'crypto');

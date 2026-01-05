@@ -4,8 +4,14 @@ import path from 'path';
 
 export class PayPalGateway {
     constructor() {
-        this.clientId = process.env.PAYPAL_CLIENT_ID;
-        this.clientSecret = process.env.PAYPAL_SECRET;
+        // Auto-Sanitize Credentials
+        this.clientId = process.env.PAYPAL_CLIENT_ID 
+            ? process.env.PAYPAL_CLIENT_ID.trim().replace(/['"]/g, '') 
+            : undefined;
+            
+        this.clientSecret = process.env.PAYPAL_SECRET 
+            ? process.env.PAYPAL_SECRET.trim().replace(/['"]/g, '') 
+            : undefined;
         
         // Default to Sandbox unless strictly LIVE
         this.environment = process.env.SWARM_LIVE === 'true' 
