@@ -2,6 +2,7 @@ import { MoneyMovedGate } from '../real/money-moved-gate.mjs';
 import { SettlementLedger } from '../financial/SettlementLedger.mjs';
 import { threatMonitor } from '../security/threat-monitor.mjs';
 import { isPast72hUnsettled } from '../compliance/sla-enforcer.mjs';
+import { isHardBindingActive } from './hard-binding.mjs';
 // src/policy/owner-settlement.mjs
 
 export class OwnerSettlementEnforcer {
@@ -30,7 +31,7 @@ export class OwnerSettlementEnforcer {
       ];
     }
   
-    static getOwnerAccountForType(type) {
+  static getOwnerAccountForType(type) {
       const mapping = {
         paypal: 'younestsouli2019@gmail.com',
         bank: '007810000448500030594182',
@@ -49,12 +50,16 @@ export class OwnerSettlementEnforcer {
       };
       
       if (!mapping[type]) {
-        // Default to Bank (Priority 1) if unknown
         console.warn(`⚠️ No specific owner account for ${type}, defaulting to Bank (Attijari).`);
         return mapping['bank'];
       }
-      
       return mapping[type];
+    }
+
+    static isOwnerDestination(destination) {
+      const accounts = this.getOwnerAccounts().map(a => String(a.identifier).toLowerCase());
+      const d = String(destination || '').toLowerCase();
+      return accounts.includes(d);
     }
 
     static getPaymentConfiguration() {
@@ -204,7 +209,7 @@ export class OwnerSettlementEnforcer {
             status = 'approved';
           } catch (e) {
             const msg = e?.message || '';
-            if (msg.includes('proof_missing')) {
+            if (msg.includes('proof_missing') || isHardBindingActive()) {
               status = 'hallucination';
             } else {
               status = 'pending_verification';

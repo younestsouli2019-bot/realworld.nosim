@@ -1,0 +1,247 @@
+{
+  "count": 11,
+  "packages": [
+    {
+      "payer": {
+        "email": "younestsouli2019@gmail.com",
+        "name": "Client",
+        "company": "Client Company",
+        "address": {
+          "line1": "",
+          "city": "",
+          "country": ""
+        }
+      },
+      "request": {
+        "amount": 100.5,
+        "currency": "USD",
+        "description": "Test Payment 1",
+        "due_date": "2026-01-12"
+      },
+      "attachments": [],
+      "notes": {
+        "verification_proof_hint": "Attach PSP Transaction ID / Settlement ID / Bank Reference if available"
+      }
+    },
+    {
+      "payer": {
+        "email": "younesdgc@gmail.com",
+        "name": "Client",
+        "company": "Client Company",
+        "address": {
+          "line1": "",
+          "city": "",
+          "country": ""
+        }
+      },
+      "request": {
+        "amount": 250,
+        "currency": "USD",
+        "description": "Test Payment 2",
+        "due_date": "2026-01-12"
+      },
+      "attachments": [],
+      "notes": {
+        "verification_proof_hint": "Attach PSP Transaction ID / Settlement ID / Bank Reference if available"
+      }
+    },
+    {
+      "payer": {
+        "email": "younestsouli2019@gmail.com",
+        "name": "Client",
+        "company": "Client Company",
+        "address": {
+          "line1": "",
+          "city": "",
+          "country": ""
+        }
+      },
+      "request": {
+        "amount": 100.5,
+        "currency": "USD",
+        "description": "Test Payment 1",
+        "due_date": "2026-01-12"
+      },
+      "attachments": [],
+      "notes": {
+        "verification_proof_hint": "Attach PSP Transaction ID / Settlement ID / Bank Reference if available"
+      }
+    },
+    {
+      "payer": {
+        "email": "younesdgc@gmail.com",
+        "name": "Client",
+        "company": "Client Company",
+        "address": {
+          "line1": "",
+          "city": "",
+          "country": ""
+        }
+      },
+      "request": {
+        "amount": 250,
+        "currency": "USD",
+        "description": "Test Payment 2",
+        "due_date": "2026-01-12"
+      },
+      "attachments": [],
+      "notes": {
+        "verification_proof_hint": "Attach PSP Transaction ID / Settlement ID / Bank Reference if available"
+      }
+    },
+    {
+      "payer": {
+        "email": "younestsouli2019@gmail.com",
+        "name": "Client",
+        "company": "Client Company",
+        "address": {
+          "line1": "",
+          "city": "",
+          "country": ""
+        }
+      },
+      "request": {
+        "amount": 150,
+        "currency": "USD",
+        "description": "Autonomous Settlement",
+        "due_date": "2026-01-12"
+      },
+      "attachments": [],
+      "notes": {
+        "verification_proof_hint": "Attach PSP Transaction ID / Settlement ID / Bank Reference if available"
+      }
+    },
+    {
+      "payer": {
+        "email": "younestsouli2019@gmail.com",
+        "name": "Client",
+        "company": "Client Company",
+        "address": {
+          "line1": "",
+          "city": "",
+          "country": ""
+        }
+      },
+      "request": {
+        "amount": 150,
+        "currency": "USD",
+        "description": "Autonomous Settlement - Direct Deposit Init",
+        "due_date": "2026-01-12"
+      },
+      "attachments": [],
+      "notes": {
+        "verification_proof_hint": "Attach PSP Transaction ID / Settlement ID / Bank Reference if available"
+      }
+    },
+    {
+      "payer": {
+        "email": "client@example.com",
+        "name": "Client",
+        "company": "Client Company",
+        "address": {
+          "line1": "",
+          "city": "",
+          "country": ""
+        }
+      },
+      "request": {
+        "amount": 10,
+        "currency": "USD",
+        "description": "Test",
+        "due_date": "2026-01-12"
+      },
+      "attachments": [],
+      "notes": {
+        "verification_proof_hint": "Attach PSP Transaction ID / Settlement ID / Bank Reference if available"
+      }
+    },
+    {
+      "payer": {
+        "email": "younestsouli2019@gmail.com",
+        "name": "Client",
+        "company": "Client Company",
+        "address": {
+          "line1": "",
+          "city": "",
+          "country": ""
+        }
+      },
+      "request": {
+        "amount": 250,
+        "currency": "USD",
+        "description": "Owner Settlement Demo",
+        "due_date": "2026-01-12"
+      },
+      "attachments": [],
+      "notes": {
+        "verification_proof_hint": "Attach PSP Transaction ID / Settlement ID / Bank Reference if available"
+      }
+    },
+    {
+      "payer": {
+        "email": "younestsouli2019@gmail.com",
+        "name": "Client",
+        "company": "Client Company",
+        "address": {
+          "line1": "",
+          "city": "",
+          "country": ""
+        }
+      },
+      "request": {
+        "amount": 500,
+        "currency": "USD",
+        "description": "Emergency Payout",
+        "due_date": "2026-01-12"
+      },
+      "attachments": [],
+      "notes": {
+        "verification_proof_hint": "Attach PSP Transaction ID / Settlement ID / Bank Reference if available"
+      }
+    },
+    {
+      "payer": {
+        "email": "007810000448500030594182",
+        "name": "Client",
+        "company": "Client Company",
+        "address": {
+          "line1": "",
+          "city": "",
+          "country": ""
+        }
+      },
+      "request": {
+        "amount": 1200,
+        "currency": "USD",
+        "description": "Service Payment Request",
+        "due_date": "2026-01-12"
+      },
+      "attachments": [],
+      "notes": {
+        "verification_proof_hint": "Attach PSP Transaction ID / Settlement ID / Bank Reference if available"
+      }
+    },
+    {
+      "payer": {
+        "email": "007810000448500030594182",
+        "name": "Client",
+        "company": "Client Company",
+        "address": {
+          "line1": "",
+          "city": "",
+          "country": ""
+        }
+      },
+      "request": {
+        "amount": 1000,
+        "currency": "USD",
+        "description": "Service Payment Request",
+        "due_date": "2026-01-12"
+      },
+      "attachments": [],
+      "notes": {
+        "verification_proof_hint": "Attach PSP Transaction ID / Settlement ID / Bank Reference if available"
+      }
+    }
+  ]
+}

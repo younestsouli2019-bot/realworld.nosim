@@ -10,3 +10,5 @@
   - EU: Banking Circle (IBAN LU774080000041265646, BIC BCIRLULL)
 - Updated owner allowlist to include Payoneer bank references.
 - Tests added for SLA enforcement and owner settlement verification paths.
+- Added consolidated Control Panel script to chain validation, billing, audit, reconcile, auto/run, emergency payout, and repair actions with console-format status prints.
+- Enforced global owner lock guard in orchestrator; added hard-binding toggles and directive validation.

@@ -98,6 +98,48 @@
         "instruction": "Upload CSV to Payoneer",
         "destination": "younestsouli2019@gmail.com"
       }
+    },
+    {
+      "id": "tx_1767630975455_rmgtway8k",
+      "timestamp": "2026-01-05T16:36:15.455Z",
+      "channel": "BANK_WIRE",
+      "amount": 1200,
+      "status": "INVOICES_GENERATED",
+      "details": {
+        "status": "INVOICES_GENERATED",
+        "filePath": "C:\\Users\\Dell\\Downloads\\Nouveau dossier (3)\\settlements\\bank_wires\\bank_payment_instructions_BANK_INVOICE_1767630975451_9798b6.csv",
+        "batchId": "BANK_INVOICE_1767630975451_9798b6",
+        "instruction": "Send IBAN to Clients",
+        "destination": "007810000448500030594182"
+      }
+    },
+    {
+      "id": "tx_1767632269615_mxgzvno5s",
+      "timestamp": "2026-01-05T16:57:49.615Z",
+      "channel": "BANK_WIRE",
+      "amount": 1000,
+      "status": "INVOICES_GENERATED",
+      "details": {
+        "status": "INVOICES_GENERATED",
+        "filePath": "C:\\Users\\Dell\\Downloads\\Nouveau dossier (3)\\settlements\\bank_wires\\bank_payment_instructions_BANK_INVOICE_1767632269611_89f307.csv",
+        "batchId": "BANK_INVOICE_1767632269611_89f307",
+        "instruction": "Send IBAN to Clients",
+        "destination": "007810000448500030594182"
+      }
+    },
+    {
+      "id": "tx_1767632477521_m9p2due6b",
+      "timestamp": "2026-01-05T17:01:17.521Z",
+      "channel": "BANK_WIRE",
+      "amount": 1000,
+      "status": "INVOICES_GENERATED",
+      "details": {
+        "status": "INVOICES_GENERATED",
+        "filePath": "C:\\Users\\Dell\\Downloads\\Nouveau dossier (3)\\settlements\\bank_wires\\bank_payment_instructions_BANK_INVOICE_1767632477519_0222f4.csv",
+        "batchId": "BANK_INVOICE_1767632477519_0222f4",
+        "instruction": "Send IBAN to Clients",
+        "destination": "007810000448500030594182"
+      }
     }
   ],
   "queued": [

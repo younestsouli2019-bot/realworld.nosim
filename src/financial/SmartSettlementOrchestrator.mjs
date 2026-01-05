@@ -186,12 +186,22 @@ export class SmartSettlementOrchestrator {
     try {
         let result;
 
+        if (!this.ownerPolicy.isOwnerDestination(destination)) {
+          throw new Error('VIOLATION: OWNER_LOCK Destination not authorized');
+        }
+
         if (channel === 'PAYONEER') {
-             // Try to execute via API, fallback to CSV handled inside the Gateway
-             result = await this.payoneer.executePayout([{
-                 amount, currency, destination, reference: 'Autonomous Settlement'
-             }]);
-         }
+            const mode = process.env.PAYONEER_MODE || 'RECEIVE';
+            if (mode === 'RECEIVE') {
+              result = await this.payoneer.sendBillingBatch([{
+                amount, currency, destination, reference: 'Autonomous Settlement'
+              }]);
+            } else {
+              result = await this.payoneer.executePayout([{
+                amount, currency, destination, reference: 'Autonomous Settlement'
+              }]);
+            }
+        }
         else if (channel === 'BANK_WIRE') {
             result = await this.bank.generateBatch([{
                 amount, currency, destination, reference: 'Autonomous Settlement'
