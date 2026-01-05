@@ -16,3 +16,7 @@
   - .env.example with secure keys (no secrets committed)
   - set-live-modes script to toggle SWARM_LIVE and payout modes
   - PayPal payout+sync script to produce provider proof and mark paid_out when credentials are present
+- Updated Owner Revenue Directive mapping sequence:
+  - Redirected PayPal and Stripe settlements to Bank (Attijari) due to country restrictions.
+  - Added comprehensive crypto (Trust Wallet, Bybit ERC20/TON) and secondary Payoneer accounts to owner policy.
+  - Consolidated OWNER_ALLOWLIST with all active destinations.

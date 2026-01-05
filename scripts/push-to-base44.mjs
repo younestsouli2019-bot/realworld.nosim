@@ -19,9 +19,19 @@ const BASE44_CONFIG = {
 // ============================================================================
 
 const OWNER_ACCOUNTS = {
-  paypal: 'younestsouli2019@gmail.com',
   bank: '007810000448500030594182',
-  payoneer: process.env.OWNER_PAYONEER_ID || 'PRINCIPAL_ACCOUNT'
+  payoneer: 'younestsouli2019@gmail.com', // Default to Primary
+  payoneer_secondary: 'younesdgc@gmail.com',
+  payoneer_uk_bank: 'Barclays:231486:15924956',
+  payoneer_jp_bank: 'MUFG:0005:869:4671926',
+  payoneer_eu_iban: 'LU774080000041265646',
+  paypal: '007810000448500030594182', // Note: PayPal mapped to BANK RIB as per instruction
+  stripe: '007810000448500030594182', // Settle Stripe to Bank
+  crypto: '0xA46225a984E2B2B5E5082E52AE8d8915A09fEfe7', // Default to Trust Wallet
+  crypto_erc20: '0xA46225a984E2B2B5E5082E52AE8d8915A09fEfe7',
+  crypto_bep20: '0xA46225a984E2B2B5E5082E52AE8d8915A09fEfe7',
+  crypto_bybit_erc20: '0xf6b9e2fcf43d41c778cba2bf46325cd201cc1a10',
+  crypto_bybit_ton: 'UQDIrlJp7NmV-5mief8eNB0b0sYGO0L62Vu7oGX49UXtqlDQ'
 };
 
 // ============================================================================

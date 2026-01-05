@@ -31,16 +31,15 @@ export class OwnerSettlementEnforcer {
       ];
     }
   
-  static getOwnerAccountForType(type) {
+    static getOwnerAccountForType(type) {
       const mapping = {
-        paypal: 'younestsouli2019@gmail.com',
         bank: '007810000448500030594182',
         payoneer: 'younestsouli2019@gmail.com', // Default to Primary
         payoneer_secondary: 'younesdgc@gmail.com',
         payoneer_uk_bank: 'Barclays:231486:15924956',
         payoneer_jp_bank: 'MUFG:0005:869:4671926',
         payoneer_eu_iban: 'LU774080000041265646',
-        // Fallbacks
+        paypal: '007810000448500030594182',
         stripe: '007810000448500030594182', // Settle Stripe to Bank
         crypto: '0xA46225a984E2B2B5E5082E52AE8d8915A09fEfe7', // Default to Trust Wallet
         crypto_erc20: '0xA46225a984E2B2B5E5082E52AE8d8915A09fEfe7',
@@ -83,7 +82,7 @@ export class OwnerSettlementEnforcer {
           crypto_bybit_ton: 'UQDIrlJp7NmV-5mief8eNB0b0sYGO0L62Vu7oGX49UXtqlDQ', // Bybit (TON)
           payoneer_secondary: 'younesdgc@gmail.com', // Priority 4: Payoneer Secondary
           stripe: '007810000448500030594182', // Priority 4: Stripe (via Bank)
-          paypal: 'younestsouli2019@gmail.com' // Priority 5: Backup (Last Resort)
+          paypal: '007810000448500030594182'
         },
         credentials: {
           binance: {
@@ -111,7 +110,7 @@ export class OwnerSettlementEnforcer {
       if (method === 'bank') return 'BANK_WIRE';
       if (method === 'payoneer') return 'PAYONEER';
       if (method && method.startsWith('payoneer_')) return 'BANK_WIRE';
-      if (method === 'paypal') return 'PAYPAL';
+      if (method === 'paypal') return 'BANK_WIRE';
       if (method === 'stripe') return 'STRIPE';
       if (method && method.startsWith('crypto')) return 'TRUST_WALLET_DIRECT';
       return 'ANY';
