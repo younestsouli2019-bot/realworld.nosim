@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { getRandomProduct } from '../products/ProductCatalog.mjs';
+import { HeadlessPoster } from '../../marketing/HeadlessPoster.mjs';
 
 export async function publishOffer(offer) {
     // 1. Sanitize: Replace "Internal Task" offers with REAL COURSES
@@ -52,6 +53,19 @@ export async function publishOffer(offer) {
     fs.writeFileSync(queuePath, JSON.stringify(queue, null, 2));
 
     console.log(`   ✅ Added to Dashboard Queue: marketing_queue.json`);
+
+    // 4. Auto-post (headless) if enabled
+    if (process.env.AUTO_POST === 'true') {
+        const poster = new HeadlessPoster();
+        const res = await poster.post({
+            id: finalOffer.offer_id,
+            title: finalOffer.title,
+            price: finalOffer.price,
+            link: finalOffer.checkout_url,
+            text: `🚀 Master new skills! ${finalOffer.title} - Only $${finalOffer.price} #RealWorldCerts ${finalOffer.checkout_url}`
+        });
+        console.log(`   🤖 HeadlessPoster: ${res.status}`);
+    }
 
     return {
         published: true,

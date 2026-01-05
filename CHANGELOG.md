@@ -22,6 +22,10 @@ All notable changes to this project will be documented in this file.
 - **Base44 Connectivity**: Updated `.env` with correct Base44 App ID and API URL (`agent-flow-ai...`) to restore "Brain" connectivity.
 - **Liquidity Pool Fix**: Replaced fictional placeholder address (`0xSwarm...`) with verified Owner Trust Wallet address in `.env`.
 - **Code Audit**: Removed fictional placeholders and `dummy` data from critical financial paths.
+- **Autonomous Posting**: Added `src/marketing/HeadlessPoster.mjs` and `AUTO_POST/AUTO_POST_MODE` env flags to enable headless posting with API/intent/outbox modes.
+- **Health Check**: Added `scripts/base44-health-check.mjs` to validate Base44 connectivity and gracefully fallback offline.
+- **Offer Generation**: Added `scripts/generate-offers.mjs` to produce two example offers for verification.
+- **Receive-Only Tests**: Added `tests/test-receive-only.mjs` to assert gateway behavior in RECEIVE mode.
 
 ## [Unreleased] - 2026-01-04
 ### Security & Integrity
