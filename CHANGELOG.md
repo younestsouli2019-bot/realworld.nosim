@@ -12,3 +12,7 @@
 - Tests added for SLA enforcement and owner settlement verification paths.
 - Added consolidated Control Panel script to chain validation, billing, audit, reconcile, auto/run, emergency payout, and repair actions with console-format status prints.
 - Enforced global owner lock guard in orchestrator; added hard-binding toggles and directive validation.
+- Live configuration helpers:
+  - .env.example with secure keys (no secrets committed)
+  - set-live-modes script to toggle SWARM_LIVE and payout modes
+  - PayPal payout+sync script to produce provider proof and mark paid_out when credentials are present

@@ -35,6 +35,8 @@ function main() {
   step('Force Reconcile', '🔁', 'scripts/force-reconcile.mjs');
   step('Activate Auto Settlement', '⚙️', 'scripts/activate-auto-settlement.mjs');
   step('Run Auto Settlement', '✈️', 'scripts/run-auto-settlement.mjs');
+  step('Set Live Modes', '🔓', 'scripts/set-live-modes.mjs');
+  step('PayPal Live Payout + Sync', '💸', 'scripts/run-paypal-payout-and-sync.mjs');
   step('Emergency Payout', '🚨', 'scripts/emergency-payout.mjs');
   step('Repair Hallucinations', '🛠️', 'scripts/repair-hallucinations.mjs');
   log('🏁 Control Panel sequence completed');
