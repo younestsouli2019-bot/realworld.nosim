@@ -1,7 +1,7 @@
 {
   "daily_usage": {
     "2026-01-04": {
-      "PAYONEER": 300
+      "PAYONEER": 1200
     }
   },
   "transactions": [
@@ -22,6 +22,80 @@
       "amount": 150,
       "status": "IN_TRANSIT",
       "details": {
+        "destination": "younestsouli2019@gmail.com"
+      }
+    },
+    {
+      "id": "tx_1767560783428_ltso5105x",
+      "timestamp": "2026-01-04T21:06:23.428Z",
+      "channel": "PAYONEER",
+      "amount": 150,
+      "status": "IN_TRANSIT",
+      "details": {
+        "destination": "younestsouli2019@gmail.com"
+      }
+    },
+    {
+      "id": "tx_1767560818784_9eiy8vyrq",
+      "timestamp": "2026-01-04T21:06:58.784Z",
+      "channel": "PAYONEER",
+      "amount": 150,
+      "status": "IN_TRANSIT",
+      "details": {
+        "destination": "younestsouli2019@gmail.com"
+      }
+    },
+    {
+      "id": "tx_1767560854085_audcy87b5",
+      "timestamp": "2026-01-04T21:07:34.085Z",
+      "channel": "PAYONEER",
+      "amount": 150,
+      "status": "IN_TRANSIT",
+      "details": {
+        "destination": "younestsouli2019@gmail.com"
+      }
+    },
+    {
+      "id": "tx_1767560889384_8hrxcz4q7",
+      "timestamp": "2026-01-04T21:08:09.384Z",
+      "channel": "PAYONEER",
+      "amount": 150,
+      "status": "IN_TRANSIT",
+      "details": {
+        "destination": "younestsouli2019@gmail.com"
+      }
+    },
+    {
+      "id": "tx_1767560924692_lrw801ha1",
+      "timestamp": "2026-01-04T21:08:44.692Z",
+      "channel": "PAYONEER",
+      "amount": 150,
+      "status": "IN_TRANSIT",
+      "details": {
+        "destination": "younestsouli2019@gmail.com"
+      }
+    },
+    {
+      "id": "tx_1767560960038_pgbhrns6l",
+      "timestamp": "2026-01-04T21:09:20.038Z",
+      "channel": "PAYONEER",
+      "amount": 150,
+      "status": "IN_TRANSIT",
+      "details": {
+        "destination": "younestsouli2019@gmail.com"
+      }
+    },
+    {
+      "id": "tx_1767605426733_huhadw6hr",
+      "timestamp": "2026-01-05T09:30:26.733Z",
+      "channel": "PAYONEER",
+      "amount": 150,
+      "status": "WAITING_UPLOAD",
+      "details": {
+        "status": "WAITING_UPLOAD",
+        "filePath": "C:\\Users\\Dell\\Downloads\\Nouveau dossier (3)\\settlements\\payoneer\\payoneer_payout_PAY_1767605426730_6bc192.csv",
+        "batchId": "PAY_1767605426730_6bc192",
+        "instruction": "Upload CSV to Payoneer",
         "destination": "younestsouli2019@gmail.com"
       }
     }

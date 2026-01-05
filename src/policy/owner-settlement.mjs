@@ -12,14 +12,17 @@ export class OwnerSettlementEnforcer {
     }
 
     static getOwnerAccounts() {
+      // ⚠️ CRITICAL: OWNER IS THE *BENEFICIARY* (RECEIVER) OF FUNDS.
+      // These accounts are where Money comes IN. 
+      // Swarm acts as Billing Agent to request/route funds TO these accounts.
       return [
-        { type: 'bank', identifier: '007810000448500030594182', label: 'Attijari', priority: 1 },
-        { type: 'payoneer', identifier: 'younestsouli2019@gmail.com', label: 'Primary (85538995)', priority: 2 },
-        { type: 'crypto', identifier: '0xA46225a984E2B2B5E5082E52AE8d8915A09fEfe7', label: 'Trust Wallet (ERC20/BEP20)', priority: 3 },
-        { type: 'crypto', identifier: '0xf6b9e2fcf43d41c778cba2bf46325cd201cc1a10', label: 'Bybit (ERC20)', priority: 3 },
-        { type: 'crypto', identifier: 'UQDIrlJp7NmV-5mief8eNB0b0sYGO0L62Vu7oGX49UXtqlDQ', label: 'Bybit (TON)', priority: 3 },
-        { type: 'payoneer', identifier: 'younesdgc@gmail.com', label: 'Secondary', priority: 4 },
-        { type: 'paypal', identifier: 'younestsouli2019@gmail.com', label: 'Backup (Last Resort)', priority: 5 }
+        { type: 'bank', identifier: '007810000448500030594182', label: 'Attijari', priority: 1, mode: 'RECEIVE' },
+        { type: 'payoneer', identifier: 'younestsouli2019@gmail.com', label: 'Primary (85538995)', priority: 2, mode: 'RECEIVE' },
+        { type: 'crypto', identifier: '0xA46225a984E2B2B5E5082E52AE8d8915A09fEfe7', label: 'Trust Wallet (ERC20/BEP20)', priority: 3, mode: 'RECEIVE' },
+        { type: 'crypto', identifier: '0xf6b9e2fcf43d41c778cba2bf46325cd201cc1a10', label: 'Bybit (ERC20)', priority: 3, mode: 'RECEIVE' },
+        { type: 'crypto', identifier: 'UQDIrlJp7NmV-5mief8eNB0b0sYGO0L62Vu7oGX49UXtqlDQ', label: 'Bybit (TON)', priority: 3, mode: 'RECEIVE' },
+        { type: 'payoneer', identifier: 'younesdgc@gmail.com', label: 'Secondary', priority: 4, mode: 'RECEIVE' },
+        { type: 'paypal', identifier: 'younestsouli2019@gmail.com', label: 'Backup (Last Resort)', priority: 5, mode: 'RECEIVE' }
       ];
     }
   

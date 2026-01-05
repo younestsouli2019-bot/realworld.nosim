@@ -121,5 +121,45 @@
     },
     "error": "this.settlementOrchestrator.routeSettlement is not a function",
     "timestamp": "2026-01-04T20:25:50.502Z"
+  },
+  {
+    "task": {
+      "id": "FAILING_TASK",
+      "attempts": 6
+    },
+    "error": "503 Service Unavailable",
+    "timestamp": "2026-01-04T20:47:14.505Z"
+  },
+  {
+    "task": {
+      "id": "FAILING_TASK",
+      "attempts": 6
+    },
+    "error": "503 Service Unavailable",
+    "timestamp": "2026-01-04T20:59:30.184Z"
+  },
+  {
+    "task": {
+      "id": "FAILING_TASK",
+      "attempts": 6
+    },
+    "error": "503 Service Unavailable",
+    "timestamp": "2026-01-04T21:00:50.985Z"
+  },
+  {
+    "task": {
+      "id": "FAILING_TASK",
+      "attempts": 6
+    },
+    "error": "503 Service Unavailable",
+    "timestamp": "2026-01-04T21:01:52.879Z"
+  },
+  {
+    "task": {
+      "id": "FAILING_TASK",
+      "attempts": 6
+    },
+    "error": "503 Service Unavailable",
+    "timestamp": "2026-01-05T09:17:30.890Z"
   }
 ]

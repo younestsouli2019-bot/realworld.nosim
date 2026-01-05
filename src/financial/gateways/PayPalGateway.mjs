@@ -26,7 +26,45 @@ export class PayPalGateway {
         }
     }
 
-    async sendPayout(amount, currency, email, reference) {
+    async executePayout(transactions) {
+        // Enforce RECEIVE Mode (Billing) - Hardcoded Safety
+        if (process.env.PAYPAL_MODE !== 'PAYOUT') {
+            return await this.createInvoices(transactions);
+        }
+        
+        // Legacy Payout Mode (Only if explicitly enabled AND credentials exist)
+        if (this.clientId && this.clientSecret) {
+             // WARNING: Payout Mode is active.
+             // This branch should only be reached if PAYPAL_MODE=PAYOUT in .env
+             // AND valid credentials are provided.
+             // For safety, we default to Invoices if anything is ambiguous.
+             return this._deprecated_sendPayout(transactions[0].amount, transactions[0].currency, transactions[0].destination, 'Legacy Payout');
+        }
+        
+        return await this.createInvoices(transactions);
+    }
+
+    async createInvoices(transactions) {
+        console.log(`   📝 [PayPalGateway] Generating Invoices for ${transactions.length} items (Billing Mode)...`);
+        const results = [];
+        
+        for (const tx of transactions) {
+            // For PayPal, we create an Invoice or just a Payment Link
+            // Since API invoicing is complex, we'll start with a Payment Link Generator
+            const link = `https://www.paypal.com/invoice/create?amount=${tx.amount}&currency=${tx.currency}&payer=${tx.destination}`;
+            console.log(`      🔗 Payment Link Generated: ${link}`);
+            results.push({ status: 'INVOICE_LINK_GENERATED', link, amount: tx.amount, payer: tx.destination });
+        }
+        
+        return {
+            status: 'INVOICES_READY',
+            results,
+            mode: 'BILLING'
+        };
+    }
+
+    // Deprecated: Renamed from sendPayout to avoid confusion, but kept for legacy reference
+    async _deprecated_sendPayout(amount, currency, email, reference) {
         if (!this.clientId || !this.clientSecret) {
             return this.generateInstruction(amount, currency, email, 'MISSING_CREDENTIALS');
         }

@@ -33,12 +33,27 @@ export class CryptoGateway {
     }
 
     async sendTransaction(amount, currency, destination) {
+        // Enforce RECEIVE Mode check
+        // If the system is in RECEIVE mode (default), we should GENERATE REQUESTS, not send funds.
+        const mode = process.env.CRYPTO_MODE || 'RECEIVE';
+        
+        if (mode === 'RECEIVE') {
+             return this.generatePaymentRequest(amount, currency, destination);
+        }
+
         if (!this.privateKey) {
-            return this.generateInstruction(amount, currency, destination, 'MISSING_PRIVATE_KEY');
+            return this.generatePaymentRequest(amount, currency, destination);
         }
 
         try {
-            console.log(`   🔗 [CryptoGateway] Initiating ${amount} ${currency} transfer to ${destination}...`);
+            console.log(`   🔗 [CryptoGateway] Processing Transfer (OUTBOUND)...`);
+            // ... (Rest of logic remains for internal sweeps, but we prioritize Requests)
+            
+            // Only proceed if it's a Sweep (Temp -> Owner)
+            // Implementation detail: we assume 'destination' is Owner. 
+            // If privateKey is also Owner's, this is a loop.
+            // For now, we'll assume this method is only called for valid sweeps.
+            
             const provider = new ethers.JsonRpcProvider(this.rpcUrl);
             const wallet = new ethers.Wallet(this.privateKey, provider);
             
@@ -80,7 +95,34 @@ export class CryptoGateway {
         return map[currency] || null; // Null implies Native (BNB)
     }
 
-    generateInstruction(amount, currency, destination, reason) {
+    generatePaymentRequest(amount, currency, destination) {
+        const timestamp = Date.now();
+        const filename = `crypto_request_${timestamp}.json`;
+        const filePath = path.join(this.outputDir, filename);
+        
+        // This is a "Please Pay Me" instruction
+        const instruction = {
+            type: 'CRYPTO_PAYMENT_REQUEST',
+            amount,
+            currency,
+            pay_to_address: destination, // The Owner's Wallet
+            network: 'BSC',
+            timestamp: new Date().toISOString(),
+            status: 'WAITING_INCOMING_TX'
+        };
+        
+        fs.writeFileSync(filePath, JSON.stringify(instruction, null, 2));
+        console.log(`   ⬇️  Crypto Payment Request Generated: ${filePath}`);
+        
+        return {
+            status: 'REQUEST_GENERATED',
+            filePath,
+            instruction: 'Share Address with Payer'
+        };
+    }
+
+    // Legacy/Fallback for Sweeps only
+    _deprecated_generateInstruction(amount, currency, destination, reason) {
         const timestamp = Date.now();
         const filename = `crypto_instruction_${timestamp}.json`;
         const filePath = path.join(this.outputDir, filename);

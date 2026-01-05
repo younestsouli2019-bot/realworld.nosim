@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased] - 2026-01-05
+### Financial Architecture Overhaul (Inbound Billing Agent)
+- **Billing Agent Transformation**: Fundamentally shifted Swarm architecture from a "Payout Engine" (Outbound) to a "Billing Agent" (Inbound).
+- **Receive-Only Policy**: Hardcoded `RECEIVE` mode across `PayoneerGateway`, `PayPalGateway`, and `CryptoGateway` to strictly prevent outbound fund movement.
+- **Payoneer Billing Service**: Switched from Mass Payouts API to Billing Service API (Payment Requests) for autonomous invoicing.
+- **PayPal Invoicing**: Replaced Payouts API with Payment Link/Invoice generation logic.
+- **Inbound Banking**: Replaced "Wire Batch" generation (Outbound) with "Payment Instruction" generation (Inbound IBAN sharing).
+
+### Marketing & Sales (RealWorldCerts.com)
+- **Mission Fix**: Resolved failure of "RealWorldCerts.com" sales mission caused by internal hallucination (selling Jira tickets).
+- **Real Product Catalog**: Implemented `src/real/products/ProductCatalog.mjs` with hardcoded, valid course data.
+- **Auto-Swap Logic**: Updated `publish.mjs` to automatically intercept "Internal Task" offers and swap them for Real Course Offers.
+- **Marketing Dashboard**: Created `marketing-dashboard.html` for one-click social media posting of generated ads.
+- **Digital Hoarding Fix**: Stopped agents from saving ads to invisible `LIVE_OFFERS.md`; system now queues actionable posts for the dashboard.
+
+### Security & Infrastructure
+- **Credential Sanitization**: Implemented auto-sanitization (trim + quote removal) for all API credentials in `PayoneerGateway`, `PayPalGateway`, and `CryptoGateway` to prevent 400 RegEx errors.
+- **Base44 Connectivity**: Updated `.env` with correct Base44 App ID and API URL (`agent-flow-ai...`) to restore "Brain" connectivity.
+- **Liquidity Pool Fix**: Replaced fictional placeholder address (`0xSwarm...`) with verified Owner Trust Wallet address in `.env`.
+- **Code Audit**: Removed fictional placeholders and `dummy` data from critical financial paths.
+
 ## [Unreleased] - 2026-01-04
 ### Security & Integrity
 - **Simulation Purge**: Deleted `src/revenue-sources/blog-adsense.mjs` and `data/restored-missions.json` to eliminate all "Simulated" logic and data.

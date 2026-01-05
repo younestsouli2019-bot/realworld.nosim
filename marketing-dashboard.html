@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Swarm Marketing Command Center</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #1a1a1a; color: #fff; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        h1 { border-bottom: 2px solid #00ff88; padding-bottom: 10px; }
+        .card { background: #2d2d2d; border-radius: 8px; padding: 20px; margin-bottom: 20px; border-left: 5px solid #00ff88; }
+        .price { font-size: 1.5em; color: #00ff88; font-weight: bold; }
+        .actions { margin-top: 15px; display: flex; gap: 10px; }
+        .btn { padding: 10px 20px; border-radius: 5px; text-decoration: none; font-weight: bold; cursor: pointer; border: none; }
+        .btn-twitter { background: #1da1f2; color: white; }
+        .btn-linkedin { background: #0077b5; color: white; }
+        .btn-copy { background: #555; color: white; }
+        .btn:hover { opacity: 0.9; }
+        .timestamp { color: #888; font-size: 0.8em; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Swarm Command Center</h1>
+        <p>Review and Approve Agent Generated Content</p>
+        <div id="feed">Loading pending posts...</div>
+    </div>
+
+    <script>
+        async function loadQueue() {
+            try {
+                const response = await fetch('marketing_queue.json');
+                const queue = await response.json();
+                const feed = document.getElementById('feed');
+                feed.innerHTML = '';
+
+                if (queue.length === 0) {
+                    feed.innerHTML = '<p>No pending posts. Run the swarm to generate content.</p>';
+                    return;
+                }
+
+                queue.reverse().forEach(post => {
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    
+                    const twitterText = encodeURIComponent(post.text);
+                    const linkedinUrl = encodeURIComponent(post.link);
+
+                    card.innerHTML = `
+                        <h3>${post.title}</h3>
+                        <div class="price">$${post.price}</div>
+                        <p>${post.text}</p>
+                        <div class="timestamp">Generated: ${new Date(post.created_at).toLocaleString()}</div>
+                        <div class="actions">
+                            <a href="https://twitter.com/intent/tweet?text=${twitterText}" target="_blank" class="btn btn-twitter">🐦 Post to X</a>
+                            <a href="https://www.linkedin.com/sharing/share-offsite/?url=${linkedinUrl}" target="_blank" class="btn btn-linkedin">💼 Post to LinkedIn</a>
+                            <button onclick="navigator.clipboard.writeText('${post.text.replace(/'/g, "\\'")}')" class="btn btn-copy">📋 Copy Text</button>
+                        </div>
+                    `;
+                    feed.appendChild(card);
+                });
+            } catch (e) {
+                document.getElementById('feed').innerHTML = '<p>Error loading queue. Ensure "marketing_queue.json" exists.</p>';
+            }
+        }
+        loadQueue();
+        setInterval(loadQueue, 5000); // Auto-refresh
+    </script>
+</body>
+</html>

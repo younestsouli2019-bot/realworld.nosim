@@ -1,0 +1,25 @@
+Subject: Request for API Access (Billing Service) - Account ID: [Your Payoneer Customer ID]
+
+Dear Payoneer Integration Team,
+
+I am writing to request API credentials (Client ID and Client Secret) for my business account to automate my billing and payment collection workflows.
+
+My account details are:
+- Name: Younes Tsouli
+- Email: younestsouli2019@gmail.com
+
+I am building an internal system to automate the generation of "Payment Requests" (Billing Service) for my clients.
+
+Please note:
+1. I am the **Owner** of this account.
+2. I am **NOT** a Third-Party Provider (TPP) and do **NOT** require Open Banking / PSD2 access.
+3. I do **NOT** have an eIDAS certificate, as I am automating my own account, not managing others'.
+
+I attempted to register via the Developer Portal, but it requires an eIDAS certificate. Please enable the standard **Billing Service API** (or Mass Payouts API if required for authentication) for my account so I can obtain my `Client ID` and `Client Secret` without this certificate.
+
+Thank you for your assistance.
+
+Best regards,
+
+Younes Tsouli
+younestsouli2019@gmail.com

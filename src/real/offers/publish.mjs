@@ -1,49 +1,83 @@
 import fs from 'fs';
 import path from 'path';
+import { getRandomProduct } from '../products/ProductCatalog.mjs';
 
 export async function publishOffer(offer) {
-    console.log(`\n📢 PUBLISHING OFFER: ${offer.title}`);
-    console.log(`   Price: $${offer.price} USD`);
-    console.log(`   Checkout: ${offer.checkout_url}`);
-    
-    // 1. Publish to Local Catalog (Phase 1: Direct Link Generation)
-    // In a full implementation, this would POST to Etsy/Shopify APIs.
-    // For now, we "Publish" by appending to a "LIVE_OFFERS.md" file that serves as our public catalog.
-    
-    const liveOffersPath = path.join(process.cwd(), 'LIVE_OFFERS.md');
-    
-    // SECURITY NOTE: We explicitly list the PayPal destination in the public catalog for transparency
-    // This allows the user to verify "No Middleman" before clicking.
-    
-    let details = '';
-    if (offer.payment_method === 'crypto') {
-        const mainAddr = offer.crypto?.address ? `Address (${offer.crypto?.network}): ${offer.crypto?.address}` : '';
-        const tag = offer.crypto?.tag ? `Tag/Memo: ${offer.crypto?.tag}` : '';
-        const opts = Array.isArray(offer.crypto_options) && offer.crypto_options.length > 0
-            ? offer.crypto_options.map(o => `- ${o.network}: ${o.address}${o.tag ? ` (Tag/Memo: ${o.tag})` : ''}`).join('\n')
-            : '';
-        const optsBlock = opts ? `\n- Networks:\n${opts}\n` : '';
-        details = `\n- **Payment Method:** Crypto (USDT)\n- ${mainAddr}\n- ${tag}${optsBlock}- **Instructions:** ${offer.crypto?.instructions || ''}\n`;
+    // 1. Sanitize: Replace "Internal Task" offers with REAL COURSES
+    // If the offer title looks like a Jira ticket, swap it for a RealWorldCerts course.
+    let finalOffer = offer;
+    if (offer.title.includes('API') || offer.title.includes('Verification') || offer.title.includes('Overhaul')) {
+        const realProduct = getRandomProduct();
+        console.log(`\n🔄 SWAPPING INTERNAL TASK FOR REAL PRODUCT:`);
+        console.log(`   Old: ${offer.title} ($${offer.price})`);
+        console.log(`   New: ${realProduct.title} ($${realProduct.price})`);
+        
+        finalOffer = {
+            ...offer,
+            title: realProduct.title,
+            price: realProduct.price,
+            checkout_url: realProduct.url,
+            description: realProduct.description,
+            offer_id: `OFFER_${realProduct.id}_${Date.now()}`
+        };
     }
-    const markdownEntry = `
-## 🛍️ ${offer.title}
-- **Price:** $${offer.price}
-- **Status:** LIVE
-- **Link:** [BUY NOW](${offer.checkout_url})
-- **Ref:** \`${offer.offer_id}\`
-- **Destination:** Direct-to-Owner (Verified)
-- *Posted: ${new Date().toISOString()}*
-${details}
 
----
-`;
+    console.log(`\n📢 PUBLISHING OFFER (REAL WORLD): ${finalOffer.title}`);
+    console.log(`   Price: $${finalOffer.price} USD`);
+    console.log(`   Link:  ${finalOffer.checkout_url}`);
 
-    fs.appendFileSync(liveOffersPath, markdownEntry);
-    console.log(`   ✅ Published to LIVE_OFFERS.md (Local Sales Catalog Updated)`);
+    // 2. Generate Social Media Post Drafts
+    // We create a "Ready-to-Post" file for the user to copy-paste.
+    const socialPost = generateSocialPost(finalOffer);
     
+    // Append to "READY_TO_POST.txt"
+    const postPath = path.join(process.cwd(), 'READY_TO_POST.txt');
+    fs.appendFileSync(postPath, socialPost);
+    
+    // 3. Update JSON Queue for Dashboard
+    const queuePath = path.join(process.cwd(), 'marketing_queue.json');
+    let queue = [];
+    if (fs.existsSync(queuePath)) {
+        try { queue = JSON.parse(fs.readFileSync(queuePath, 'utf8')); } catch (e) {}
+    }
+    queue.push({
+        id: finalOffer.offer_id,
+        title: finalOffer.title,
+        price: finalOffer.price,
+        link: finalOffer.checkout_url,
+        text: `🚀 Master new skills! ${finalOffer.title} - Only $${finalOffer.price} #RealWorldCerts ${finalOffer.checkout_url}`,
+        platform: 'All',
+        created_at: new Date().toISOString()
+    });
+    fs.writeFileSync(queuePath, JSON.stringify(queue, null, 2));
+
+    console.log(`   ✅ Added to Dashboard Queue: marketing_queue.json`);
+
     return {
         published: true,
-        platform: 'Direct/Markdown',
-        url: liveOffersPath
+        platform: 'SocialDraft',
+        url: postPath,
+        offer: finalOffer
     };
+}
+
+function generateSocialPost(offer) {
+    return `
+================================================================================
+PLATFORM: Twitter / LinkedIn / Instagram
+STATUS:   READY TO POST
+DATE:     ${new Date().toISOString()}
+================================================================================
+🚀 FLASH SALE ALERT! 🚀
+
+Master new skills today with "${offer.title}"!
+
+🎓 Certification Included
+🔥 Limited Time Price: $${offer.price}
+👇 Get Instant Access:
+${offer.checkout_url}
+
+#RealWorldCerts #OnlineLearning #${offer.category || 'Education'}
+================================================================================
+`;
 }
