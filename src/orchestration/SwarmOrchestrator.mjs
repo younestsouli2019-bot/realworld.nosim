@@ -3,6 +3,7 @@ import { AgentHealthMonitor } from '../swarm/health-monitor.mjs';
 import { AdaptiveRateLimiter } from '../swarm/adaptive-rate-limiter.mjs';
 import { FailureHandler } from '../swarm/failure-handler.mjs';
 import { TaskManager } from '../swarm/task-manager.mjs';
+import { GovernanceGate } from '../governance/GovernanceGate.mjs';
 
 /**
  * THE MISSING LINK: Central Swarm Orchestration
@@ -16,6 +17,7 @@ export class SwarmOrchestrator {
     this.rateLimiter = new AdaptiveRateLimiter();
     this.failureHandler = new FailureHandler();
     this.taskManager = new TaskManager(new Map()); // Agents added dynamically
+    this.governanceGate = new GovernanceGate()
     
     this.active = false;
   }
@@ -56,6 +58,9 @@ export class SwarmOrchestrator {
     const taskId = task.id || `task_${Date.now()}`;
     task.id = taskId;
     
+    const gov = this.governanceGate.evaluate(task)
+    if (!gov.ok) return { status: 'BLOCKED_GOVERNANCE', reason: gov.reason }
+
     // 1. Assign Agent
     const agentId = this.taskManager.assignTask(task);
     if (!agentId) return { status: 'FAILED', reason: 'NO_AGENT_AVAILABLE' };

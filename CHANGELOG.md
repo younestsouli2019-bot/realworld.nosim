@@ -26,6 +26,7 @@ All notable changes to this project will be documented in this file.
 - **Health Check**: Added `scripts/base44-health-check.mjs` to validate Base44 connectivity and gracefully fallback offline.
 - **Offer Generation**: Added `scripts/generate-offers.mjs` to produce two example offers for verification.
 - **Receive-Only Tests**: Added `tests/test-receive-only.mjs` to assert gateway behavior in RECEIVE mode.
+ - **Governor Primitives**: Added `GovernanceGate` with `IntentInvariant`, `PowerGradient`, `TransparencyCost`, `DomainAutonomy`, `ReputationLedger`, and `DeadmanSwitch` and integrated into `SwarmOrchestrator`.
 
 ## [Unreleased] - 2026-01-04
 ### Security & Integrity
