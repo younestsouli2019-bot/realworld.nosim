@@ -122,36 +122,19 @@ async function run() {
 
     // 2. VERIFICATION PHASE (STRICT)
     console.log('\n🔍 VERIFICATION PHASE: SCANNING BLOCKCHAIN...');
-    console.log('    (Waiting for transaction confirmation...)');
     
     const verifier = new ChainVerifier();
     
-    // If we had a txId from Binance, we would verify THAT specific hash.
-    // Since we likely don't (due to missing keys in this env), we wait for ANY valid tx.
-    // BUT user said "PROOF IT ALL".
-    
     if (!txId) {
         console.log('ℹ️  No Internal TX ID to verify. Checking manual settlement status...');
-        // In a real loop, we would poll here. For this script, we check once and fail if not found.
-        // Or we simply output the INSTRUCTION for the user.
         
-        const instructionPath = path.join(RECEIPTS_DIR, `instruction_${Date.now()}.txt`);
-        const instruction = `
-ACTION REQUIRED: MANUAL CRYPTO SETTLEMENT
------------------------------------------
-The system could not autonomously withdraw funds (Missing Keys/API).
-Please execute the following transfer MANUALLY:
-
-AMOUNT:      ${amount} USDT
-NETWORK:     BSC (BEP20)
-DESTINATION: ${TARGET_WALLET.address}
-
-Once executed, the system will detect the transaction on-chain.
-`;
-        fs.writeFileSync(instructionPath, instruction);
-        console.log(`📄 INSTRUCTION SAVED: ${instructionPath}`);
-        console.log('❌ STATUS: PENDING_MANUAL_EXECUTION (NOT COMPLETED)');
-        process.exit(0); // Exit cleanly, but NOT completed.
+        // DO NOT GENERATE FAKE RECEIPTS OR INSTRUCTIONS IF WE ARE AUTONOMOUS
+        // If keys are missing, we log the error to STDERR and exit with failure code.
+        // The orchestrator handles the failure.
+        
+        console.error('❌ FATAL: Cannot settle funds. Missing Exchange Keys or Private Key.');
+        console.error('   NO RECEIPT GENERATED. NO TRANSACTION OCCURRED.');
+        process.exit(1);
     }
 
     // If we DID get a txId, verify it.
