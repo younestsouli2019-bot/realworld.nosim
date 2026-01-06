@@ -1,0 +1,36 @@
+{
+  "id": "AUD_1767692173796_78482e9f",
+  "timestamp": "2026-01-06T09:36:13.796Z",
+  "action": "INITIATE_CRYPTO_TRANSFER",
+  "entity_id": "7188714a-790e-4a09-bb2a-1a5bd5195e98",
+  "actor": "MissionControl",
+  "changes": {
+    "before": null,
+    "after": {
+      "status": "processing",
+      "gateway_response": {
+        "status": "prepared",
+        "network": "ERC20",
+        "prepared_at": "2026-01-06T09:36:13.792Z",
+        "transactions": [
+          {
+            "amount": 133,
+            "currency": "USD",
+            "destination": "0xA46225a984E2B2B5E5082E52AE8d8915A09fEfe7",
+            "reference": "Owner Settlement"
+          }
+        ]
+      },
+      "payout_batch_id": "BATCH_1767521125268",
+      "processed_at": "2026-01-06T09:36:13.795Z",
+      "route_attempted": "crypto"
+    }
+  },
+  "context": {
+    "action": "INITIATE_CRYPTO_TRANSFER",
+    "actor": "MissionControl",
+    "payoutBatchId": "BATCH_1767521125268",
+    "status": "success"
+  },
+  "updated_at": "2026-01-06T09:36:13.796Z"
+}

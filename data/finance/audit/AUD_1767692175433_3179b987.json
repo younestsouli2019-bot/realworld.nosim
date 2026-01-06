@@ -1,0 +1,36 @@
+{
+  "id": "AUD_1767692175433_3179b987",
+  "timestamp": "2026-01-06T09:36:15.433Z",
+  "action": "INITIATE_BANK_WIRE",
+  "entity_id": "ddd2df61-c1c5-45f0-8e7f-0111721a4e18",
+  "actor": "MissionControl",
+  "changes": {
+    "before": null,
+    "after": {
+      "status": "processing",
+      "gateway_response": {
+        "status": "prepared",
+        "network": "BANK_WIRE",
+        "prepared_at": "2026-01-06T09:36:15.429Z",
+        "transactions": [
+          {
+            "amount": 114,
+            "currency": "USD",
+            "destination": "younestsouli2019@gmail.com",
+            "reference": "Owner Settlement"
+          }
+        ]
+      },
+      "payout_batch_id": "BATCH_1767521176773",
+      "processed_at": "2026-01-06T09:36:15.431Z",
+      "route_attempted": "bank_transfer"
+    }
+  },
+  "context": {
+    "action": "INITIATE_BANK_WIRE",
+    "actor": "MissionControl",
+    "payoutBatchId": "BATCH_1767521176773",
+    "status": "success"
+  },
+  "updated_at": "2026-01-06T09:36:15.433Z"
+}

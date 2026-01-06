@@ -1,0 +1,25 @@
+{
+  "id": "a61346aa-439d-4df9-8e85-51a1d2efceba",
+  "status": "completed",
+  "result": {
+    "status": "processing",
+    "gateway_response": {
+      "status": "prepared",
+      "network": "BANK_WIRE",
+      "prepared_at": "2026-01-06T09:36:17.922Z",
+      "transactions": [
+        {
+          "amount": 136,
+          "currency": "USD",
+          "destination": "younestsouli2019@gmail.com",
+          "reference": "Owner Settlement"
+        }
+      ]
+    },
+    "payout_batch_id": "BATCH_STIMULUS_1767526063588",
+    "processed_at": "2026-01-06T09:36:17.925Z",
+    "route_attempted": "bank_transfer"
+  },
+  "completed_at": "2026-01-06T09:36:17.925Z",
+  "updated_at": "2026-01-06T09:36:17.925Z"
+}

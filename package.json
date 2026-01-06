@@ -1,40 +1,9 @@
 {
-  "name": "autonomous-revenue-system",
-  "version": "2.0.0",
-  "description": "Autonomous revenue generation and settlement system with REAL work execution",
+  "name": "payment-scripts",
+  "version": "1.0.0",
   "type": "module",
-  "main": "scripts/autonomous-revenue-generator.mjs",
-  "scripts": {
-    "start": "node scripts/run-swarm-orchestrated.mjs",
-    "start:legacy": "node scripts/autonomous-revenue-generator.mjs",
-    "test": "node scripts/run-full-suite.mjs",
-    "test:unit": "node scripts/test-swarm-orchestrator.mjs",
-    "backup": "node scripts/system-backup.mjs",
-    "verify-env": "node scripts/verify-env.mjs",
-    "monitor": "node scripts/monitor-revenue-health.mjs"
-  },
   "dependencies": {
-    "@paypal/payouts-sdk": "^1.1.1",
-    "openai": "^4.24.1",
-    "stripe": "^14.10.0",
-    "googleapis": "^129.0.0",
-    "ethers": "^6.10.0"
-  },
-  "devDependencies": {
-    "dotenv": "^16.3.1"
-  },
-  "engines": {
-    "node": ">=18.0.0"
-  },
-  "keywords": [
-    "autonomous",
-    "revenue",
-    "settlement",
-    "automation",
-    "ai",
-    "blog",
-    "adsense"
-  ],
-  "author": "Younes Tsouli",
-  "license": "PRIVATE"
+    "dotenv": "^16.0.0",
+    "ethers": "^6.0.0"
+  }
 }

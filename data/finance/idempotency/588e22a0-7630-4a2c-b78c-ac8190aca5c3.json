@@ -1,0 +1,25 @@
+{
+  "id": "588e22a0-7630-4a2c-b78c-ac8190aca5c3",
+  "status": "completed",
+  "result": {
+    "status": "processing",
+    "gateway_response": {
+      "status": "prepared",
+      "network": "PAYONEER",
+      "prepared_at": "2026-01-06T09:36:14.610Z",
+      "transactions": [
+        {
+          "amount": 144,
+          "currency": "USD",
+          "destination": "younestsouli2019@gmail.com",
+          "reference": "Owner Settlement"
+        }
+      ]
+    },
+    "payout_batch_id": "BATCH_1767521126334",
+    "processed_at": "2026-01-06T09:36:14.612Z",
+    "route_attempted": "payoneer"
+  },
+  "completed_at": "2026-01-06T09:36:14.612Z",
+  "updated_at": "2026-01-06T09:36:14.612Z"
+}

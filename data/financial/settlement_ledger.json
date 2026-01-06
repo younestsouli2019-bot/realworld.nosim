@@ -140,6 +140,27 @@
         "instruction": "Send IBAN to Clients",
         "destination": "007810000448500030594182"
       }
+    },
+    {
+      "id": "tx_1767696297094_si0le73k2",
+      "timestamp": "2026-01-06T10:44:57.094Z",
+      "channel": "BINANCE_API",
+      "amount": 850,
+      "status": "prepared",
+      "details": {
+        "status": "prepared",
+        "network": "ERC20",
+        "prepared_at": "2026-01-06T10:44:57.092Z",
+        "transactions": [
+          {
+            "amount": 850,
+            "currency": "USDT",
+            "destination": "007810000448500030594182",
+            "reference": "Autonomous Settlement"
+          }
+        ],
+        "destination": "007810000448500030594182"
+      }
     }
   ],
   "queued": [

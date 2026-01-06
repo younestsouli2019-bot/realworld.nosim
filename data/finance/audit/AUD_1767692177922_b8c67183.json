@@ -1,0 +1,25 @@
+{
+  "id": "AUD_1767692177922_b8c67183",
+  "timestamp": "2026-01-06T09:36:17.922Z",
+  "action": "BANK_WIRE_PREPARED",
+  "entity_id": "BATCH_STIMULUS_1767526063588",
+  "actor": "MissionControl",
+  "changes": {
+    "before": null,
+    "after": {
+      "status": "prepared",
+      "network": "BANK_WIRE",
+      "prepared_at": "2026-01-06T09:36:17.922Z",
+      "transactions": [
+        {
+          "amount": 136,
+          "currency": "USD",
+          "destination": "younestsouli2019@gmail.com",
+          "reference": "Owner Settlement"
+        }
+      ]
+    }
+  },
+  "context": {},
+  "updated_at": "2026-01-06T09:36:17.922Z"
+}

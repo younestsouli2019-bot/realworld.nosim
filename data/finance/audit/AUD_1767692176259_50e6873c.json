@@ -1,0 +1,25 @@
+{
+  "id": "AUD_1767692176259_50e6873c",
+  "timestamp": "2026-01-06T09:36:16.259Z",
+  "action": "CRYPTO_TRANSFER_PREPARED",
+  "entity_id": "BATCH_1767521176791",
+  "actor": "MissionControl",
+  "changes": {
+    "before": null,
+    "after": {
+      "status": "prepared",
+      "network": "ERC20",
+      "prepared_at": "2026-01-06T09:36:16.259Z",
+      "transactions": [
+        {
+          "amount": 118,
+          "currency": "USD",
+          "destination": "0xA46225a984E2B2B5E5082E52AE8d8915A09fEfe7",
+          "reference": "Owner Settlement"
+        }
+      ]
+    }
+  },
+  "context": {},
+  "updated_at": "2026-01-06T09:36:16.259Z"
+}
