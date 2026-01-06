@@ -191,16 +191,11 @@ export class SmartSettlementOrchestrator {
         }
 
         if (channel === 'PAYONEER') {
-            const mode = process.env.PAYONEER_MODE || 'RECEIVE';
-            if (mode === 'RECEIVE') {
-              result = await this.payoneer.sendBillingBatch([{
-                amount, currency, destination, reference: 'Autonomous Settlement'
-              }]);
-            } else {
-              result = await this.payoneer.executePayout([{
-                amount, currency, destination, reference: 'Autonomous Settlement'
-              }]);
-            }
+            const rawMode = process.env.PAYONEER_MODE || 'RECEIVE';
+            const mode = rawMode.trim().toUpperCase();
+            result = await this.payoneer.executeTransfer([{
+              amount, currency, destination, reference: 'Autonomous Settlement'
+            }]);
         }
         else if (channel === 'BANK_WIRE') {
             result = await this.bank.generateBatch([{
@@ -208,10 +203,14 @@ export class SmartSettlementOrchestrator {
             }]);
         }
         else if (channel === 'BINANCE_API' || channel === 'TRUST_WALLET_DIRECT') {
-            result = await this.crypto.sendTransaction(amount, currency, destination);
+            result = await this.crypto.executeTransfer([{
+                amount, currency, destination, reference: 'Autonomous Settlement'
+            }]);
         }
         else if (channel === 'PAYPAL') {
-            result = await this.paypal.sendPayout(amount, currency, destination, 'Autonomous Settlement');
+            result = await this.paypal.executePayout([{
+                amount, currency, destination, reference: 'Autonomous Settlement'
+            }]);
         }
         else {
             console.warn(`      ⚠️ Unknown Channel ${channel}, falling back to Ledger Record only.`);
