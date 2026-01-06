@@ -27,24 +27,25 @@ export class OwnerSettlementEnforcer {
       ];
     }
   
-    static getOwnerAccountForType(type) {
-      // Direct Registry Lookup
-      const key = String(type).toLowerCase();
-      
-      // Direct match in registry
-      if (OWNER_ACCOUNTS[key]) {
-          const acc = OWNER_ACCOUNTS[key];
-          // Return the identifier (RIB, Email, Address)
-          return acc.rib || acc.email || acc.identifier || acc.address || acc.accountId;
-      }
-
-      // Legacy Fallback / Special Cases
-      if (key === 'stripe') return OWNER_ACCOUNTS.stripe.rib;
-      if (key.includes('erc20')) return OWNER_ACCOUNTS.crypto_erc20.address;
-      
-      console.warn(`⚠️ No specific owner account for ${type}, defaulting to Bank.`);
-      return OWNER_ACCOUNTS.bank.rib;
+  static getOwnerAccountForType(type) {
+    // Direct Registry Lookup
+    const key = String(type).toLowerCase();
+    
+    // Direct match in registry
+    if (OWNER_ACCOUNTS[key]) {
+        const acc = OWNER_ACCOUNTS[key];
+        // Return the identifier (RIB, Email, Address)
+        return acc.rib || acc.email || acc.identifier || acc.address || acc.accountId;
     }
+
+    // Legacy Fallback / Special Cases
+    if (key === 'stripe') return OWNER_ACCOUNTS.stripe.rib;
+    if (key.includes('erc20')) return OWNER_ACCOUNTS.crypto_erc20.address;
+    if (key.includes('bep20') || key.includes('bsc')) return OWNER_ACCOUNTS.crypto.address;
+    
+    console.warn(`⚠️ No specific owner account for ${type}, defaulting to Bank.`);
+    return OWNER_ACCOUNTS.bank.rib;
+  }
 
     static isOwnerDestination(destination) {
       const d = String(destination || '').toLowerCase();

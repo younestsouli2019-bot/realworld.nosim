@@ -35,7 +35,8 @@ export async function publishOffer(offer) {
             else if (opt.rib) extra = opt.rib;
             else if (opt.accountId) extra = `ID:${opt.accountId}`;
             else if (opt.address) extra = opt.address;
-            console.log(`   Route: ${t} -> ${extra}`);
+            const badges = Array.isArray(opt.badges) && opt.badges.length ? ` [${opt.badges.map(b => (b === 'Secure' ? '🔒' : '✅') + ' ' + b).join(' ')}]` : '';
+            console.log(`   Route: ${t} -> ${extra}${badges}`);
         }
     }
 
@@ -103,10 +104,25 @@ export async function publishOffer(offer) {
 }
 
 function generateSocialPost(offer) {
+    const privacyStrict = String(process.env.PRIVACY_STRICT || '').toLowerCase() === 'true';
+    const maskEmail = (e) => {
+        if (!e) return '';
+        const parts = String(e).split('@');
+        if (parts.length < 2) return e;
+        const local = parts[0];
+        const domain = parts[1];
+        const maskedLocal = local.length <= 1 ? '*' : local[0] + '*'.repeat(Math.max(1, local.length - 1));
+        return `${maskedLocal}@${domain}`;
+    };
     const routes = Array.isArray(offer.payment_options) ? offer.payment_options.map(opt => {
         const label = opt.method.toUpperCase();
-        const extra = opt.url ? opt.url : (opt.rib || opt.email || opt.address || '');
-        return `- ${label}: ${extra}`;
+        let extra = '';
+        if (opt.url) extra = opt.url;
+        else if (opt.rib) extra = opt.rib;
+        else if (opt.email) extra = privacyStrict ? maskEmail(opt.email) : opt.email;
+        else if (opt.address) extra = opt.address;
+        const badges = Array.isArray(opt.badges) && opt.badges.length ? ` (${opt.badges.map(b => (b === 'Secure' ? '🔒' : '✅') + ' ' + b).join(' ')})` : '';
+        return `- ${label}: ${extra}${badges}`;
     }).join('\n') : `- ${offer.payment_method.toUpperCase()}: ${offer.checkout_url}`;
     return `
 ========================================================================================

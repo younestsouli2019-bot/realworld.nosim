@@ -114,4 +114,18 @@ export class SwarmMemory {
   get(key) {
       return this.state.get(key);
   }
+
+  async addLesson(lesson, agentId = 'system') {
+    const existing = this.get('lessons') || [];
+    const entry = { lesson, agentId, timestamp: Date.now() };
+    const next = Array.isArray(existing) ? [...existing, entry] : [entry];
+    return this.update('lessons', next, agentId, 'lesson');
+  }
+
+  async broadcastAlert(message, agentId = 'system') {
+    const existing = this.get('alerts') || [];
+    const entry = { message, agentId, timestamp: Date.now() };
+    const next = Array.isArray(existing) ? [entry, ...existing].slice(0, 100) : [entry];
+    return this.update('alerts', next, agentId, 'alert');
+  }
 }

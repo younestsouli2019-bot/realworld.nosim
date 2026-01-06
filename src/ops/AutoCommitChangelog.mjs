@@ -48,3 +48,10 @@ export function recordSuccess(summary, details = {}, commitMessage = null) {
   const pushRes = commitAndPushIfEnabled(msg)
   return { changelog: fp, push: pushRes }
 }
+
+export function recordProgress(summary, details = {}, commitMessage = null) {
+  const fp = appendChangelogEntry(summary, details)
+  const msg = commitMessage || summary
+  const pushRes = commitAndPushIfEnabled(msg)
+  return { changelog: fp, push: pushRes }
+}

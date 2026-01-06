@@ -116,3 +116,18 @@ Details:
 - price: $39.99
 - routes: bank, payoneer, crypto, crypto, crypto, payoneer, payoneer, bank, bank, bank
 ---
+# Success Report - 2026-01-06T12:40:12.697Z
+Summary: Multi-Route publish success: Advanced Course
+Details:
+- offer_id: OFFER_nuance1_1767703212674
+- price: $49.99
+- routes: bank, payoneer, crypto, crypto, crypto, payoneer, payoneer, bank, bank, bank
+---
+# Success Report - 2026-01-06T15:54:09.420Z
+Summary: progress: BYBIT_API -> 0xA46225a984E2B2B5E5082E52AE8d8915A09fEfe7 INSTRUCTIONS_READY
+Details:
+- amount: 50
+- currency: USDT
+- destination: 0xA46225a984E2B2B5E5082E52AE8d8915A09fEfe7
+- status: INSTRUCTIONS_READY
+---

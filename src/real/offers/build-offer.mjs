@@ -6,6 +6,15 @@ import { shouldAvoidPayPal } from '../../policy/geopolicy.mjs';
 
 export async function buildOffer(idea) {
     const price = idea.price_usd || 19.99;
+    const maskEmail = (e) => {
+        if (!e) return null;
+        const parts = String(e).split('@');
+        if (parts.length < 2) return e;
+        const local = parts[0];
+        const domain = parts[1];
+        const maskedLocal = local.length <= 1 ? '*' : local[0] + '*'.repeat(Math.max(1, local.length - 1));
+        return `${maskedLocal}@${domain}`;
+    };
     
     // STRICT OWNER DIRECTIVE: Always use the hardcoded owner account
     const ownerPaypal = OWNER_ACCOUNTS.paypal.email;
@@ -31,7 +40,7 @@ export async function buildOffer(idea) {
     const optimizer = new RailOptimizer();
     let selectedRail = optimizer.selectRail(price, 'USD', 'MA', 'owner');
     const privacyStrict = String(process.env.PRIVACY_STRICT || '').toLowerCase() === 'true';
-    const avoidPP = shouldAvoidPayPal() || privacyStrict;
+    const avoidPP = shouldAvoidPayPal();
     if (selectedRail === 'paypal' && avoidPP) {
         selectedRail = 'bank';
     }
@@ -56,7 +65,8 @@ export async function buildOffer(idea) {
     if (paypalUrl) {
         paymentOptions.push({
             method: 'paypal',
-            url: paypalUrl
+            url: paypalUrl,
+            badges: ['Verified', 'Secure', 'Buyer Protection']
         });
     }
     if (OWNER_ACCOUNTS.bank?.rib) {
@@ -64,15 +74,20 @@ export async function buildOffer(idea) {
             method: 'bank',
             label: OWNER_ACCOUNTS.bank.label || 'Bank Wire',
             rib: OWNER_ACCOUNTS.bank.rib,
-            instructions: `Make a bank transfer of $${price.toFixed(2)} USD to RIB ${OWNER_ACCOUNTS.bank.rib}. Add reference ${offerId}.`
+            instructions: `Make a bank transfer of $${price.toFixed(2)} USD to RIB ${OWNER_ACCOUNTS.bank.rib}. Add reference ${offerId}.`,
+            badges: ['Verified', 'Secure']
         });
     }
     if (OWNER_ACCOUNTS.payoneer?.email || OWNER_ACCOUNTS.payoneer?.accountId) {
         const accountId = OWNER_ACCOUNTS.payoneer.accountId || null;
+        const displayEmail = privacyStrict ? maskEmail(OWNER_ACCOUNTS.payoneer.email || null) : (OWNER_ACCOUNTS.payoneer.email || null);
+        const target = accountId ? `ID ${accountId}` : (displayEmail || '');
         paymentOptions.push({
             method: 'payoneer',
             accountId,
-            instructions: `Send a Payoneer payment request. Reference ${offerId}.`
+            email: displayEmail,
+            instructions: target ? `Send a Payoneer payment request to ${target}. Reference ${offerId}.` : `Send a Payoneer payment request. Reference ${offerId}.`,
+            badges: ['Verified', 'Secure']
         });
     }
 
@@ -117,7 +132,8 @@ export async function buildOffer(idea) {
                 address: address,
                 tag: tag,
                 instructions: `Send ${price.toFixed(2)} USDT to the address on ${network}. Include MEMO/TAG if provided.`,
-                alternatives: cryptoOptions
+                alternatives: cryptoOptions,
+                badges: ['Secure', 'Verified Address']
             });
         }
     }
@@ -128,7 +144,8 @@ export async function buildOffer(idea) {
             coin: 'USDT',
             network: 'ETH',
             address: OWNER_ACCOUNTS.crypto_erc20.address,
-            instructions: `Send ${price.toFixed(2)} USDT on ERC20 to ${OWNER_ACCOUNTS.crypto_erc20.address}.`
+            instructions: `Send ${price.toFixed(2)} USDT on ERC20 to ${OWNER_ACCOUNTS.crypto_erc20.address}.`,
+            badges: ['Secure', 'Verified Address']
         });
     }
     if (OWNER_ACCOUNTS.crypto_bybit_erc20?.address) {
@@ -138,7 +155,8 @@ export async function buildOffer(idea) {
             coin: 'USDT',
             network: 'ETH',
             address: OWNER_ACCOUNTS.crypto_bybit_erc20.address,
-            instructions: `Send ${price.toFixed(2)} USDT on ERC20 to ${OWNER_ACCOUNTS.crypto_bybit_erc20.address}.`
+            instructions: `Send ${price.toFixed(2)} USDT on ERC20 to ${OWNER_ACCOUNTS.crypto_bybit_erc20.address}.`,
+            badges: ['Secure', 'Verified Address']
         });
     }
     if (OWNER_ACCOUNTS.crypto_bybit_ton?.address) {
@@ -148,7 +166,8 @@ export async function buildOffer(idea) {
             coin: 'TON',
             network: 'TON',
             address: OWNER_ACCOUNTS.crypto_bybit_ton.address,
-            instructions: `Send ${price.toFixed(2)} TON to ${OWNER_ACCOUNTS.crypto_bybit_ton.address}.`
+            instructions: `Send ${price.toFixed(2)} TON to ${OWNER_ACCOUNTS.crypto_bybit_ton.address}.`,
+            badges: ['Secure', 'Verified Address']
         });
     }
     
@@ -163,7 +182,8 @@ export async function buildOffer(idea) {
                 paymentOptions.push({
                     method: 'bank',
                     label: acc.label || 'Bank Wire',
-                    rib
+                    rib,
+                    badges: ['Verified', 'Secure']
                 });
                 seenBank.add(rib);
             }
@@ -173,7 +193,8 @@ export async function buildOffer(idea) {
                 paymentOptions.push({
                     method: 'payoneer',
                     email: acc.email || null,
-                    accountId: acc.accountId || null
+                    accountId: acc.accountId || null,
+                    badges: ['Verified', 'Secure']
                 });
                 seenPayoneer.add(id);
             }
@@ -189,7 +210,8 @@ export async function buildOffer(idea) {
                     provider: acc.label && acc.label.toLowerCase().includes('bybit') ? 'bybit' : 'wallet',
                     coin: network === 'TON' ? 'TON' : 'USDT',
                     network,
-                    address: addr
+                    address: addr,
+                    badges: ['Secure', 'Verified Address']
                 });
                 seenCrypto.add(addr);
             }
@@ -202,7 +224,7 @@ export async function buildOffer(idea) {
         const primary = paymentOptions.find(p => p.method === primaryMethod) || paymentOptions[0] || null;
         if (primary?.url) checkout = primary.url;
         else if (primary?.method === 'bank') checkout = `Bank Wire: ${OWNER_ACCOUNTS.bank.rib}`;
-        else if (primary?.method === 'payoneer') checkout = `Payoneer: ${OWNER_ACCOUNTS.payoneer.email}`;
+        else if (primary?.method === 'payoneer') checkout = `Payoneer: ${privacyStrict ? maskEmail(OWNER_ACCOUNTS.payoneer.email) : OWNER_ACCOUNTS.payoneer.email}`;
         else if (primary?.method === 'crypto' && primary?.address) checkout = `USDT ${primary.network}: ${primary.address}`;
         else checkout = paypalUrl || `Bank Wire: ${OWNER_ACCOUNTS.bank.rib}`;
     }

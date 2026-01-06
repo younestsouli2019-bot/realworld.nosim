@@ -1,0 +1,76 @@
+{
+  "auditDate": "2026-01-01T23:33:23.534Z",
+  "totalRevenueEvents": 2,
+  "totalTrackedAmount": 309.45,
+  "byStatus": {
+    "earned": {
+      "count": 1,
+      "total": 159.45,
+      "events": [
+        {
+          "event_id": "SWARM_EXEC_1767293194734_1051928a",
+          "event_hash": "793dc8c254e0b4bd80f4dcfba38324aebb1bfda6e8edaef79c6800a1c2830a8f",
+          "source": "swarm_commerce_v1",
+          "source_id": null,
+          "amount": 159.45,
+          "currency": "USD",
+          "status": "earned",
+          "confirmation_date": null,
+          "reconciliation_key": null,
+          "payout_batch_id": null,
+          "notes": null,
+          "metadata": {
+            "product_name": "Abstract AI Art Pack (50pcs)",
+            "market_score": 0.6460605860317571,
+            "execution_mode": "WET_RUN_REALITY",
+            "notes": "Autonomous revenue generation executed by SwarmRunner."
+          },
+          "id": "6956c069dcdfb13c43803684",
+          "created_date": "2026-01-01T18:43:53.328000",
+          "updated_date": "2026-01-01T18:43:53.328000",
+          "created_by_id": "anonymous",
+          "created_by": "anonymous",
+          "is_sample": false
+        }
+      ]
+    },
+    "paid_out": {
+      "count": 1,
+      "total": 150,
+      "events": [
+        {
+          "event_id": "RE_001_AGENT_COMMISSION",
+          "event_hash": null,
+          "source": "agent_generated",
+          "source_id": null,
+          "amount": 150,
+          "currency": "USD",
+          "status": "paid_out",
+          "confirmation_date": "2025-12-22",
+          "reconciliation_key": null,
+          "payout_batch_id": "PB_001_FIRST_PAYOUT",
+          "notes": "Initial agent commission for first payout cycle.",
+          "metadata": null,
+          "id": "694974bd8ea0699ad93ab29b",
+          "created_date": "2025-12-22T16:41:33.289000",
+          "updated_date": "2025-12-22T16:43:24.155000",
+          "created_by_id": "6888ac155ebf84dd9855ea99",
+          "created_by": "younesdgc@gmail.com",
+          "is_sample": false
+        }
+      ]
+    }
+  },
+  "unpaidRevenue": {
+    "count": 1,
+    "total": 159.45,
+    "events": [
+      {
+        "id": "6956c069dcdfb13c43803684",
+        "amount": 159.45,
+        "currency": "USD",
+        "source": "swarm_commerce_v1"
+      }
+    ]
+  }
+}

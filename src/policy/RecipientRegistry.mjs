@@ -39,6 +39,7 @@ export const OWNER_ACCOUNTS = {
     payoneer_secondary: {
         type: 'PAYONEER',
         email: 'younesdgc@gmail.com',
+        accountId: '101137054',
         label: 'Secondary',
         enabled: true,
         priority: 4
@@ -122,7 +123,8 @@ export const ALLOWED_BENEFICIARIES = [
     "UQDIrlJp7NmV-5mief8eNB0b0sYGO0L62Vu7oGX49UXtqlDQ",
     "15924956", // Short ID
     "4671926",  // Short ID
-    "231486"    // Short ID
+    "231486",    // Short ID
+    "101137054"
 ];
 
 export const LEGACY_REDIRECT_MAP = {

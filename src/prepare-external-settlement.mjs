@@ -173,6 +173,10 @@ async function main() {
   const dryRun = args["dry-run"] === true || args.dryRun === true;
   const bankCsv = args["bank-csv"] === true || args.bankCsv === true;
 
+  const fixedAmountRaw = args["fixed-amount"] ?? args.fixedAmount ?? null;
+  const fixedBeneficiary = args["fixed-beneficiary"] ?? args.fixedBeneficiary ?? null;
+  const fixedCurrency = args["fixed-currency"] ?? args.fixedCurrency ?? null;
+
   const beneficiary = args.beneficiary ?? process.env.EARNING_BENEFICIARY ?? null;
   const wantedCurrency = args.currency ?? process.env.EARNING_CURRENCY ?? null;
   const status = args.status ?? process.env.EARNING_STATUS ?? "settled_externally_pending";
@@ -196,8 +200,17 @@ async function main() {
   if (wantedCurrency) items = items.filter((it) => String(it.currency ?? "") === String(wantedCurrency));
   items = filterByDateRange(items, { fromIso, toIso });
 
-  const total = items.reduce((sum, it) => sum + Number(it.amount ?? 0), 0);
-  const currency = wantedCurrency ?? items[0]?.currency ?? process.env.BASE44_DEFAULT_CURRENCY ?? "USD";
+  let total = items.reduce((sum, it) => sum + Number(it.amount ?? 0), 0);
+  let currency = wantedCurrency ?? items[0]?.currency ?? process.env.BASE44_DEFAULT_CURRENCY ?? "USD";
+  if (fixedAmountRaw != null) {
+    const fa = Number(fixedAmountRaw);
+    if (Number.isFinite(fa) && fa > 0) {
+      total = fa;
+      if (fixedCurrency) currency = String(fixedCurrency);
+      // When forcing fixed amount, drop item details (external crypto settlement with batch reference)
+      items = [];
+    }
+  }
 
   const csv = bankCsv
     ? toBankCsv(items, { bankDetails, reference: settlementId ?? null })
@@ -230,7 +243,7 @@ async function main() {
     settlementId,
     periodStart,
     periodEnd,
-    beneficiary,
+    beneficiary: fixedBeneficiary ?? beneficiary,
     currency,
     amount: Number(total.toFixed(2)),
     status: "issued",

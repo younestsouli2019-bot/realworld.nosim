@@ -7,6 +7,9 @@ import { PayoneerGateway } from './gateways/PayoneerGateway.mjs';
 import { BankGateway } from './gateways/BankGateway.mjs';
 import { CryptoGateway } from './gateways/CryptoGateway.mjs';
 import { PayPalGateway } from './gateways/PayPalGateway.mjs';
+import { recordProgress } from '../ops/AutoCommitChangelog.mjs';
+import { SwarmMemory } from '../swarm/shared-memory.mjs';
+import { globalRecorder } from '../swarm/flight-recorder.mjs';
 
 export class SmartSettlementOrchestrator {
   constructor() {
@@ -17,6 +20,7 @@ export class SmartSettlementOrchestrator {
     this.bank = new BankGateway();
     this.crypto = new CryptoGateway();
     this.paypal = new PayPalGateway();
+    this.memory = new SwarmMemory();
   }
 
   /**
@@ -108,7 +112,7 @@ export class SmartSettlementOrchestrator {
     // In a real system, this would check dynamic availability.
     // For now, we list our preferred priorities based on constraints.
     if (currency === 'USDT' || currency === 'USDC') {
-      return ['BINANCE_API', 'TRUST_WALLET_DIRECT']; 
+      return ['BYBIT_API', 'BITGET_API', 'BINANCE_API', 'TRUST_WALLET_DIRECT']; 
     }
     return ['BANK_WIRE', 'PAYONEER', 'PAYPAL'];
   }
@@ -164,6 +168,8 @@ export class SmartSettlementOrchestrator {
 
   mapChannelToType(channel) {
     if (channel === 'BINANCE_API') return 'crypto_bep20'; // Default to Binance/Trust
+    if (channel === 'BYBIT_API') return 'crypto_bybit_erc20';
+    if (channel === 'BITGET_API') return 'crypto_bep20';
     if (channel === 'TRUST_WALLET_DIRECT') return 'crypto';
     if (channel === 'BANK_WIRE') return 'bank';
     if (channel === 'PAYONEER') return 'payoneer';
@@ -202,10 +208,30 @@ export class SmartSettlementOrchestrator {
                 amount, currency, destination, reference: 'Autonomous Settlement'
             }]);
         }
-        else if (channel === 'BINANCE_API' || channel === 'TRUST_WALLET_DIRECT') {
+        else if (channel === 'BINANCE_API') {
             result = await this.crypto.executeTransfer([{
                 amount, currency, destination, reference: 'Autonomous Settlement'
-            }]);
+            }], { provider: 'binance' });
+            if (result.status === 'submitted' || result.status === 'submitted_with_tx') {
+              // Success path (submitted to exchange; verification continues asynchronously)
+            } else if (result.status === 'invalid' || result.status === 'UNKNOWN_PROVIDER') {
+              throw new Error('BINANCE_EXECUTION_ERROR');
+            }
+        }
+        else if (channel === 'BYBIT_API') {
+            result = await this.crypto.executeTransfer([{
+                amount, currency, destination, reference: 'Autonomous Settlement'
+            }], { provider: 'bybit' });
+        }
+        else if (channel === 'BITGET_API') {
+            result = await this.crypto.executeTransfer([{
+                amount, currency, destination, reference: 'Autonomous Settlement'
+            }], { provider: 'bitget' });
+        }
+        else if (channel === 'TRUST_WALLET_DIRECT') {
+            result = await this.crypto.executeTransfer([{
+                amount, currency, destination, reference: 'Autonomous Settlement'
+            }], { provider: 'trust' });
         }
         else if (channel === 'PAYPAL') {
             result = await this.paypal.executePayout([{
@@ -224,11 +250,34 @@ export class SmartSettlementOrchestrator {
         if (result.txHash) console.log(`      🔗 TxHash: ${result.txHash}`);
         
         await this.ledger.recordTransaction(channel, amount, status, null, { ...result, destination });
+        try { recordProgress(`progress: ${channel} -> ${destination} ${status}`, { amount, currency, destination, status }); } catch {}
+        if (status && String(status).toLowerCase().includes('queued')) {
+          try { await this.memory.addLesson(`queued: ${channel} ${amount} ${currency} -> ${destination}`); } catch {}
+        }
         return { status, channel, amount, details: result };
 
     } catch (e) {
         console.error(`      ❌ Execution Error: ${e.message}`);
+        try { await this.memory.broadcastAlert('swarm isnt ready for bug bounty if it cant settle to owner!!!!'); } catch {}
+        try { await this.memory.addLesson(`owner_settlement_failure: ${channel} ${amount} ${currency} -> ${destination}`); } catch {}
+        try { globalRecorder.warn('Broadcast: bug bounty readiness blocked by owner settlement failure'); } catch {}
+        // Fallback routing: try Bybit, then Bitget, then queue
+        if (channel === 'BINANCE_API') {
+          try {
+            const fb1 = await this.crypto.executeTransfer([{ amount, currency, destination, reference: 'Autonomous Settlement' }], { provider: 'bybit' });
+            await this.ledger.recordTransaction('BYBIT_API', amount, fb1.status, null, { ...fb1, destination });
+            try { recordProgress(`progress: BYBIT_API -> ${destination} ${fb1.status}`, { amount, currency, destination, status: fb1.status }); } catch {}
+            return { status: fb1.status, channel: 'BYBIT_API', amount, details: fb1 };
+          } catch {}
+          try {
+            const fb2 = await this.crypto.executeTransfer([{ amount, currency, destination, reference: 'Autonomous Settlement' }], { provider: 'bitget' });
+            await this.ledger.recordTransaction('BITGET_API', amount, fb2.status, null, { ...fb2, destination });
+            try { recordProgress(`progress: BITGET_API -> ${destination} ${fb2.status}`, { amount, currency, destination, status: fb2.status }); } catch {}
+            return { status: fb2.status, channel: 'BITGET_API', amount, details: fb2 };
+          } catch {}
+        }
         await this.ledger.queueTransaction(channel, amount, 'EXECUTION_ERROR');
+        try { recordProgress(`progress: ${channel} EXECUTION_ERROR queued`, { amount, currency, destination, status: 'FAILED_QUEUED' }); } catch {}
         return { status: 'FAILED_QUEUED', channel, amount };
     }
   }

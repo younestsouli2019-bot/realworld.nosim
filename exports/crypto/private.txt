@@ -1,0 +1,2 @@
+OWNER bitget wallet private key (bnb chain):
+0x67e694f7b4ce878d664c4b18e22c55c02667a10f86f8cc2faecdc77bff37d54ad

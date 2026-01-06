@@ -161,6 +161,21 @@
         ],
         "destination": "007810000448500030594182"
       }
+    },
+    {
+      "id": "tx_1767714849418_gotsqe9id",
+      "timestamp": "2026-01-06T15:54:09.418Z",
+      "channel": "BYBIT_API",
+      "amount": 50,
+      "status": "INSTRUCTIONS_READY",
+      "details": {
+        "status": "INSTRUCTIONS_READY",
+        "provider": "bybit",
+        "filePath": "C:\\Users\\Dell\\Downloads\\Nouveau dossier (3)\\settlements\\crypto\\bybit_instruction_1767714849416.json",
+        "network": "ERC20",
+        "prepared_at": "2026-01-06T15:54:09.416Z",
+        "destination": "0xA46225a984E2B2B5E5082E52AE8d8915A09fEfe7"
+      }
     }
   ],
   "queued": [
@@ -199,6 +214,54 @@
     {
       "id": "queue_1767629221409_tt7utf31t",
       "timestamp": "2026-01-05T16:07:01.409Z",
+      "channel": "PAYONEER",
+      "amount": 300,
+      "reason": "MISSING_CREDENTIALS",
+      "status": "QUEUED"
+    },
+    {
+      "id": "queue_1767711211171_fco07c7nb",
+      "timestamp": "2026-01-06T14:53:31.171Z",
+      "channel": "BINANCE_API",
+      "amount": 850,
+      "reason": "EXECUTION_ERROR",
+      "status": "QUEUED"
+    },
+    {
+      "id": "queue_1767711635308_j8z53jguc",
+      "timestamp": "2026-01-06T15:00:35.308Z",
+      "channel": "BINANCE_API",
+      "amount": 850,
+      "reason": "EXECUTION_ERROR",
+      "status": "QUEUED"
+    },
+    {
+      "id": "queue_1767711911466_gthaiwaq5",
+      "timestamp": "2026-01-06T15:05:11.466Z",
+      "channel": "BINANCE_API",
+      "amount": 850,
+      "reason": "EXECUTION_ERROR",
+      "status": "QUEUED"
+    },
+    {
+      "id": "queue_1767713824117_1qktc4fd9",
+      "timestamp": "2026-01-06T15:37:04.117Z",
+      "channel": "BANK_WIRE",
+      "amount": 100,
+      "reason": "BUNKER_MODE",
+      "status": "QUEUED"
+    },
+    {
+      "id": "queue_1767713824119_xis2egcr5",
+      "timestamp": "2026-01-06T15:37:04.119Z",
+      "channel": "BANK_WIRE",
+      "amount": 200,
+      "reason": "BUNKER_MODE",
+      "status": "QUEUED"
+    },
+    {
+      "id": "queue_1767713824123_5jeff9hty",
+      "timestamp": "2026-01-06T15:37:04.123Z",
       "channel": "PAYONEER",
       "amount": 300,
       "reason": "MISSING_CREDENTIALS",

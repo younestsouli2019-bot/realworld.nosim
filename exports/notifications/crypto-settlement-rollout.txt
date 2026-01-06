@@ -1,0 +1,39 @@
+Subject: Crypto Settlement Live Rollout — Signature Fix + External Settlement
+
+Summary:
+- Settlement route: USDT (BEP20) from Swarm Aggregation Wallet to Owner Trust Wallet (0xA462...fe7)
+- Live withdraw path uses Exchange API HMAC-SHA256 signing over sorted query string with server time alignment
+- ExternalSettlement recorded in Base44 (idempotent, gated), no private keys used
+
+Operational Steps:
+- Set env gates:
+  - SWARM_LIVE=true
+  - CRYPTO_WITHDRAW_ENABLE=true
+  - BINANCE_API_KEY, BINANCE_API_SECRET present
+  - BASE44_ENABLE_EXTERNAL_SETTLEMENT_WRITES=true (for Base44 record creation)
+- Execute live withdraw:
+  - node scripts/execute-crypto-settlement.mjs BATCH_LIVE_1767528254631
+  - Behavior: submit withdrawal, resolve txId via history; if pending, logs “submitted” receipt and exits non-zero
+- Verify on-chain:
+  - ChainVerifier scans BSC for USDT Transfer to Owner Trust Wallet; requires successful receipt.status=COMPLETED_AND_VERIFIED
+- Record External Settlement:
+  - Dry-run: node src/prepare-external-settlement.mjs --settlement-id BATCH_LIVE_1767528254631 --fixed-amount 850 --fixed-beneficiary 0xA46225a984E2B2B5E5082E52AE8d8915A09fEfe7 --fixed-currency USDT --dry-run
+  - Write: same command without --dry-run and with BASE44_ENABLE_EXTERNAL_SETTLEMENT_WRITES=true
+
+Security:
+- No private keys are used or stored; receive-only posture enforced
+- Strict on-chain verification; no simulated receipts
+- If exchange signing fails, process queues and requests manual intervention; no forced spend
+
+Agent Actions:
+- Rail Optimizer: prefer bank/payoneer where configured; crypto used for verified destination only
+- Mission Consolidator: mark settlement batch mission as completed upon verified tx + external settlement record write
+- Health Monitor: alert if submission persists >30 minutes without txId; fallback to manual execution path
+
+References:
+- scripts/execute-crypto-settlement.mjs (HMAC signing + server time + withdraw/history)
+- src/verification/ChainVerifier.mjs (USDT transfer verification on BSC)
+- src/prepare-external-settlement.mjs (fixed-amount Base44 ExternalSettlement write)
+
+Status:
+- Ready for live release. Proceed immediately when env gates are set.

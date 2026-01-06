@@ -32,9 +32,8 @@ function binanceRequest(endpoint, params = {}, method = 'GET') {
       return reject(new Error("MISSING_BINANCE_KEYS: Cannot execute withdrawal without API keys."));
     }
 
-    const queryString = Object.keys(params)
-      .map(key => `${key}=${encodeURIComponent(params[key])}`)
-      .join('&');
+    const keys = Object.keys(params).sort((a, b) => a.localeCompare(b));
+    const queryString = keys.map(key => `${key}=${encodeURIComponent(params[key])}`).join('&');
     
     const signature = crypto
       .createHmac('sha256', apiSecret)
@@ -76,6 +75,53 @@ function binanceRequest(endpoint, params = {}, method = 'GET') {
   });
 }
 
+async function getServerTime() {
+  return new Promise((resolve, reject) => {
+    https.get('https://api.binance.com/api/v3/time', (res) => {
+      let data = '';
+      res.on('data', c => data += c);
+      res.on('end', () => {
+        try {
+          const j = JSON.parse(String(data || '{}'));
+          resolve(Number(j.serverTime || 0));
+        } catch (e) {
+          reject(e);
+        }
+      });
+    }).on('error', reject);
+  });
+}
+
+async function binanceWithdrawUSDTBep20({ address, amount, name = 'AutonomousSettlement' }) {
+  const serverTime = await getServerTime().catch(() => 0);
+  const localTime = Date.now();
+  const offset = serverTime ? serverTime - localTime : 0;
+  const timestamp = Date.now() + offset;
+  const recvWindow = Number(process.env.BINANCE_RECV_WINDOW_MS ?? 10000);
+  const params = {
+    coin: 'USDT',
+    network: 'BSC',
+    address,
+    amount,
+    timestamp,
+    name,
+    recvWindow
+  };
+  return binanceRequest('/sapi/v1/capital/withdraw/apply', params, 'POST');
+}
+
+async function binanceListWithdrawals({ coin = 'USDT', startTime, endTime }) {
+  const serverTime = await getServerTime().catch(() => 0);
+  const localTime = Date.now();
+  const offset = serverTime ? serverTime - localTime : 0;
+  const timestamp = Date.now() + offset;
+  const recvWindow = Number(process.env.BINANCE_RECV_WINDOW_MS ?? 10000);
+  const params = { coin, timestamp, recvWindow };
+  if (startTime != null) params.startTime = Math.floor(Number(startTime));
+  if (endTime != null) params.endTime = Math.floor(Number(endTime));
+  return binanceRequest('/sapi/v1/capital/withdraw/history', params, 'GET');
+}
+
 // ------------------------------------------------------------------
 // MAIN EXECUTION FLOW
 // ------------------------------------------------------------------
@@ -90,25 +136,38 @@ async function run() {
     // 1. ATTEMPT REAL WITHDRAWAL VIA BINANCE API
     console.log('\n📡 INITIATING WITHDRAWAL VIA BINANCE API...');
     let txId = null;
+    let withdrawId = null;
+    const enable = String(process.env.CRYPTO_WITHDRAW_ENABLE || '').toLowerCase() === 'true';
 
     try {
-      const timestamp = Date.now();
-      const withdrawParams = {
-        coin: 'USDT',
-        network: 'BSC',
-        address: TARGET_WALLET.address,
-        amount: amount,
-        timestamp: timestamp,
-        name: 'AutonomousSettlement'
-      };
-      
-      // UNCOMMENT TO ENABLE REAL WITHDRAWAL (Requires valid keys)
-      // const result = await binanceRequest('/sapi/v1/capital/withdraw/apply', withdrawParams, 'POST');
-      // txId = result.id;
-      
-      // IF API FAILS OR IS DISABLED, WE HALT. WE DO NOT SIMULATE.
       if (!process.env.BINANCE_API_KEY) {
         throw new Error("BINANCE KEYS MISSING. Cannot execute autonomous withdrawal.");
+      }
+      if (!enable) {
+        throw new Error("CRYPTO_WITHDRAW_ENABLE not set to true. Refusing real fund movement.");
+      }
+
+      const result = await binanceWithdrawUSDTBep20({
+        address: TARGET_WALLET.address,
+        amount
+      });
+      withdrawId = result.id || result.applyId || null;
+      console.log(`✅ Withdrawal submitted. WithdrawID: ${withdrawId ?? 'unknown'}`);
+
+      const startTime = Date.now() - 60 * 60 * 1000;
+      for (let i = 0; i < 3 && !txId; i++) {
+        await new Promise((r) => setTimeout(r, 2000));
+        try {
+          const hist = await binanceListWithdrawals({ coin: 'USDT', startTime });
+          if (Array.isArray(hist)) {
+            const match = hist.find((h) => String(h.address || '').toLowerCase() === TARGET_WALLET.address.toLowerCase() && Number(h.amount) === Number(amount));
+            if (match && match.txId) {
+              txId = match.txId;
+              console.log(`🔗 On-chain txId resolved: ${txId}`);
+              break;
+            }
+          }
+        } catch {}
       }
 
     } catch (e) {
@@ -126,15 +185,22 @@ async function run() {
     const verifier = new ChainVerifier();
     
     if (!txId) {
-        console.log('ℹ️  No Internal TX ID to verify. Checking manual settlement status...');
-        
-        // DO NOT GENERATE FAKE RECEIPTS OR INSTRUCTIONS IF WE ARE AUTONOMOUS
-        // If keys are missing, we log the error to STDERR and exit with failure code.
-        // The orchestrator handles the failure.
-        
-        console.error('❌ FATAL: Cannot settle funds. Missing Exchange Keys or Private Key.');
-        console.error('   NO RECEIPT GENERATED. NO TRANSACTION OCCURRED.');
-        process.exit(1);
+      console.log('ℹ️  No on-chain txId available yet. Recording submission and exiting with non-zero to trigger orchestrator follow-up.');
+      const receiptPath = path.join(RECEIPTS_DIR, `crypto_settlement_submitted_${Date.now()}.json`);
+      const receipt = {
+        timestamp: new Date().toISOString(),
+        batch_id: BATCH_ID || 'AUTO-STIMULUS',
+        amount: amount,
+        currency: 'USDT',
+        network: 'BSC',
+        destination: TARGET_WALLET.address,
+        withdraw_id: withdrawId,
+        status: 'SUBMITTED_PENDING_CHAIN_TX',
+        method: 'BINANCE_API_SUBMIT'
+      };
+      fs.writeFileSync(receiptPath, JSON.stringify(receipt, null, 2));
+      console.log(`📝 Submission recorded: ${receiptPath}`);
+      process.exit(2);
     }
 
     // If we DID get a txId, verify it.

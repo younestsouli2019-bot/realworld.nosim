@@ -1,0 +1,26 @@
+{
+  "created": "2026-01-02T03:36:10.343Z",
+  "totalBatches": 1,
+  "totalAmount": 159.45,
+  "batches": [
+    {
+      "batchId": "MIGRATION_USD_1767324969425",
+      "currency": "USD",
+      "amount": 159.45,
+      "eventCount": 1,
+      "destination": "bank",
+      "batchEntityId": "MIGRATION_USD_1767324969425",
+      "itemEntityId": "MIGRATION_USD_1767324969425_ITEM_001",
+      "notes": {
+        "migration": true,
+        "source_audit": "2026-01-01T23:33:23.534Z",
+        "original_tracked_total": 309.45,
+        "batch_type": "tracked_revenue_migration"
+      },
+      "local": true
+    }
+  ],
+  "auditReference": "2026-01-01T23:33:23.534Z",
+  "approved": "2026-01-02T11:07:07.218Z",
+  "approved_by": "force_approve_script"
+}

@@ -1,0 +1,9 @@
+{
+  "provider": "bybit",
+  "action": "withdraw",
+  "coin": "USDT",
+  "network": "ERC20",
+  "address": "0xA46225a984E2B2B5E5082E52AE8d8915A09fEfe7",
+  "amount": 50,
+  "status": "WAITING_MANUAL_EXECUTION"
+}
