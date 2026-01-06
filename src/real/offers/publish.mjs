@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { getRandomProduct } from '../products/ProductCatalog.mjs';
 import { HeadlessPoster } from '../../marketing/HeadlessPoster.mjs';
+import { recordSuccess } from '../../ops/AutoCommitChangelog.mjs';
 
 export async function publishOffer(offer) {
     // 1. Sanitize: Replace "Internal Task" offers with REAL COURSES
@@ -26,6 +27,17 @@ export async function publishOffer(offer) {
     console.log(`\n📢 PUBLISHING OFFER (REAL WORLD): ${finalOffer.title}`);
     console.log(`   Price: $${finalOffer.price} USD`);
     console.log(`   Link:  ${finalOffer.checkout_url}`);
+    if (Array.isArray(finalOffer.payment_options)) {
+        for (const opt of finalOffer.payment_options) {
+            const t = opt.method.toUpperCase();
+            let extra = '';
+            if (opt.url) extra = opt.url;
+            else if (opt.rib) extra = opt.rib;
+            else if (opt.accountId) extra = `ID:${opt.accountId}`;
+            else if (opt.address) extra = opt.address;
+            console.log(`   Route: ${t} -> ${extra}`);
+        }
+    }
 
     // 2. Generate Social Media Post Drafts
     // We create a "Ready-to-Post" file for the user to copy-paste.
@@ -41,11 +53,19 @@ export async function publishOffer(offer) {
     if (fs.existsSync(queuePath)) {
         try { queue = JSON.parse(fs.readFileSync(queuePath, 'utf8')); } catch (e) {}
     }
+    const links = Array.isArray(finalOffer.payment_options) ? finalOffer.payment_options.flatMap(opt => {
+        if (opt.url) return [opt.url];
+        if (opt.rib) return [`Bank Wire: ${opt.rib}`];
+        if (opt.accountId) return [`Payoneer ID: ${opt.accountId}`];
+        if (opt.address && opt.network) return [`${opt.coin || 'USDT'} ${opt.network}: ${opt.address}`];
+        return [];
+    }) : [finalOffer.checkout_url];
     queue.push({
         id: finalOffer.offer_id,
         title: finalOffer.title,
         price: finalOffer.price,
         link: finalOffer.checkout_url,
+        links,
         text: `🚀 Master new skills! ${finalOffer.title} - Only $${finalOffer.price} #RealWorldCerts ${finalOffer.checkout_url}`,
         platform: 'All',
         created_at: new Date().toISOString()
@@ -53,6 +73,12 @@ export async function publishOffer(offer) {
     fs.writeFileSync(queuePath, JSON.stringify(queue, null, 2));
 
     console.log(`   ✅ Added to Dashboard Queue: marketing_queue.json`);
+    const summary = `Multi-Route publish success: ${finalOffer.title}`
+    const details = { offer_id: finalOffer.offer_id, price: `$${finalOffer.price}`, routes: Array.isArray(finalOffer.payment_options) ? finalOffer.payment_options.map(o => o.method) : [finalOffer.payment_method] }
+    const resCommit = recordSuccess(summary, details, `publish: ${finalOffer.offer_id}`)
+    if (resCommit.push?.pushed) {
+        console.log(`   ⬆️ Auto-pushed commit: ${resCommit.push.commit?.stdout || ''}`.trim())
+    }
 
     // 4. Auto-post (headless) if enabled
     if (process.env.AUTO_POST === 'true') {
@@ -62,6 +88,7 @@ export async function publishOffer(offer) {
             title: finalOffer.title,
             price: finalOffer.price,
             link: finalOffer.checkout_url,
+            links,
             text: `🚀 Master new skills! ${finalOffer.title} - Only $${finalOffer.price} #RealWorldCerts ${finalOffer.checkout_url}`
         });
         console.log(`   🤖 HeadlessPoster: ${res.status}`);
@@ -76,12 +103,17 @@ export async function publishOffer(offer) {
 }
 
 function generateSocialPost(offer) {
+    const routes = Array.isArray(offer.payment_options) ? offer.payment_options.map(opt => {
+        const label = opt.method.toUpperCase();
+        const extra = opt.url ? opt.url : (opt.rib || opt.email || opt.address || '');
+        return `- ${label}: ${extra}`;
+    }).join('\n') : `- ${offer.payment_method.toUpperCase()}: ${offer.checkout_url}`;
     return `
-================================================================================
+========================================================================================
 PLATFORM: Twitter / LinkedIn / Instagram
 STATUS:   READY TO POST
 DATE:     ${new Date().toISOString()}
-================================================================================
+========================================================================================
 🚀 FLASH SALE ALERT! 🚀
 
 Master new skills today with "${offer.title}"!
@@ -89,9 +121,9 @@ Master new skills today with "${offer.title}"!
 🎓 Certification Included
 🔥 Limited Time Price: $${offer.price}
 👇 Get Instant Access:
-${offer.checkout_url}
+${routes}
 
 #RealWorldCerts #OnlineLearning #${offer.category || 'Education'}
-================================================================================
+========================================================================================
 `;
 }

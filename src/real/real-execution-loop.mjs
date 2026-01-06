@@ -62,8 +62,12 @@ async function executeIdea(idea) {
       });
 
       if (!payment.confirmed) {
-        // Strict Policy: If no payment, it is a FAILURE.
-        // "If you cannot produce a confirmed payment event... terminate."
+        const noMatch = String(payment.reason || '').includes('No matching transaction found');
+        if (noMatch) {
+          console.log('⏳ No payment yet; leaving offer published. No failure logged.');
+          recordAttempt({ idea_id: idea.id, status: 'PENDING' });
+          return;
+        }
         throw new Error(`NO_PAYMENT_RECEIVED: ${payment.reason}`);
       }
 

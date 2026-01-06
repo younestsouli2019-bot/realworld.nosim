@@ -409,7 +409,9 @@ export function buildBase44Client({ allowMissing = false, mode = "auto" } = {}) 
   }
   
   if (!createClient) {
-    console.warn("⚠️ Base44 SDK missing. Falling back to Offline Client.");
+    if (!getEnvBool("BASE44_QUIET", false)) {
+      console.warn("⚠️ Base44 SDK missing. Falling back to Offline Client.");
+    }
     return createOfflineClient({ filePath: getOfflineStorePath() });
   }
 

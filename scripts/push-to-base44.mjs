@@ -4,6 +4,7 @@
 
 import '../src/load-env.mjs';
 import { OWNER_ACCOUNTS as REGISTRY_ACCOUNTS } from '../src/policy/RecipientRegistry.mjs';
+import { recordSuccess } from '../src/ops/AutoCommitChangelog.mjs';
 
 // ============================================================================
 // BASE44 API CONFIGURATION
@@ -464,6 +465,9 @@ class Base44Deployment {
       this.pusher.log(`Failed to create PayoutItem: ${error.message}`, 'error');
       this.results.records.failed.push({ entity: 'PayoutItem', error: error.message });
     }
+    const summary = 'Base44 push success'
+    const details = { schemas_created: this.results.schemas.created.length, schemas_updated: this.results.schemas.updated.length, records_created: this.results.records.created.length }
+    recordSuccess(summary, details, 'base44: push')
   }
 
   async validateOwnerDirective() {

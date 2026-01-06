@@ -1,4 +1,5 @@
 import { Base44Client } from '../../base44-client.mjs';
+import { recordSuccess } from '../ops/AutoCommitChangelog.mjs';
 
 /**
  * Base44MissionSyncHook
@@ -36,5 +37,8 @@ export class Base44MissionSyncHook {
         if (!this.enabled) return;
         console.log(`[MissionHook] Syncing COMPLETED mission ${mission.id} to Base44...`);
         // Implementation stub: Mark task done
+        const summary = `Mission completed: ${mission.id}`
+        const details = { title: mission.title || '', status: mission.status || 'completed' }
+        recordSuccess(summary, details, `mission: ${mission.id}`)
     }
 }

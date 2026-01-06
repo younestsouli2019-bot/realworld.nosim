@@ -37,10 +37,12 @@ export class HeadlessPoster {
 
   async _intentDraft(post) {
     const file = path.join(this.outboxDir, `intent_${Date.now()}_${sanitize(post.id)}.txt`)
+    const links = Array.isArray(post.links) ? post.links : (post.link ? [post.link] : [])
     const content = [
       'INTENT LINKS',
       `X: https://twitter.com/intent/tweet?text=${encodeURIComponent(post.text)}`,
-      `LinkedIn: https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(post.link)}`,
+      `LinkedIn: https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(links[0] || '')}`,
+      ...(links.length > 1 ? ['More Links:', ...links.map(l => `- ${l}`)] : []),
       ''
     ].join('\n')
     fs.writeFileSync(file, content)
@@ -49,11 +51,12 @@ export class HeadlessPoster {
 
   async _outbox(post) {
     const file = path.join(this.outboxDir, `post_${Date.now()}_${sanitize(post.id)}.txt`)
+    const links = Array.isArray(post.links) ? post.links : (post.link ? [post.link] : [])
     const content = [
       `TITLE: ${post.title}`,
       `PRICE: $${post.price}`,
       `TEXT:  ${post.text}`,
-      `LINK:  ${post.link}`,
+      ...(links.length ? links.map((l, i) => `LINK${links.length > 1 ? `#${i+1}` : ''}:  ${l}`) : [`LINK:  ${post.link}`]),
       ''
     ].join('\n')
     fs.writeFileSync(file, content)

@@ -56,6 +56,10 @@
                             <a href="https://www.linkedin.com/sharing/share-offsite/?url=${linkedinUrl}" target="_blank" class="btn btn-linkedin">💼 Post to LinkedIn</a>
                             <button onclick="navigator.clipboard.writeText('${post.text.replace(/'/g, "\\'")}')" class="btn btn-copy">📋 Copy Text</button>
                         </div>
+                        ${Array.isArray(post.links) && post.links.length ? `
+                        <div class="actions">
+                            ${post.links.map((l, idx) => `<a href="${l}" target="_blank" class="btn btn-copy">🔗 Link ${idx+1}</a>`).join('')}
+                        </div>` : ''}
                     `;
                     feed.appendChild(card);
                 });
