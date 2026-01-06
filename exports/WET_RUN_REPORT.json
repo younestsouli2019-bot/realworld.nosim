@@ -1,0 +1,17 @@
+{
+  "date": "2026-01-05",
+  "service": "ExternalPaymentServer",
+  "port": 8088,
+  "status": "initialized",
+  "audits": {
+    "append_only_hmac": true
+  },
+  "endpoints": [
+    "/api/settlement/auto",
+    "/api/payout/paypal",
+    "/api/payout/status",
+    "/api/balance/paypal",
+    "/api/audit/verify?date=YYYY-MM-DD"
+  ]
+}
+

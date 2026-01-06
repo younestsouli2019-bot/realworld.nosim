@@ -34,32 +34,25 @@ async function querySwarm() {
 
   const votes = [
     {
-      candidate: 'DIRECT_ON_CHAIN',
-      name: 'Self-Custody Wallet (Trust/MetaMask/Ledger)',
-      score: 98,
-      reason: 'Eliminates Exchange Risk. Zero API dependency for receiving. Uncensorable.',
-      implementation: 'Direct Blockchain Transaction (EVM/TRON)'
+      candidate: 'RealWorldCerts',
+      name: 'RealWorldCerts Swarm',
+      score: 99,
+      reason: 'Aligns with registered legal entity (Auto-Entrepreneur). Professional, corporate identity. Distances from "freelancer" stigma.',
+      implementation: 'Corporate Identity Protocol'
     },
     {
-      candidate: 'KUCOIN',
-      name: 'KuCoin Exchange',
-      score: 72,
-      reason: 'Fallback CEX. API similar to Binance but higher regulatory friction recently.',
-      implementation: 'KuCoin API v2'
+      candidate: 'Tsouli_Holdings',
+      name: 'Tsouli Holdings Autonomous Unit',
+      score: 88,
+      reason: 'Strong, but slightly less market-facing than RealWorldCerts.',
+      implementation: 'Holding Structure'
     },
     {
-      candidate: 'BYBIT',
-      name: 'Bybit Exchange',
-      score: 75,
-      reason: 'Strong liquidity, reliable API. Good alternative if CEX is mandatory.',
-      implementation: 'Bybit API v5'
-    },
-    {
-      candidate: 'PAYONEER_CRYPTO',
-      name: 'Payoneer Digital Assets',
-      score: 40,
-      reason: 'High friction. Not truly autonomous. Tied to banking identity.',
-      implementation: 'Payoneer API'
+      candidate: 'LazyArk_Collective',
+      name: 'LazyArk Collective',
+      score: 45,
+      reason: 'Sounds too informal/freelance. Deprecated in favor of corporate branding.',
+      implementation: 'Legacy'
     }
   ];
 

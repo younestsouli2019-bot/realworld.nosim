@@ -1,0 +1,25 @@
+{
+  "id": "a7814b6e-a578-441b-b928-461538655948",
+  "status": "completed",
+  "result": {
+    "status": "processing",
+    "gateway_response": {
+      "status": "prepared",
+      "network": "ERC20",
+      "prepared_at": "2026-01-06T08:47:13.287Z",
+      "transactions": [
+        {
+          "amount": 100,
+          "currency": "USD",
+          "destination": "0xA46225a984E2B2B5E5082E52AE8d8915A09fEfe7",
+          "reference": "Owner Settlement"
+        }
+      ]
+    },
+    "payout_batch_id": "BATCH_CRYPTO_001",
+    "processed_at": "2026-01-06T08:47:13.290Z",
+    "route_attempted": "crypto"
+  },
+  "completed_at": "2026-01-06T08:47:13.290Z",
+  "updated_at": "2026-01-06T08:47:13.290Z"
+}

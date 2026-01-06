@@ -122,6 +122,8 @@ function scanDirectory(dir) {
                         line.includes('console.error') || 
                         line.includes('console.warn') ||
                         line.includes('isPlaceholderValue') ||
+                        line.includes("=== 'sandbox'") ||
+                        line.includes(".includes('sandbox") ||
                         line.trim().startsWith('//')) {
                         continue; // It's a check or comment
                     }

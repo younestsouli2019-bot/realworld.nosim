@@ -3,6 +3,7 @@
 // This script COMMITS everything to your Base44 app instance
 
 import '../src/load-env.mjs';
+import { OWNER_ACCOUNTS as REGISTRY_ACCOUNTS } from '../src/policy/RecipientRegistry.mjs';
 
 // ============================================================================
 // BASE44 API CONFIGURATION
@@ -15,23 +16,23 @@ const BASE44_CONFIG = {
 };
 
 // ============================================================================
-// OWNER ACCOUNTS - HARDCODED (Source of Truth)
+// OWNER ACCOUNTS - SOURCE OF TRUTH: RECIPIENT REGISTRY
 // ============================================================================
 
 const OWNER_ACCOUNTS = {
-  bank: '007810000448500030594182',
-  payoneer: 'younestsouli2019@gmail.com', // Default to Primary
-  payoneer_secondary: 'younesdgc@gmail.com',
-  payoneer_uk_bank: 'Barclays:231486:15924956',
-  payoneer_jp_bank: 'MUFG:0005:869:4671926',
-  payoneer_eu_iban: 'LU774080000041265646',
-  paypal: '007810000448500030594182', // Note: PayPal mapped to BANK RIB as per instruction
-  stripe: '007810000448500030594182', // Settle Stripe to Bank
-  crypto: '0xA46225a984E2B2B5E5082E52AE8d8915A09fEfe7', // Default to Trust Wallet
-  crypto_erc20: '0xA46225a984E2B2B5E5082E52AE8d8915A09fEfe7',
-  crypto_bep20: '0xA46225a984E2B2B5E5082E52AE8d8915A09fEfe7',
-  crypto_bybit_erc20: '0xf6b9e2fcf43d41c778cba2bf46325cd201cc1a10',
-  crypto_bybit_ton: 'UQDIrlJp7NmV-5mief8eNB0b0sYGO0L62Vu7oGX49UXtqlDQ'
+  bank: REGISTRY_ACCOUNTS.bank.rib,
+  payoneer: REGISTRY_ACCOUNTS.payoneer.email,
+  payoneer_secondary: REGISTRY_ACCOUNTS.payoneer_secondary.email,
+  payoneer_uk_bank: REGISTRY_ACCOUNTS.payoneer_uk_bank.identifier,
+  payoneer_jp_bank: REGISTRY_ACCOUNTS.payoneer_jp_bank.identifier,
+  payoneer_eu_iban: REGISTRY_ACCOUNTS.payoneer_eu_iban.identifier,
+  paypal: REGISTRY_ACCOUNTS.paypal.rib, // Mapped to Bank as per Registry
+  stripe: REGISTRY_ACCOUNTS.stripe.rib, // Mapped to Bank as per Registry
+  crypto: REGISTRY_ACCOUNTS.crypto.address,
+  crypto_erc20: REGISTRY_ACCOUNTS.crypto_erc20.address,
+  crypto_bep20: REGISTRY_ACCOUNTS.crypto.address, // Fallback/Same
+  crypto_bybit_erc20: REGISTRY_ACCOUNTS.crypto_bybit_erc20.address,
+  crypto_bybit_ton: REGISTRY_ACCOUNTS.crypto_bybit_ton.address
 };
 
 // ============================================================================
@@ -120,7 +121,7 @@ class Base44Pusher {
   }
 
   async updateEntity(name, schema) {
-    return await this.request(`/entities/${name}`, 'PATCH', schema);
+    return await this.request(`/entities/${name}`, 'PUT', schema);
   }
 
   async listEntities() {
@@ -261,6 +262,22 @@ const SCHEMAS = {
       { name: 'payout_batch_id', type: 'text', required: false },
       { name: 'payout_item_id', type: 'text', required: false },
       { name: 'metadata', type: 'json', required: false }
+    ]
+  },
+
+  AgentFeedback: {
+    name: 'AgentFeedback',
+    description: 'Feedback, escalations, and upgrade requests from autonomous agents',
+    fields: [
+      { name: 'feedback_id', type: 'text', required: true, unique: true },
+      { name: 'agent_id', type: 'text', required: true },
+      { name: 'type', type: 'text', required: true }, // ESCALATION, SUGGESTION, UPGRADE_REQUEST
+      { name: 'content', type: 'text', required: true },
+      { name: 'priority', type: 'text', required: true }, // LOW, MEDIUM, HIGH, CRITICAL
+      { name: 'context', type: 'json', required: false },
+      { name: 'status', type: 'text', required: true }, // PENDING, ACKNOWLEDGED, IMPLEMENTED
+      { name: 'created_at', type: 'text', required: true },
+      { name: 'resolution_notes', type: 'text', required: false }
     ]
   }
 };
@@ -642,7 +659,15 @@ async function main() {
 }
 
 // Run if executed directly
-main();
+import { fileURLToPath } from 'url';
+import path from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const isMainModule = process.argv[1] === __filename;
+
+if (isMainModule) {
+  main();
+}
 
 export {
   Base44Pusher,

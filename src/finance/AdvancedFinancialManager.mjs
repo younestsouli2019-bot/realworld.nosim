@@ -2,14 +2,8 @@ import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
 import { ExternalGatewayManager } from './ExternalGatewayManager.mjs';
-
-const OWNER_ACCOUNTS = {
-  bank_rib: '007810000448500030594182', // Priority 1: Attijari
-  payoneer: 'younestsouli2019@gmail.com', // Priority 2: Primary
-  crypto: '0xA4...fe7', // Priority 3: Trust Wallet
-  payoneer_secondary: 'younesdgc@gmail.com', // Priority 4
-  paypal: 'younestsouli2019@gmail.com' // Priority 5
-};
+import { OwnerSettlementEnforcer } from '../policy/owner-settlement.mjs';
+import { AppendOnlyHmacLogger } from '../audit/AppendOnlyHmacLogger.mjs';
 
 // ============================================================================
 // LAZYARK FUSION: LEGACY REDIRECT MAP
@@ -94,6 +88,7 @@ class FinancialStorage {
 class SystemAuditLogger {
   constructor(storage) {
     this.storage = storage;
+    this.appendOnly = new AppendOnlyHmacLogger();
   }
 
   log(action, entityId, oldState, newState, actor, context = {}) {
@@ -113,6 +108,9 @@ class SystemAuditLogger {
     
     this.storage.save('audit', auditId, entry);
     console.log(`📝 [AUDIT] ${action} on ${entityId} by ${actor}`);
+    try {
+      this.appendOnly.write(entry);
+    } catch {}
   }
 }
 
@@ -274,29 +272,35 @@ class RecipientManager {
 
   createRecipient(data, actor = 'System') {
     // ENFORCE OWNER REVENUE DIRECTIVE
+    const paypalPrimary = OwnerSettlementEnforcer.getOwnerAccountForType('paypal');
+    const payoneerPrimary = OwnerSettlementEnforcer.getOwnerAccountForType('payoneer');
+    const payoneerSecondary = OwnerSettlementEnforcer.getOwnerAccountForType('payoneer_secondary');
+    const bankPrimary = OwnerSettlementEnforcer.getOwnerAccountForType('bank');
+    const cryptoPrimary = OwnerSettlementEnforcer.getOwnerAccountForType('crypto');
+
     const isOwner = (
-      data.email === OWNER_ACCOUNTS.paypal || 
-      data.email === OWNER_ACCOUNTS.payoneer ||
-      data.email === OWNER_ACCOUNTS.payoneer_secondary ||
-      data.bank_account === OWNER_ACCOUNTS.bank_rib ||
+      data.email === paypalPrimary || 
+      data.email === payoneerPrimary ||
+      data.email === payoneerSecondary ||
+      data.bank_account === bankPrimary ||
       (data.name && data.name.includes('Owner')) // Basic check, reliant on exact account match mostly
     );
 
     // If attempting to add a payment method that is NOT in the allowlist, BLOCK IT.
     if (data.payment_methods) {
       for (const method of data.payment_methods) {
-        if (method.type === 'paypal' && method.details.email !== OWNER_ACCOUNTS.paypal) {
+        if (method.type === 'paypal' && method.details.email !== paypalPrimary) {
           throw new Error(`VIOLATION: PayPal account ${method.details.email} is not authorized. Hard-Lock Active.`);
         }
-        if (method.type === 'bank' && method.details.rib !== OWNER_ACCOUNTS.bank_rib) {
+        if (method.type === 'bank' && method.details.rib !== bankPrimary) {
           throw new Error(`VIOLATION: Bank account ${method.details.rib} is not authorized. Hard-Lock Active.`);
         }
         if (method.type === 'payoneer' && 
-            method.details.email !== OWNER_ACCOUNTS.payoneer && 
-            method.details.email !== OWNER_ACCOUNTS.payoneer_secondary) {
+            method.details.email !== payoneerPrimary && 
+            method.details.email !== payoneerSecondary) {
           throw new Error(`VIOLATION: Payoneer account ${method.details.email} is not authorized. Hard-Lock Active.`);
         }
-        if (method.type === 'crypto' && method.details.address !== OWNER_ACCOUNTS.crypto) {
+        if (method.type === 'crypto' && method.details.address !== cryptoPrimary) {
              throw new Error(`VIOLATION: Crypto address ${method.details.address} is not authorized. Hard-Lock Active.`);
         }
       }
@@ -336,19 +340,25 @@ class RecipientManager {
 
     // ENFORCE OWNER REVENUE DIRECTIVE ON UPDATE
     if (updates.payment_methods) {
+      const paypalPrimary = OwnerSettlementEnforcer.getOwnerAccountForType('paypal');
+      const payoneerPrimary = OwnerSettlementEnforcer.getOwnerAccountForType('payoneer');
+      const payoneerSecondary = OwnerSettlementEnforcer.getOwnerAccountForType('payoneer_secondary');
+      const bankPrimary = OwnerSettlementEnforcer.getOwnerAccountForType('bank');
+      const cryptoPrimary = OwnerSettlementEnforcer.getOwnerAccountForType('crypto');
+
       for (const method of updates.payment_methods) {
-        if (method.type === 'paypal' && method.details.email !== OWNER_ACCOUNTS.paypal) {
+        if (method.type === 'paypal' && method.details.email !== paypalPrimary) {
           throw new Error(`VIOLATION: PayPal account ${method.details.email} is not authorized. Hard-Lock Active.`);
         }
-        if (method.type === 'bank' && method.details.rib !== OWNER_ACCOUNTS.bank_rib) {
+        if (method.type === 'bank' && method.details.rib !== bankPrimary) {
           throw new Error(`VIOLATION: Bank account ${method.details.rib} is not authorized. Hard-Lock Active.`);
         }
         if (method.type === 'payoneer' && 
-            method.details.email !== OWNER_ACCOUNTS.payoneer && 
-            method.details.email !== OWNER_ACCOUNTS.payoneer_secondary) {
+            method.details.email !== payoneerPrimary && 
+            method.details.email !== payoneerSecondary) {
           throw new Error(`VIOLATION: Payoneer account ${method.details.email} is not authorized. Hard-Lock Active.`);
         }
-        if (method.type === 'crypto' && method.details.address !== OWNER_ACCOUNTS.crypto) {
+        if (method.type === 'crypto' && method.details.address !== cryptoPrimary) {
              throw new Error(`VIOLATION: Crypto address ${method.details.address} is not authorized. Hard-Lock Active.`);
         }
       }

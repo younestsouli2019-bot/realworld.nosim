@@ -12,10 +12,14 @@
   "status": "reconciled",
   "timestamp": "2026-01-04T15:27:37.925Z",
   "metadata": {},
-  "updated_at": "2026-01-04T15:27:37.938Z",
+  "updated_at": "2026-01-05T23:40:16.722Z",
   "reconciliation_data": {
     "source": "BankOfAmerica",
     "external_ref": "TXN_12345",
     "matched_at": "2026-01-04T15:27:37.938Z"
+  },
+  "attribution": {
+    "agent_id": "unknown_legacy",
+    "auto_patched": true
   }
 }

@@ -36,6 +36,23 @@ The system has been upgraded to **Hard-Binding Execution Evidence-Bound Systems*
 
 ---
 
+# Changelog & Status Report - 2026-01-05 (Wet-Run)
+
+## Summary
+Enabled External Payment Gateway Integration for agents (programmatic + HTTP). Added append-only HMAC audit logging and PSP webhook handler skeletons. Performed wet-run initialization and API startup locally.
+
+## Key Changes
+- ExternalPaymentAPI (programmatic) with LIVE-mode guardrails, Owner Directive enforcement, unit economics.
+- External Payment HTTP Service with secured endpoints for settlement, payout, status, balance, and audit verification.
+- AppendOnlyHmacLogger integrated into SystemAuditLogger for tamper-evident audit trail.
+- PSP webhook handlers for PayPal/Stripe/Payoneer/Bank reference normalization.
+
+## Wet-Run Deployment Status
+- Service initialized and running on internal port (AGENT_API_PORT).
+- Append-only audit writes verified with HMAC chain.
+- Endpoint connectivity pending network policy (local firewall may block loopback calls).
+
+---
 # Changelog & Status Report - 2026-01-02
 
 ## Summary

@@ -6,7 +6,7 @@ async function run() {
   const dest = OwnerSettlementEnforcer.getOwnerAccountForType('payoneer');
   const amt = Number(process.env.EMERGENCY_AMOUNT || 500);
   const cur = process.env.EMERGENCY_CURRENCY || 'USD';
-  const res = await gw.generateBatch([{ amount: amt, currency: cur, destination: dest, reference: 'Emergency Payout' }]);
+  const res = await gw.executeTransfer([{ amount: amt, currency: cur, destination: dest, reference: 'Emergency Payout' }]);
   console.log(JSON.stringify(res, null, 2));
 }
 

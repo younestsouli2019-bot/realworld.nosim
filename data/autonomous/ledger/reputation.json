@@ -1,0 +1,2581 @@
+{
+  "records": [
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767656417576"
+      },
+      "ts": 1767656417576
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767656417578"
+      },
+      "ts": 1767656417578
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "id": "TASK_001",
+        "requiredCapabilities": [
+          "CRYPTO_SETTLEMENT"
+        ],
+        "resourceKey": "BINANCE_API"
+      },
+      "ts": 1767656418215
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "id": "BURST_TASK_0",
+        "requiredCapabilities": [
+          "CRYPTO_SETTLEMENT"
+        ],
+        "resourceKey": "BINANCE_API"
+      },
+      "ts": 1767656418216
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "id": "BURST_TASK_1",
+        "requiredCapabilities": [
+          "CRYPTO_SETTLEMENT"
+        ],
+        "resourceKey": "BINANCE_API"
+      },
+      "ts": 1767656418219
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "id": "BURST_TASK_2",
+        "requiredCapabilities": [
+          "CRYPTO_SETTLEMENT"
+        ],
+        "resourceKey": "BINANCE_API"
+      },
+      "ts": 1767656418221
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "id": "BURST_TASK_3",
+        "requiredCapabilities": [
+          "CRYPTO_SETTLEMENT"
+        ],
+        "resourceKey": "BINANCE_API"
+      },
+      "ts": 1767656418222
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "id": "BURST_TASK_4",
+        "requiredCapabilities": [
+          "CRYPTO_SETTLEMENT"
+        ],
+        "resourceKey": "BINANCE_API"
+      },
+      "ts": 1767656418223
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "id": "BURST_TASK_5",
+        "requiredCapabilities": [
+          "CRYPTO_SETTLEMENT"
+        ],
+        "resourceKey": "BINANCE_API"
+      },
+      "ts": 1767656418225
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "id": "BURST_TASK_6",
+        "requiredCapabilities": [
+          "CRYPTO_SETTLEMENT"
+        ],
+        "resourceKey": "BINANCE_API"
+      },
+      "ts": 1767656418227
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "id": "BURST_TASK_7",
+        "requiredCapabilities": [
+          "CRYPTO_SETTLEMENT"
+        ],
+        "resourceKey": "BINANCE_API"
+      },
+      "ts": 1767656418229
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "id": "BURST_TASK_8",
+        "requiredCapabilities": [
+          "CRYPTO_SETTLEMENT"
+        ],
+        "resourceKey": "BINANCE_API"
+      },
+      "ts": 1767656418230
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "id": "BURST_TASK_9",
+        "requiredCapabilities": [
+          "CRYPTO_SETTLEMENT"
+        ],
+        "resourceKey": "BINANCE_API"
+      },
+      "ts": 1767656418232
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "id": "BURST_TASK_10",
+        "requiredCapabilities": [
+          "CRYPTO_SETTLEMENT"
+        ],
+        "resourceKey": "BINANCE_API"
+      },
+      "ts": 1767656418233
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "id": "BURST_TASK_11",
+        "requiredCapabilities": [
+          "CRYPTO_SETTLEMENT"
+        ],
+        "resourceKey": "BINANCE_API"
+      },
+      "ts": 1767656418234
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767656927286"
+      },
+      "ts": 1767656927287
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767656927290"
+      },
+      "ts": 1767656927291
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767656962627"
+      },
+      "ts": 1767656962628
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767656962629"
+      },
+      "ts": 1767656962629
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767656997969"
+      },
+      "ts": 1767656997970
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767656997971"
+      },
+      "ts": 1767656997971
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767657033310"
+      },
+      "ts": 1767657033311
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767657033312"
+      },
+      "ts": 1767657033313
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767657068681"
+      },
+      "ts": 1767657068682
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767657068683"
+      },
+      "ts": 1767657068684
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767657104031"
+      },
+      "ts": 1767657104031
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767657104032"
+      },
+      "ts": 1767657104033
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767657139378"
+      },
+      "ts": 1767657139379
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767657139380"
+      },
+      "ts": 1767657139380
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767657174737"
+      },
+      "ts": 1767657174738
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767657174739"
+      },
+      "ts": 1767657174739
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767657210069"
+      },
+      "ts": 1767657210070
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767657210071"
+      },
+      "ts": 1767657210071
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767657245716"
+      },
+      "ts": 1767657245718
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767657245719"
+      },
+      "ts": 1767657245720
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767657281083"
+      },
+      "ts": 1767657281084
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767657281085"
+      },
+      "ts": 1767657281085
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767657316415"
+      },
+      "ts": 1767657316416
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767657316417"
+      },
+      "ts": 1767657316417
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767657351916"
+      },
+      "ts": 1767657351917
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767657351918"
+      },
+      "ts": 1767657351919
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767657387251"
+      },
+      "ts": 1767657387252
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767657387253"
+      },
+      "ts": 1767657387253
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767657422595"
+      },
+      "ts": 1767657422595
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767657422597"
+      },
+      "ts": 1767657422597
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767657457953"
+      },
+      "ts": 1767657457955
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767657457957"
+      },
+      "ts": 1767657457957
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767657493305"
+      },
+      "ts": 1767657493306
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767657493307"
+      },
+      "ts": 1767657493308
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767657528766"
+      },
+      "ts": 1767657528767
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767657528768"
+      },
+      "ts": 1767657528768
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767657564149"
+      },
+      "ts": 1767657564150
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767657564151"
+      },
+      "ts": 1767657564151
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767657599484"
+      },
+      "ts": 1767657599484
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767657599485"
+      },
+      "ts": 1767657599486
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767657634834"
+      },
+      "ts": 1767657634834
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767657634835"
+      },
+      "ts": 1767657634837
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767657670168"
+      },
+      "ts": 1767657670169
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767657670170"
+      },
+      "ts": 1767657670170
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767657705580"
+      },
+      "ts": 1767657705581
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767657705582"
+      },
+      "ts": 1767657705582
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767657740925"
+      },
+      "ts": 1767657740926
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767657740927"
+      },
+      "ts": 1767657740927
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767657776243"
+      },
+      "ts": 1767657776244
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767657776245"
+      },
+      "ts": 1767657776246
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767657811702"
+      },
+      "ts": 1767657811702
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767657811705"
+      },
+      "ts": 1767657811705
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767657847082"
+      },
+      "ts": 1767657847082
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767657847083"
+      },
+      "ts": 1767657847084
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767657882459"
+      },
+      "ts": 1767657882460
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767657882461"
+      },
+      "ts": 1767657882462
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767657917946"
+      },
+      "ts": 1767657917947
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767657917948"
+      },
+      "ts": 1767657917949
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767657953299"
+      },
+      "ts": 1767657953300
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767657953301"
+      },
+      "ts": 1767657953302
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767657988722"
+      },
+      "ts": 1767657988723
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767657988726"
+      },
+      "ts": 1767657988726
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767658024120"
+      },
+      "ts": 1767658024121
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767658024122"
+      },
+      "ts": 1767658024123
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767658059747"
+      },
+      "ts": 1767658059748
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767658059749"
+      },
+      "ts": 1767658059750
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767658095167"
+      },
+      "ts": 1767658095168
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767658095170"
+      },
+      "ts": 1767658095170
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767658130579"
+      },
+      "ts": 1767658130579
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767658130581"
+      },
+      "ts": 1767658130581
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767658166053"
+      },
+      "ts": 1767658166054
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767658166056"
+      },
+      "ts": 1767658166057
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767658201492"
+      },
+      "ts": 1767658201493
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767658201494"
+      },
+      "ts": 1767658201494
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767658237443"
+      },
+      "ts": 1767658237445
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767658237446"
+      },
+      "ts": 1767658237447
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767658272796"
+      },
+      "ts": 1767658272797
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767658272798"
+      },
+      "ts": 1767658272799
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767658308218"
+      },
+      "ts": 1767658308218
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767658308221"
+      },
+      "ts": 1767658308221
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767658343561"
+      },
+      "ts": 1767658343562
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767658343563"
+      },
+      "ts": 1767658343564
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767658378922"
+      },
+      "ts": 1767658378923
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767658378924"
+      },
+      "ts": 1767658378925
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767658414362"
+      },
+      "ts": 1767658414363
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767658414365"
+      },
+      "ts": 1767658414366
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767658449704"
+      },
+      "ts": 1767658449705
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767658449706"
+      },
+      "ts": 1767658449707
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767658485022"
+      },
+      "ts": 1767658485023
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767658485024"
+      },
+      "ts": 1767658485025
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767658520357"
+      },
+      "ts": 1767658520358
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767658520359"
+      },
+      "ts": 1767658520360
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767658555713"
+      },
+      "ts": 1767658555714
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767658555717"
+      },
+      "ts": 1767658555717
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767658591055"
+      },
+      "ts": 1767658591056
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767658591057"
+      },
+      "ts": 1767658591058
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767658626379"
+      },
+      "ts": 1767658626379
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767658626381"
+      },
+      "ts": 1767658626381
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767658661734"
+      },
+      "ts": 1767658661736
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767658661737"
+      },
+      "ts": 1767658661738
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767658697122"
+      },
+      "ts": 1767658697123
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767658697125"
+      },
+      "ts": 1767658697126
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767658732534"
+      },
+      "ts": 1767658732535
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767658732537"
+      },
+      "ts": 1767658732538
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767658767890"
+      },
+      "ts": 1767658767891
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767658767892"
+      },
+      "ts": 1767658767892
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767658803255"
+      },
+      "ts": 1767658803256
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767658803259"
+      },
+      "ts": 1767658803260
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767658838660"
+      },
+      "ts": 1767658838661
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767658838662"
+      },
+      "ts": 1767658838663
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767658874017"
+      },
+      "ts": 1767658874018
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767658874019"
+      },
+      "ts": 1767658874021
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767658909382"
+      },
+      "ts": 1767658909383
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767658909386"
+      },
+      "ts": 1767658909387
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767658944813"
+      },
+      "ts": 1767658944814
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767658944816"
+      },
+      "ts": 1767658944816
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767658980261"
+      },
+      "ts": 1767658980262
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767658980264"
+      },
+      "ts": 1767658980264
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767659015691"
+      },
+      "ts": 1767659015692
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767659015693"
+      },
+      "ts": 1767659015693
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767659051144"
+      },
+      "ts": 1767659051145
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767659051146"
+      },
+      "ts": 1767659051146
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767659086579"
+      },
+      "ts": 1767659086580
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767659086581"
+      },
+      "ts": 1767659086582
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767659122025"
+      },
+      "ts": 1767659122026
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767659122028"
+      },
+      "ts": 1767659122028
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767659157452"
+      },
+      "ts": 1767659157454
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767659157456"
+      },
+      "ts": 1767659157457
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767659192904"
+      },
+      "ts": 1767659192905
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767659192906"
+      },
+      "ts": 1767659192907
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767659228364"
+      },
+      "ts": 1767659228365
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767659228367"
+      },
+      "ts": 1767659228368
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767659263800"
+      },
+      "ts": 1767659263802
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767659263804"
+      },
+      "ts": 1767659263805
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767659299279"
+      },
+      "ts": 1767659299281
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767659299282"
+      },
+      "ts": 1767659299284
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767659334713"
+      },
+      "ts": 1767659334715
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767659334717"
+      },
+      "ts": 1767659334717
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767659370217"
+      },
+      "ts": 1767659370220
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767659370222"
+      },
+      "ts": 1767659370223
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767659405658"
+      },
+      "ts": 1767659405659
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767659405660"
+      },
+      "ts": 1767659405661
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767659441110"
+      },
+      "ts": 1767659441112
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767659441114"
+      },
+      "ts": 1767659441115
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767659476550"
+      },
+      "ts": 1767659476552
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767659476556"
+      },
+      "ts": 1767659476557
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767659512057"
+      },
+      "ts": 1767659512060
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767659512064"
+      },
+      "ts": 1767659512065
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767659547454"
+      },
+      "ts": 1767659547455
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767659547456"
+      },
+      "ts": 1767659547457
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767659582881"
+      },
+      "ts": 1767659582882
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767659582883"
+      },
+      "ts": 1767659582884
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767659618359"
+      },
+      "ts": 1767659618361
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767659618363"
+      },
+      "ts": 1767659618365
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767659653793"
+      },
+      "ts": 1767659653794
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767659653795"
+      },
+      "ts": 1767659653796
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767659689227"
+      },
+      "ts": 1767659689228
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767659689231"
+      },
+      "ts": 1767659689232
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767659724676"
+      },
+      "ts": 1767659724677
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767659724678"
+      },
+      "ts": 1767659724678
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767659760052"
+      },
+      "ts": 1767659760053
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767659760055"
+      },
+      "ts": 1767659760055
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767659795507"
+      },
+      "ts": 1767659795509
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767659795510"
+      },
+      "ts": 1767659795511
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767659830867"
+      },
+      "ts": 1767659830868
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767659830872"
+      },
+      "ts": 1767659830873
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767659866232"
+      },
+      "ts": 1767659866232
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767659866234"
+      },
+      "ts": 1767659866234
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767659901571"
+      },
+      "ts": 1767659901573
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767659901574"
+      },
+      "ts": 1767659901575
+    }
+  ]
+}

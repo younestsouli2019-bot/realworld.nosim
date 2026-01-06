@@ -42,3 +42,40 @@ npm run backup
 1. **No Simulation**: All actions must be real.
 2. **Owner Only**: Funds only move to verified accounts.
 3. **Proof of Settlement**: All status updates require external proof.
+
+## 🤝 Agent Payment API
+
+- Programmatic usage:
+  - Module: src/api/external-payment-api.mjs
+  - Methods: requestAutoSettlement, requestPayPalPayout, updatePayoutStatus, getGatewayBalance
+- HTTP service:
+  - Module: src/api/external-payment-server.mjs
+  - Endpoints:
+    - POST /api/settlement/auto
+    - POST /api/payout/paypal
+    - POST /api/payout/status
+    - GET /api/balance/paypal
+    - GET /api/audit/verify?date=YYYY-MM-DD
+- Requirements:
+  - SWARM_LIVE=true
+  - AUDIT_HMAC_SECRET set for append-only audit signing
+  - AGENT_API_TOKENS set with one or more bearer tokens
+
+## 🔌 Agent IPC Interface (Firewall-Independent)
+
+- Named pipe server:
+  - Module: src/api/external-payment-ipc-server.mjs
+  - Default pipe: \\\\.\\pipe\\SwarmExternalPayment
+- Client helper:
+  - Module: src/api/external-payment-ipc-client.mjs
+  - Example:
+    ```javascript
+    import { ipcCall } from './src/api/external-payment-ipc-client.mjs';
+    const token = process.env.AGENT_API_TOKENS.split(',')[0];
+    const res = await ipcCall({
+      path: '/settlement/auto',
+      token,
+      body: { payoutBatchId: 'BATCH_TEST', items: [{ amount: 25, currency: 'USD', recipient_email: 'younestsouli2019@gmail.com' }] }
+    });
+    console.log(res);
+    ```

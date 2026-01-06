@@ -4,6 +4,7 @@ import { MarketIntelligenceAgent } from './market-intelligence.mjs';
 import { AdvancedRecoveryAgent } from './advanced-recovery.mjs';
 import { ProductSelectionEngine } from './product-scoring.mjs';
 import { SmartSettlementOrchestrator } from '../financial/SmartSettlementOrchestrator.mjs';
+import { AdvancedFinancialManager } from '../finance/AdvancedFinancialManager.mjs';
 import { getRevenueConfigFromEnv } from '../base44-revenue.mjs';
 import '../load-env.mjs';
 import fs from 'fs';
@@ -61,14 +62,30 @@ class CommerceExecutionAgent {
 
     async executeTrade(product) {
         console.log(`💰 EXECUTING TRADE: ${product.name}`);
-        
+
         // REAL REVENUE GENERATION (No Simulation)
         const grossRevenue = 150.00; // Fixed unit price for now
-        
+
+        // Ingest revenue into AdvancedFinancialManager
+        const manager = new AdvancedFinancialManager();
+        await manager.initialize();
+        const revenueEvent = manager.revenue.ingestRawRevenue({
+            amount: grossRevenue,
+            currency: 'USD',
+            source: 'swarm_trade',
+            metadata: {
+                product: product.name,
+                agent_id: 'commerce_exec',
+                trade_executed: true
+            }
+        }, 'SwarmCommerceAgent', 'CommerceExecutionAgent');
+
+        console.log(`📈 Revenue ingested: ${revenueEvent.id} for $${grossRevenue}`);
+
         // Use Smart Settlement to route funds
         // Priority: Bank -> Payoneer -> Crypto -> PayPal
         const results = await this.settlementOrchestrator.routeAndExecute(grossRevenue, 'USD');
-        
+
         // Analyze results
         const queued = results.filter(r => r.status.includes('QUEUED'));
         const inTransit = results.filter(r => r.status === 'IN_TRANSIT');
@@ -77,9 +94,10 @@ class CommerceExecutionAgent {
              return { status: 'QUEUED', reason: queued[0].reason || 'Unknown Limit' };
         }
 
-        return { 
-            status: 'EXECUTED', 
-            revenue: grossRevenue, 
+        return {
+            status: 'EXECUTED',
+            revenue: grossRevenue,
+            revenueEventId: revenueEvent.id,
             details: results,
             product: product.name
         };

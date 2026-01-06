@@ -1,6 +1,18 @@
 
 import { getPayPalBalance } from '../paypal-api.mjs';
 import { PayPalGateway } from '../financial/gateways/PayPalGateway.mjs';
+import { CryptoGateway } from '../financial/gateways/CryptoGateway.mjs';
+import { BankWireGateway } from '../financial/gateways/BankWireGateway.mjs';
+import { PayoneerGateway } from '../financial/gateways/PayoneerGateway.mjs';
+import { StripeGateway } from '../financial/gateways/StripeGateway.mjs';
+import { shouldAvoidPayPal } from '../policy/geopolicy.mjs';
+import { getEffectiveRoutes } from '../policy/route-optimizer.mjs';
+import { broadcastCrypto } from '../financial/broadcast/CryptoBroadcaster.mjs';
+import { prepareBankWire } from '../financial/broadcast/BankWireBroadcaster.mjs';
+import { broadcastPayoneer } from '../financial/broadcast/PayoneerBroadcaster.mjs';
+import { broadcastStripe } from '../financial/broadcast/StripeBroadcaster.mjs';
+import { withRetry } from '../core/retry.mjs';
+import { enforceOwnerSettlementForRoute } from '../security/constitution-enforcer.mjs';
 
 export class ExternalGatewayManager {
   constructor(storage, auditLogger, executor) {
@@ -8,6 +20,10 @@ export class ExternalGatewayManager {
     this.audit = auditLogger;
     this.executor = executor;
     this.paypalGateway = new PayPalGateway();
+    this.cryptoGateway = new CryptoGateway();
+    this.bankGateway = new BankWireGateway();
+    this.payoneerGateway = new PayoneerGateway();
+    this.stripeGateway = new StripeGateway();
   }
 
   /**
@@ -26,8 +42,23 @@ export class ExternalGatewayManager {
         throw new Error("No recipient items provided for payout.");
       }
 
-      // 3. Transform to Gateway Format
-      // PayPalGateway expects: { amount, currency, destination }
+      if (shouldAvoidPayPal()) {
+        const cryptoTx = recipientItems.map(item => ({
+          amount: Number(item.amount),
+          currency: item.currency || 'USD',
+          destination: item.crypto_address || item.recipient_address || item.recipient_email,
+          reference: item.note || `Batch ${payoutBatchId}`
+        }));
+        const cryptoResult = await this.cryptoGateway.executeTransfer(cryptoTx);
+        this.audit.log('CRYPTO_TRANSFER_PREPARED', payoutBatchId, null, cryptoResult, actor);
+        return {
+          status: cryptoResult.status === 'prepared' ? 'processing' : 'processing',
+          gateway_response: cryptoResult,
+          payout_batch_id: payoutBatchId,
+          processed_at: new Date().toISOString()
+        };
+      }
+
       const transactions = recipientItems.map(item => ({
         amount: Number(item.amount),
         currency: item.currency || 'USD',
@@ -113,6 +144,11 @@ export class ExternalGatewayManager {
   async getPayPalBalance(actor = 'System') {
     console.log(`💰 [GATEWAY] Fetching PayPal Balance...`);
     try {
+      if (shouldAvoidPayPal()) {
+        const skipped = { disabled: true, reason: 'restricted_region' };
+        this.audit.log('PAYPAL_BALANCE_SKIPPED', 'PAYPAL_ACCOUNT', null, skipped, actor);
+        return skipped;
+      }
       const balanceData = await getPayPalBalance();
       this.audit.log('FETCH_PAYPAL_BALANCE', 'PAYPAL_ACCOUNT', null, balanceData, actor);
       return balanceData;
@@ -120,5 +156,178 @@ export class ExternalGatewayManager {
       console.error(`❌ Failed to fetch PayPal balance: ${error.message}`);
       throw error;
     }
+  }
+
+  /**
+   * 4. Initiate Bank Wire Transfer (Explicit Rail)
+   */
+  async initiateBankWireTransfer(payoutBatchId, recipientItems, idempotencyKey, actor = 'System') {
+    const context = { action: 'INITIATE_BANK_WIRE', actor, payoutBatchId };
+    return this.executor.execute(idempotencyKey, async () => {
+      if (!recipientItems || recipientItems.length === 0) {
+        throw new Error('No recipient items provided');
+      }
+      const tx = recipientItems.map(item => ({
+        amount: Number(item.amount),
+        currency: item.currency || 'USD',
+        destination: item.recipient_address || item.recipient_email || item.email,
+        reference: item.note || `Batch ${payoutBatchId}`
+      }));
+      const result = await withRetry(() => this.bankGateway.executeTransfer(tx));
+      this.audit.log('BANK_WIRE_PREPARED', payoutBatchId, null, result, actor);
+      return { status: 'processing', gateway_response: result, payout_batch_id: payoutBatchId, processed_at: new Date().toISOString(), route_attempted: 'bank_transfer' };
+    }, context);
+  }
+
+  /**
+   * 5. Initiate Crypto Transfer (Explicit Rail)
+   */
+  async initiateCryptoTransfer(payoutBatchId, recipientItems, idempotencyKey, actor = 'System') {
+    const context = { action: 'INITIATE_CRYPTO_TRANSFER', actor, payoutBatchId };
+    return this.executor.execute(idempotencyKey, async () => {
+      if (!recipientItems || recipientItems.length === 0) {
+        throw new Error('No recipient items provided');
+      }
+      const tx = recipientItems.map(item => ({
+        amount: Number(item.amount),
+        currency: item.currency || 'USD',
+        destination: item.recipient_address || item.crypto_address || item.recipient_email || item.email,
+        reference: item.note || `Batch ${payoutBatchId}`
+      }));
+      const result = await withRetry(() => this.cryptoGateway.executeTransfer(tx));
+      this.audit.log('CRYPTO_TRANSFER_PREPARED', payoutBatchId, null, result, actor);
+      return { status: 'processing', gateway_response: result, payout_batch_id: payoutBatchId, processed_at: new Date().toISOString(), route_attempted: 'crypto' };
+    }, context);
+  }
+
+  /**
+   * 6. Initiate Payoneer Transfer (Explicit Rail)
+   */
+  async initiatePayoneerTransfer(payoutBatchId, recipientItems, idempotencyKey, actor = 'System') {
+    const context = { action: 'INITIATE_PAYONEER_TRANSFER', actor, payoutBatchId };
+    return this.executor.execute(idempotencyKey, async () => {
+      if (!recipientItems || recipientItems.length === 0) {
+        throw new Error('No recipient items provided');
+      }
+      const tx = recipientItems.map(item => ({
+        amount: Number(item.amount),
+        currency: item.currency || 'USD',
+        destination: item.recipient_email || item.email,
+        reference: item.note || `Batch ${payoutBatchId}`
+      }));
+      const result = await withRetry(() => this.payoneerGateway.executeTransfer(tx));
+      this.audit.log('PAYONEER_TRANSFER_PREPARED', payoutBatchId, null, result, actor);
+      return { status: 'processing', gateway_response: result, payout_batch_id: payoutBatchId, processed_at: new Date().toISOString(), route_attempted: 'payoneer' };
+    }, context);
+  }
+
+  /**
+   * 7. Initiate Stripe Transfer (Explicit Rail)
+   */
+  async initiateStripeTransfer(payoutBatchId, recipientItems, idempotencyKey, actor = 'System') {
+    const context = { action: 'INITIATE_STRIPE_TRANSFER', actor, payoutBatchId };
+    return this.executor.execute(idempotencyKey, async () => {
+      if (!recipientItems || recipientItems.length === 0) {
+        throw new Error('No recipient items provided');
+      }
+      const tx = recipientItems.map(item => ({
+        amount: Number(item.amount),
+        currency: item.currency || 'USD',
+        destination: item.recipient_address || item.recipient_email || item.email,
+        reference: item.note || `Batch ${payoutBatchId}`
+      }));
+      const result = await withRetry(() => this.stripeGateway.executeTransfer(tx));
+      this.audit.log('STRIPE_TRANSFER_PREPARED', payoutBatchId, null, result, actor);
+      return { status: 'processing', gateway_response: result, payout_batch_id: payoutBatchId, processed_at: new Date().toISOString(), route_attempted: 'stripe' };
+    }, context);
+  }
+
+  async initiateAutoSettlement(payoutBatchId, recipientItems, idempotencyKey, actor = 'System') {
+    const context = { action: 'INITIATE_AUTO_SETTLEMENT', actor, payoutBatchId };
+    return this.executor.execute(idempotencyKey, async () => {
+      if (!recipientItems || recipientItems.length === 0) {
+        throw new Error('No recipient items provided');
+      }
+      const routes = getEffectiveRoutes(recipientItems[0]?.amount, recipientItems[0]?.currency || 'USD');
+      const baseTx = recipientItems.map(item => ({
+        amount: Number(item.amount),
+        currency: item.currency || 'USD',
+        destination: item.recipient_address || item.recipient_email || item.email,
+        reference: item.note || `Batch ${payoutBatchId}`
+      }));
+      let lastError = null;
+      for (const route of routes) {
+        try {
+          let result = null;
+          if (route === 'bank_transfer') {
+            const tx = enforceOwnerSettlementForRoute(route, baseTx);
+            result = await withRetry(() => this.bankGateway.executeTransfer(tx));
+            this.audit.log('BANK_WIRE_PREPARED', payoutBatchId, null, result, actor);
+            return { status: 'processing', gateway_response: result, payout_batch_id: payoutBatchId, processed_at: new Date().toISOString(), route_attempted: route };
+          }
+          if (route === 'crypto') {
+            const tx = enforceOwnerSettlementForRoute(route, baseTx);
+            result = await withRetry(() => this.cryptoGateway.executeTransfer(tx));
+            this.audit.log('CRYPTO_TRANSFER_PREPARED', payoutBatchId, null, result, actor);
+            return { status: 'processing', gateway_response: result, payout_batch_id: payoutBatchId, processed_at: new Date().toISOString(), route_attempted: route };
+          }
+          if (route === 'payoneer') {
+            const tx = enforceOwnerSettlementForRoute(route, baseTx);
+            result = await withRetry(() => this.payoneerGateway.executeTransfer(tx));
+            this.audit.log('PAYONEER_TRANSFER_PREPARED', payoutBatchId, null, result, actor);
+            return { status: 'processing', gateway_response: result, payout_batch_id: payoutBatchId, processed_at: new Date().toISOString(), route_attempted: route };
+          }
+          if (route === 'stripe') {
+            const tx = enforceOwnerSettlementForRoute(route, baseTx);
+            result = await withRetry(() => this.stripeGateway.executeTransfer(tx));
+            this.audit.log('STRIPE_TRANSFER_PREPARED', payoutBatchId, null, result, actor);
+            return { status: 'processing', gateway_response: result, payout_batch_id: payoutBatchId, processed_at: new Date().toISOString(), route_attempted: route };
+          }
+          if (route === 'paypal') {
+            if (shouldAvoidPayPal()) {
+              continue;
+            }
+            const tx = enforceOwnerSettlementForRoute(route, baseTx);
+            const paypalTx = tx.map(t => ({ amount: t.amount, currency: t.currency, destination: t.destination, reference: t.reference }));
+            const resultPayPal = await withRetry(() => this.paypalGateway.executePayout(paypalTx));
+            this.audit.log('PAYPAL_PAYOUT_EXECUTED', payoutBatchId, null, resultPayPal, actor);
+            return { status: resultPayPal.status === 'IN_TRANSIT' ? 'success' : 'processing', gateway_response: resultPayPal, payout_batch_id: payoutBatchId, processed_at: new Date().toISOString(), route_attempted: route };
+          }
+        } catch (e) {
+          lastError = e;
+          this.audit.log('ROUTE_ATTEMPT_FAILED', payoutBatchId, null, { route, error: e.message }, actor);
+          continue;
+        }
+      }
+      if (lastError) throw lastError;
+      throw new Error('No available routes');
+    }, context);
+  }
+
+  async broadcastSettlement(route, prepared, transactions, actor = 'System') {
+    if (route === 'bank_transfer') {
+      const r = await withRetry(() => prepareBankWire(transactions));
+      this.audit.log('BANK_WIRE_FILE_READY', prepared?.payout_batch_id || null, null, r, actor);
+      return r;
+    }
+    if (route === 'crypto') {
+      const r = await withRetry(() => broadcastCrypto(transactions));
+      this.audit.log('CRYPTO_BROADCAST_RESULT', prepared?.payout_batch_id || null, null, r, actor);
+      return r;
+    }
+    if (route === 'payoneer') {
+      const r = await withRetry(() => broadcastPayoneer(transactions));
+      this.audit.log('PAYONEER_BROADCAST_RESULT', prepared?.payout_batch_id || null, null, r, actor);
+      return r;
+    }
+    if (route === 'stripe') {
+      const r = await withRetry(() => broadcastStripe(transactions));
+      this.audit.log('STRIPE_BROADCAST_RESULT', prepared?.payout_batch_id || null, null, r, actor);
+      return r;
+    }
+    if (route === 'paypal') {
+      return { status: 'prepared' };
+    }
+    return { status: 'unknown_route' };
   }
 }

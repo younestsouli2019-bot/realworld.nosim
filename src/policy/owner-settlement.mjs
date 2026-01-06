@@ -3,86 +3,82 @@ import { SettlementLedger } from '../financial/SettlementLedger.mjs';
 import { threatMonitor } from '../security/threat-monitor.mjs';
 import { isPast72hUnsettled } from '../compliance/sla-enforcer.mjs';
 import { isHardBindingActive } from './hard-binding.mjs';
-// src/policy/owner-settlement.mjs
+import { OWNER_IDENTITY, OWNER_ACCOUNTS, ALLOWED_BENEFICIARIES } from './RecipientRegistry.mjs';
+import { shouldAvoidPayPal } from './geopolicy.mjs';
 
 export class OwnerSettlementEnforcer {
     static getOwnerIdentity() {
-      // STRICT HARDCODED IDENTITY - NO ENV OVERRIDES ALLOWED
-      return {
-        name: 'Younes Tsouli',
-        cin: 'A337773',
-        verification_sources: ['biometrics', 'gov_id', 'law_enforcement_db'],
-        status: 'VERIFIED_OWNER'
-      };
+      return OWNER_IDENTITY;
     }
 
     static getOwnerAccounts() {
+      // Convert Registry Object to Array format expected by legacy callers
       return [
-        { type: 'bank', identifier: '007810000448500030594182', label: 'Attijari', priority: 1, mode: 'RECEIVE' },
-        { type: 'bank', identifier: 'Barclays:231486:15924956', label: 'Payoneer UK (Barclays)', priority: 2, mode: 'RECEIVE' },
-        { type: 'bank', identifier: 'MUFG:0005:869:4671926', label: 'Payoneer JP (MUFG)', priority: 2, mode: 'RECEIVE' },
-        { type: 'bank', identifier: 'LU774080000041265646', label: 'Payoneer EU (Banking Circle IBAN)', priority: 2, mode: 'RECEIVE' },
-        { type: 'payoneer', identifier: 'younestsouli2019@gmail.com', label: 'Primary (85538995)', priority: 2, mode: 'RECEIVE' },
-        { type: 'crypto', identifier: '0xA46225a984E2B2B5E5082E52AE8d8915A09fEfe7', label: 'Trust Wallet (ERC20/BEP20)', priority: 3, mode: 'RECEIVE' },
-        { type: 'crypto', identifier: '0xf6b9e2fcf43d41c778cba2bf46325cd201cc1a10', label: 'Bybit (ERC20)', priority: 3, mode: 'RECEIVE' },
-        { type: 'crypto', identifier: 'UQDIrlJp7NmV-5mief8eNB0b0sYGO0L62Vu7oGX49UXtqlDQ', label: 'Bybit (TON)', priority: 3, mode: 'RECEIVE' },
-        { type: 'payoneer', identifier: 'younesdgc@gmail.com', label: 'Secondary', priority: 4, mode: 'RECEIVE' },
-        { type: 'paypal', identifier: 'younestsouli2019@gmail.com', label: 'Backup (Last Resort)', priority: 5, mode: 'RECEIVE' }
+        { type: 'bank', identifier: OWNER_ACCOUNTS.bank.rib, label: OWNER_ACCOUNTS.bank.label, priority: OWNER_ACCOUNTS.bank.priority, mode: 'RECEIVE_LIVE' },
+        { type: 'bank', identifier: OWNER_ACCOUNTS.payoneer_uk_bank.identifier, label: OWNER_ACCOUNTS.payoneer_uk_bank.label, priority: OWNER_ACCOUNTS.payoneer_uk_bank.priority, mode: 'RECEIVE_LIVE' },
+        { type: 'bank', identifier: OWNER_ACCOUNTS.payoneer_jp_bank.identifier, label: OWNER_ACCOUNTS.payoneer_jp_bank.label, priority: OWNER_ACCOUNTS.payoneer_jp_bank.priority, mode: 'RECEIVE_LIVE' },
+        { type: 'bank', identifier: OWNER_ACCOUNTS.payoneer_eu_iban.identifier, label: OWNER_ACCOUNTS.payoneer_eu_iban.label, priority: OWNER_ACCOUNTS.payoneer_eu_iban.priority, mode: 'RECEIVE_LIVE' },
+        { type: 'payoneer', identifier: OWNER_ACCOUNTS.payoneer.email, label: OWNER_ACCOUNTS.payoneer.label, priority: OWNER_ACCOUNTS.payoneer.priority, mode: 'RECEIVE_LIVE' },
+        { type: 'crypto', identifier: OWNER_ACCOUNTS.crypto.address, label: OWNER_ACCOUNTS.crypto.label, priority: OWNER_ACCOUNTS.crypto.priority, mode: 'RECEIVE_LIVE' },
+        { type: 'crypto', identifier: OWNER_ACCOUNTS.crypto_bybit_erc20.address, label: OWNER_ACCOUNTS.crypto_bybit_erc20.label, priority: OWNER_ACCOUNTS.crypto_bybit_erc20.priority, mode: 'RECEIVE_LIVE' },
+        { type: 'crypto', identifier: OWNER_ACCOUNTS.crypto_bybit_ton.address, label: OWNER_ACCOUNTS.crypto_bybit_ton.label, priority: OWNER_ACCOUNTS.crypto_bybit_ton.priority, mode: 'RECEIVE_LIVE' },
+        { type: 'payoneer', identifier: OWNER_ACCOUNTS.payoneer_secondary.email, label: OWNER_ACCOUNTS.payoneer_secondary.label, priority: OWNER_ACCOUNTS.payoneer_secondary.priority, mode: 'RECEIVE_LIVE' },
+        { type: 'paypal', identifier: OWNER_ACCOUNTS.paypal.email, label: OWNER_ACCOUNTS.paypal.label, priority: OWNER_ACCOUNTS.paypal.priority, mode: 'RECEIVE_LIVE' }
       ];
     }
   
     static getOwnerAccountForType(type) {
-      const mapping = {
-        bank: '007810000448500030594182',
-        payoneer: 'younestsouli2019@gmail.com', // Default to Primary
-        payoneer_secondary: 'younesdgc@gmail.com',
-        payoneer_uk_bank: 'Barclays:231486:15924956',
-        payoneer_jp_bank: 'MUFG:0005:869:4671926',
-        payoneer_eu_iban: 'LU774080000041265646',
-        paypal: '007810000448500030594182',
-        stripe: '007810000448500030594182', // Settle Stripe to Bank
-        crypto: '0xA46225a984E2B2B5E5082E52AE8d8915A09fEfe7', // Default to Trust Wallet
-        crypto_erc20: '0xA46225a984E2B2B5E5082E52AE8d8915A09fEfe7',
-        crypto_bep20: '0xA46225a984E2B2B5E5082E52AE8d8915A09fEfe7',
-        crypto_bybit_erc20: '0xf6b9e2fcf43d41c778cba2bf46325cd201cc1a10',
-        crypto_bybit_ton: 'UQDIrlJp7NmV-5mief8eNB0b0sYGO0L62Vu7oGX49UXtqlDQ'
-      };
+      // Direct Registry Lookup
+      const key = String(type).toLowerCase();
       
-      if (!mapping[type]) {
-        console.warn(`⚠️ No specific owner account for ${type}, defaulting to Bank (Attijari).`);
-        return mapping['bank'];
+      // Direct match in registry
+      if (OWNER_ACCOUNTS[key]) {
+          const acc = OWNER_ACCOUNTS[key];
+          // Return the identifier (RIB, Email, Address)
+          return acc.rib || acc.email || acc.identifier || acc.address || acc.accountId;
       }
-      return mapping[type];
+
+      // Legacy Fallback / Special Cases
+      if (key === 'stripe') return OWNER_ACCOUNTS.stripe.rib;
+      if (key.includes('erc20')) return OWNER_ACCOUNTS.crypto_erc20.address;
+      
+      console.warn(`⚠️ No specific owner account for ${type}, defaulting to Bank.`);
+      return OWNER_ACCOUNTS.bank.rib;
     }
 
     static isOwnerDestination(destination) {
-      const accounts = this.getOwnerAccounts().map(a => String(a.identifier).toLowerCase());
       const d = String(destination || '').toLowerCase();
-      return accounts.includes(d);
+      // Check strict allowlist
+      return ALLOWED_BENEFICIARIES.some(b => b.toLowerCase() === d);
     }
 
+
     static getPaymentConfiguration() {
+      const basePriority = ['bank_transfer', 'crypto', 'payoneer', 'stripe', 'paypal'];
+      const baseGateways = ['bank_transfer', 'payoneer', 'binance', 'stripe', 'paypal', 'crypto'];
+      const effectivePriority = shouldAvoidPayPal() ? ['crypto', 'bank_transfer', 'payoneer', 'stripe', 'paypal'] : basePriority;
+      const effectiveGateways = shouldAvoidPayPal() ? ['crypto', 'bank_transfer', 'payoneer', 'stripe'] : baseGateways;
       return {
         enabled: true,
-        supported_gateways: ['bank_transfer', 'payoneer', 'binance', 'stripe', 'paypal'],
-        settlement_priority: ['bank_transfer', 'payoneer', 'binance', 'stripe', 'paypal'], // Explicit Priority 1-5
+        supported_gateways: effectiveGateways,
+        settlement_priority: effectivePriority,
         auto_configuration: true,
         proof_generation: true,
         settlement_automation: true,
-        owner_only_settlement: true, // STRICT ENFORCEMENT
-        require_external_verification: true, // PROOF IT ALL POLICY
+        owner_only_settlement: true,
+        require_external_verification: true,
         settlement_destinations: {
-          bank: '007810000448500030594182', // Priority 1: Attijari
-          payoneer: 'younestsouli2019@gmail.com', // Priority 2: Primary (Email preferred)
-          payoneer_uk_bank: 'Barclays:231486:15924956',
-          payoneer_jp_bank: 'MUFG:0005:869:4671926',
-          payoneer_eu_iban: 'LU774080000041265646',
-          crypto: '0xA46225a984E2B2B5E5082E52AE8d8915A09fEfe7', // Priority 3: Trust Wallet (Primary)
-          crypto_bybit_erc20: '0xf6b9e2fcf43d41c778cba2bf46325cd201cc1a10', // Bybit (Secondary)
-          crypto_bybit_ton: 'UQDIrlJp7NmV-5mief8eNB0b0sYGO0L62Vu7oGX49UXtqlDQ', // Bybit (TON)
-          payoneer_secondary: 'younesdgc@gmail.com', // Priority 4: Payoneer Secondary
-          stripe: '007810000448500030594182', // Priority 4: Stripe (via Bank)
-          paypal: '007810000448500030594182'
+          bank: OWNER_ACCOUNTS.bank.rib, // Priority 1: Attijari
+          payoneer: OWNER_ACCOUNTS.payoneer.email, // Priority 2: Primary (Email preferred)
+          payoneer_uk_bank: OWNER_ACCOUNTS.payoneer_uk_bank.identifier,
+          payoneer_jp_bank: OWNER_ACCOUNTS.payoneer_jp_bank.identifier,
+          payoneer_eu_iban: OWNER_ACCOUNTS.payoneer_eu_iban.identifier,
+          crypto: OWNER_ACCOUNTS.crypto.address, // Priority 3: Trust Wallet (Primary)
+          crypto_bybit_erc20: OWNER_ACCOUNTS.crypto_bybit_erc20.address, // Bybit (Secondary)
+          crypto_bybit_ton: OWNER_ACCOUNTS.crypto_bybit_ton.address, // Bybit (TON)
+          payoneer_secondary: OWNER_ACCOUNTS.payoneer_secondary.email, // Priority 4: Payoneer Secondary
+          stripe: OWNER_ACCOUNTS.stripe.rib, // Priority 4: Stripe (via Bank)
+          paypal: OWNER_ACCOUNTS.paypal.rib
         },
         credentials: {
           binance: {

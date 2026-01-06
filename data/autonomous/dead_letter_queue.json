@@ -161,5 +161,13 @@
     },
     "error": "503 Service Unavailable",
     "timestamp": "2026-01-05T09:17:30.890Z"
+  },
+  {
+    "task": {
+      "id": "FAILING_TASK",
+      "attempts": 6
+    },
+    "error": "503 Service Unavailable",
+    "timestamp": "2026-01-05T23:40:18.239Z"
   }
 ]

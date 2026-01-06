@@ -1,0 +1,9 @@
+{
+  "type": "PAYPAL_PAYOUT",
+  "amount": 25,
+  "currency": "USD",
+  "recipient": "007810000448500030594182",
+  "reason": "REDIRECT_TO_BANK_MANUAL",
+  "timestamp": "2026-01-06T08:42:56.467Z",
+  "status": "WAITING_MANUAL_EXECUTION"
+}

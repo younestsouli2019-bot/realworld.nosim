@@ -20,3 +20,13 @@
   - Redirected PayPal and Stripe settlements to Bank (Attijari) due to country restrictions.
   - Added comprehensive crypto (Trust Wallet, Bybit ERC20/TON) and secondary Payoneer accounts to owner policy.
   - Consolidated OWNER_ALLOWLIST with all active destinations.
+- Implemented PSP webhook handler skeletons and unified proof validators:
+  - PayPal signature verification and event mapping
+  - Stripe endpoint signature validation
+  - Payoneer HMAC verification
+  - Bank Wire reference normalization
+- Added append-only HMAC-signed audit logger with chain verification and integrated it into SystemAuditLogger.
+- Exposed External Payment Gateway Integration for agents:
+  - Programmatic API: requestAutoSettlement, requestPayPalPayout, updatePayoutStatus, getGatewayBalance
+  - Internal HTTP service with secured endpoints for agent access
+- Wet-run deployment validated locally; audit entries are written via append-only logger; endpoints started under AGENT_API_PORT.

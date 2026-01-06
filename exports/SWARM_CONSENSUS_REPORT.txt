@@ -1,19 +1,19 @@
 
 === SWARM CONSENSUS REPORT ===
-Date: 2026-01-04T11:46:39.164Z
+Date: 2026-01-06T00:09:59.967Z
 Topic: ALTERNATIVE_CRYPTO_RAILS
 Context: Binance API Failure
 
 RANKING:
-1. Self-Custody Wallet (Trust/MetaMask/Ledger) (Score: 98)
-   Reason: Eliminates Exchange Risk. Zero API dependency for receiving. Uncensorable.
+1. RealWorldCerts Swarm (Score: 99)
+   Reason: Aligns with registered legal entity (Auto-Entrepreneur). Professional, corporate identity. Distances from "freelancer" stigma.
 
-2. Bybit Exchange (Score: 75)
-   Reason: Strong liquidity, reliable API. Good alternative if CEX is mandatory.
+2. Tsouli Holdings Autonomous Unit (Score: 88)
+   Reason: Strong, but slightly less market-facing than RealWorldCerts.
 
-3. KuCoin Exchange (Score: 72)
-   Reason: Fallback CEX. API similar to Binance but higher regulatory friction recently.
+3. LazyArk Collective (Score: 45)
+   Reason: Sounds too informal/freelance. Deprecated in favor of corporate branding.
 
 VERDICT:
-Switch to DIRECT_ON_CHAIN.
+Switch to RealWorldCerts.
 System is ready to re-route pending settlements to this new destination.

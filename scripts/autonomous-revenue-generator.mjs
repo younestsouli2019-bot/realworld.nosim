@@ -234,7 +234,7 @@ export class FinancialOrchestrator {
       // 2. RECURRING PAYOUTS (Salaries, Expenses)
       // Processes scheduled payments
       process.stdout.write(`   [Payouts]   Checking schedules... `);
-      const payouts = await this.manager.processRecurringPayouts();
+      const payouts = await this.manager.recurring.processSchedules();
       if (payouts.length > 0) {
         console.log(`💸 EXECUTED ${payouts.length} PAYOUTS`);
         payouts.forEach(p => console.log(`      -> ${p.recipientId}: ${p.amount} ${p.currency}`));

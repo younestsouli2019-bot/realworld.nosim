@@ -1,0 +1,38 @@
+{
+  "company": {
+    "name": "RealWorldCerts",
+    "website": "https://www.realworldcerts.com",
+    "country": "MA"
+  },
+  "contact": {
+    "name": "Younes Tsouli",
+    "email": "younestsouli2019@gmail.com",
+    "account_id": "85538995"
+  },
+  "use_case": {
+    "description": "Automated beneficiary payouts and reconciliation from operations platform",
+    "volume": "low_to_moderate_initial",
+    "growth": true
+  },
+  "api_capabilities": [
+    "payouts_execute",
+    "payout_status_query",
+    "balance_query",
+    "beneficiary_management",
+    "webhooks_payout_updates"
+  ],
+  "security": {
+    "secrets_store": "env/secret_manager",
+    "webhook_verification": "HMAC_SHA256",
+    "ip_whitelist": "supported_if_available",
+    "audit": "append_only_hmac_jsonl"
+  },
+  "technical": {
+    "stack": "nodejs",
+    "webhook_url": "https://{domain}/webhooks/payoneer",
+    "headers": {
+      "x-payoneer-signature": "hmac_sha256(raw_body, PAYONEER_WEBHOOK_SECRET)"
+    }
+  }
+}
+

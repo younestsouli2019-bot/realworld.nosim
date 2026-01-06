@@ -22,9 +22,13 @@
     "proof_id": "PAYPAL_1767547142981_73oqdbd54",
     "recovered_at": "2026-01-04T17:19:02.981Z"
   },
-  "updated_at": "2026-01-04T17:19:02.982Z",
+  "updated_at": "2026-01-05T23:40:16.724Z",
   "settlement_info": {
     "destination": "OWNER_ACCOUNTS",
     "timestamp": "2026-01-04T17:19:02.982Z"
+  },
+  "attribution": {
+    "agent_id": "unknown_legacy",
+    "auto_patched": true
   }
 }

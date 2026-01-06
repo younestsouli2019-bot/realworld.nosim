@@ -28,12 +28,13 @@ async function reconcileAmountMismatches() {
   const revenueEntity = base44.asServiceRole.entities[revenueConfig.entityName];
 
   let allEvents = [];
-  let page = 1;
+  let offset = 0;
+  const limit = 100;
   while (true) {
-      const res = await base44.asServiceRole.list(revenueEntity, { page, perPage: 100 });
-      allEvents = allEvents.concat(res.items);
-      if (page >= res.totalPages) break;
-      page++;
+      const items = await revenueEntity.list("-created_date", limit, offset);
+      allEvents = allEvents.concat(items);
+      if (items.length < limit) break;
+      offset += limit;
   }
 
   const mismatches = allEvents.filter(e => {

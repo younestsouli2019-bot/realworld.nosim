@@ -1,0 +1,25 @@
+{
+  "id": "84021c2f-d731-474a-b614-bc5884fb5864",
+  "status": "completed",
+  "result": {
+    "status": "processing",
+    "gateway_response": {
+      "status": "prepared",
+      "network": "ERC20",
+      "prepared_at": "2026-01-06T08:13:28.020Z",
+      "transactions": [
+        {
+          "amount": 100,
+          "currency": "USD",
+          "destination": "0xA46225a984E2B2B5E5082E52AE8d8915A09fEfe7",
+          "reference": "Batch BATCH_TEST_CRYPTO"
+        }
+      ]
+    },
+    "payout_batch_id": "BATCH_TEST_CRYPTO",
+    "processed_at": "2026-01-06T08:13:28.023Z",
+    "route_attempted": "crypto"
+  },
+  "completed_at": "2026-01-06T08:13:28.023Z",
+  "updated_at": "2026-01-06T08:13:28.023Z"
+}
