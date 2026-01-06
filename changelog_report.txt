@@ -131,3 +131,11 @@ Details:
 - destination: 0xA46225a984E2B2B5E5082E52AE8d8915A09fEfe7
 - status: INSTRUCTIONS_READY
 ---
+# Success Report - 2026-01-06T16:04:08.206Z
+Summary: progress: BYBIT_API -> 0xf6b9e2fcf43d41c778cba2bf46325cd201cc1a10 INSTRUCTIONS_READY
+Details:
+- amount: 50
+- currency: USDT
+- destination: 0xf6b9e2fcf43d41c778cba2bf46325cd201cc1a10
+- status: INSTRUCTIONS_READY
+---

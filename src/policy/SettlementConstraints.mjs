@@ -39,6 +39,22 @@ export const SETTLEMENT_CONSTRAINTS = {
     currency: 'USD'
   },
 
+  BYBIT_API: {
+    daily_limit: 50000,
+    min_amount: 10,
+    processing_time: 'minutes',
+    risk_factor: 'low',
+    currency: 'USDT'
+  },
+
+  BITGET_API: {
+    daily_limit: 50000,
+    min_amount: 10,
+    processing_time: 'minutes',
+    risk_factor: 'low',
+    currency: 'USDT'
+  },
+
   // ----------------------------------------------------------------
   // GLOBAL POLICIES
   // ----------------------------------------------------------------

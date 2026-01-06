@@ -176,6 +176,22 @@
         "prepared_at": "2026-01-06T15:54:09.416Z",
         "destination": "0xA46225a984E2B2B5E5082E52AE8d8915A09fEfe7"
       }
+    },
+    {
+      "id": "tx_1767715448205_0adhaeecz",
+      "timestamp": "2026-01-06T16:04:08.205Z",
+      "channel": "BYBIT_API",
+      "amount": 50,
+      "status": "INSTRUCTIONS_READY",
+      "details": {
+        "status": "INSTRUCTIONS_READY",
+        "provider": "bybit",
+        "filePath": "C:\\Users\\Dell\\Downloads\\Nouveau dossier (3)\\settlements\\crypto\\bybit_instruction_1767715448203.json",
+        "network": "ERC20",
+        "prepared_at": "2026-01-06T16:04:08.203Z",
+        "creds_present": false,
+        "destination": "0xf6b9e2fcf43d41c778cba2bf46325cd201cc1a10"
+      }
     }
   ],
   "queued": [

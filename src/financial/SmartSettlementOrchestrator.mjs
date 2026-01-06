@@ -1,5 +1,6 @@
 // src/financial/SmartSettlementOrchestrator.mjs
 import { SETTLEMENT_CONSTRAINTS, SettlementConstraints } from '../policy/SettlementConstraints.mjs';
+import '../load-env.mjs';
 import { SettlementLedger } from './SettlementLedger.mjs';
 import { OwnerSettlementEnforcer } from '../policy/owner-settlement.mjs';
 import { ChainVerifier } from '../verification/ChainVerifier.mjs';

@@ -2,6 +2,7 @@ import https from 'https';
 import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
+import '../../load-env.mjs';
 
 function getServerTime() {
   return new Promise((resolve, reject) => {
@@ -87,6 +88,8 @@ export class CryptoGateway {
     const dest = transactions[0]?.destination;
     const amount = transactions[0]?.amount;
     if (!dest || !amount) return { status: 'invalid', reason: 'missing_destination_or_amount' };
+    const bitgetCreds = { apiKey: process.env.BITGET_API_KEY, secret: process.env.BITGET_API_SECRET, passphrase: process.env.BITGET_PASSPHRASE };
+    const bybitCreds = { apiKey: process.env.BYBIT_API_KEY, secret: process.env.BYBIT_API_SECRET };
 
     if (provider === 'binance') {
       const r = await withdrawUSDTBEP20(dest, amount);
@@ -114,9 +117,9 @@ export class CryptoGateway {
       fs.mkdirSync(path.dirname(filePath), { recursive: true });
       fs.writeFileSync(
         filePath,
-        JSON.stringify({ provider: 'bybit', action: 'withdraw', coin: 'USDT', network: 'ERC20', address: dest, amount, status: 'WAITING_MANUAL_EXECUTION' }, null, 2)
+        JSON.stringify({ provider: 'bybit', action: 'withdraw', coin: 'USDT', network: 'ERC20', address: dest, amount, status: 'WAITING_MANUAL_EXECUTION', creds_present: !!(bybitCreds.apiKey && bybitCreds.secret) }, null, 2)
       );
-      return { status: 'INSTRUCTIONS_READY', provider: 'bybit', filePath, network: 'ERC20', prepared_at };
+      return { status: 'INSTRUCTIONS_READY', provider: 'bybit', filePath, network: 'ERC20', prepared_at, creds_present: !!(bybitCreds.apiKey && bybitCreds.secret) };
     }
 
     if (provider === 'bitget') {
@@ -126,9 +129,9 @@ export class CryptoGateway {
       fs.mkdirSync(path.dirname(filePath), { recursive: true });
       fs.writeFileSync(
         filePath,
-        JSON.stringify({ provider: 'bitget', action: 'withdraw', coin: 'USDT', network: 'BEP20', address: dest, amount, status: 'WAITING_MANUAL_EXECUTION' }, null, 2)
+        JSON.stringify({ provider: 'bitget', action: 'withdraw', coin: 'USDT', network: 'BEP20', address: dest, amount, status: 'WAITING_MANUAL_EXECUTION', creds_present: !!(bitgetCreds.apiKey && bitgetCreds.secret && bitgetCreds.passphrase) }, null, 2)
       );
-      return { status: 'INSTRUCTIONS_READY', provider: 'bitget', filePath, network: 'BEP20', prepared_at };
+      return { status: 'INSTRUCTIONS_READY', provider: 'bitget', filePath, network: 'BEP20', prepared_at, creds_present: !!(bitgetCreds.apiKey && bitgetCreds.secret && bitgetCreds.passphrase) };
     }
 
     if (provider === 'trust') {
