@@ -128,7 +128,6 @@ export class SwarmOrchestrator {
     if (!this.active) return;
     await this.healthMonitor.checkHealth();
     setTimeout(() => this.healthLoop(), 30000);
-    }
   }
 
   async ownerRequestsLoop() {
