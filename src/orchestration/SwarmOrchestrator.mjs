@@ -10,6 +10,7 @@ import { execFileSync } from 'node:child_process';
 import { PowerRedundancyManager } from '../contingency/power-manager.mjs';
 import { SmartSettlementOrchestrator } from '../financial/SmartSettlementOrchestrator.mjs';
 import { CryptoGateway } from '../financial/gateways/CryptoGateway.mjs';
+import { installAbility } from '../swarm/ability-fetcher.mjs';
 
 /**
  * THE MISSING LINK: Central Swarm Orchestration
@@ -97,6 +98,8 @@ export class SwarmOrchestrator {
             throw new Error(`Agent ${agentId} instance not found`);
         }
 
+        await this._autoInstallAbilities(task, agentData);
+
         // REAL EXECUTION
         const result = await agentData.instance.execute(task);
         
@@ -125,6 +128,7 @@ export class SwarmOrchestrator {
     if (!this.active) return;
     await this.healthMonitor.checkHealth();
     setTimeout(() => this.healthLoop(), 30000);
+    }
   }
 
   async ownerRequestsLoop() {
@@ -187,6 +191,30 @@ export class SwarmOrchestrator {
     };
     const ackPath = path.join(process.cwd(), 'owner.requests', `ack_${ts}.json`);
     fs.writeFileSync(ackPath, JSON.stringify(ack, null, 2));
+  }
+  _parseAbilityMap() {
+    const raw = process.env.ABILITIES_MAP_JSON || '';
+    try {
+      const j = JSON.parse(raw);
+      if (j && typeof j === 'object') return j;
+    } catch {}
+    return {};
+  }
+  async _autoInstallAbilities(task, agentData) {
+    const req = Array.isArray(task.requiredCapabilities) ? task.requiredCapabilities : [];
+    if (req.length === 0) return;
+    const have = Array.isArray(agentData.capabilities) ? agentData.capabilities : [];
+    const map = this._parseAbilityMap();
+    for (const cap of req) {
+      if (have.includes(cap)) continue;
+      const info = map[cap] || null;
+      if (!info || !info.repo || !info.path) continue;
+      const name = info.name || cap;
+      try {
+        await installAbility({ name, ownerRepo: info.repo, branch: info.branch || 'main', repoPath: info.path });
+        agentData.capabilities.push(cap);
+      } catch {}
+    }
   }
 
   async processOutstandingTasks() {
