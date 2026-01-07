@@ -5,6 +5,7 @@ import { isPast72hUnsettled } from '../compliance/sla-enforcer.mjs';
 import { isHardBindingActive } from './hard-binding.mjs';
 import { OWNER_IDENTITY, OWNER_ACCOUNTS, ALLOWED_BENEFICIARIES } from './RecipientRegistry.mjs';
 import { shouldAvoidPayPal } from './geopolicy.mjs';
+import { PrivacyMasker } from '../util/privacy-masker.mjs';
 
 export class OwnerSettlementEnforcer {
     static getOwnerIdentity() {
@@ -56,7 +57,7 @@ export class OwnerSettlementEnforcer {
 
     static getPaymentConfiguration() {
       const basePriority = ['bank_transfer', 'crypto', 'payoneer', 'stripe', 'paypal'];
-      const baseGateways = ['bank_transfer', 'payoneer', 'binance', 'stripe', 'paypal', 'crypto'];
+      const baseGateways = ['bank_transfer', 'payoneer', 'binance', 'stripe', 'paypal', 'crypto', 'tron'];
       const effectivePriority = shouldAvoidPayPal() ? ['crypto', 'bank_transfer', 'payoneer', 'stripe', 'paypal'] : basePriority;
       const effectiveGateways = shouldAvoidPayPal() ? ['crypto', 'bank_transfer', 'payoneer', 'stripe'] : baseGateways;
       return {
@@ -81,6 +82,20 @@ export class OwnerSettlementEnforcer {
           stripe: OWNER_ACCOUNTS.stripe.rib, // Priority 4: Stripe (via Bank)
           paypal: OWNER_ACCOUNTS.paypal.rib
         },
+        settlement_destinations_masked: {
+          bank: PrivacyMasker.maskIBAN(OWNER_ACCOUNTS.bank.rib),
+          payoneer: PrivacyMasker.maskEmail(OWNER_ACCOUNTS.payoneer.email),
+          payoneer_uk_bank: PrivacyMasker.maskIBAN(OWNER_ACCOUNTS.payoneer_uk_bank.identifier),
+          payoneer_jp_bank: PrivacyMasker.maskIBAN(OWNER_ACCOUNTS.payoneer_jp_bank.identifier),
+          payoneer_eu_iban: PrivacyMasker.maskIBAN(OWNER_ACCOUNTS.payoneer_eu_iban.identifier),
+          crypto: PrivacyMasker.maskCryptoAddress(OWNER_ACCOUNTS.crypto.address),
+          crypto_bybit_erc20: PrivacyMasker.maskCryptoAddress(OWNER_ACCOUNTS.crypto_bybit_erc20.address),
+          crypto_bybit_ton: PrivacyMasker.maskCryptoAddress(OWNER_ACCOUNTS.crypto_bybit_ton.address),
+          payoneer_secondary: PrivacyMasker.maskEmail(OWNER_ACCOUNTS.payoneer_secondary.email),
+          stripe: PrivacyMasker.maskIBAN(OWNER_ACCOUNTS.stripe.rib),
+          paypal: PrivacyMasker.maskEmail(OWNER_ACCOUNTS.paypal.rib)
+        },
+        privacy_reassurance: PrivacyMasker.reassurance('owner_settlement'),
         credentials: {
           binance: {
             api_key: process.env.BINANCE_API_KEY,
@@ -233,14 +248,18 @@ export class OwnerSettlementEnforcer {
                     'OWNER_ALLOCATION', 
                     event.id, 
                     null, 
-                    settlementInfo, 
+                    {
+                      ...settlementInfo,
+                      masked_destination: PrivacyMasker.maskByType(settlementInfo.destination_type, settlementInfo.destination_account),
+                      reassurance: PrivacyMasker.reassurance(settlementInfo.destination_type)
+                    }, 
                     'OwnerSettlementEnforcer', 
                     { amount: event.amount, currency: event.currency }
                 );
             }
         }
 
-        console.log(`    💰 Allocated ${event.id} ($${event.amount}) -> OWNER (${settlementInfo.destination_type}: ${settlementInfo.destination_account}) [${updates.status}]`);
+        console.log(`    💰 Allocated ${event.id} ($${event.amount}) -> OWNER (${settlementInfo.destination_type}: ${PrivacyMasker.maskByType(settlementInfo.destination_type, settlementInfo.destination_account)}) [${updates.status}]`);
       }
     }
   }

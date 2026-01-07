@@ -213,4 +213,25 @@ export class CryptoGateway {
 
     return { status: 'UNKNOWN_PROVIDER', provider, network, prepared_at };
   }
+  
+  async getWithdrawalStatus({ provider = 'binance', address, amount, startTime } = {}) {
+    if (provider === 'binance') {
+      try {
+        const hist = await listWithdrawals(startTime ?? Date.now() - 7 * 24 * 60 * 60 * 1000);
+        if (!Array.isArray(hist)) return { status: 'unknown', provider };
+        const m = hist.find((h) => String(h.address || '').toLowerCase() === String(address || '').toLowerCase() && (amount == null || Number(h.amount) === Number(amount)));
+        if (!m) return { status: 'not_found', provider };
+        return {
+          status: String(m.status || '').toLowerCase() || 'unknown',
+          txId: m.txId || null,
+          id: m.id || m.applyId || null,
+          coin: m.coin || 'USDT',
+          network: m.network || 'BEP20'
+        };
+      } catch (e) {
+        return { status: 'error', error: e?.message || String(e), provider };
+      }
+    }
+    return { status: 'unsupported_provider', provider };
+  }
 }

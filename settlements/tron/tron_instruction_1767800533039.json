@@ -1,0 +1,9 @@
+{
+  "type": "TRON_USDT_RECEIVE",
+  "address": "TUtM17RZ1jCrXPnLa34o7J59BSEqgqYYBE",
+  "amount": 1000,
+  "currency": "USDT",
+  "provider_hint": "Wirex/Tron Wallet",
+  "status": "WAITING_MANUAL_EXECUTION",
+  "created_at": "2026-01-07T15:42:13.039Z"
+}

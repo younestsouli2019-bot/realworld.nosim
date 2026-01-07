@@ -23,6 +23,7 @@ import { threatMonitor } from "./security/threat-monitor.mjs";
 import { regulatoryMonitor } from "./contingency/regulatory-monitor.mjs";
 import { runDoomsdayExport } from "./real/ledger/doomsday-export.mjs";
 import { enforceOwnerDirective } from "./owner-directive.mjs";
+import { AutonomousAgentUpgrader } from "./agents/autonomous-upgrader.mjs";
 import { 
   getEnvBool, 
   deepMerge, 
@@ -255,6 +256,30 @@ async function atomicWriteJson(filePath, value) {
   }
 }
 
+async function maybeRunAutonomousOptimization(cfg, state) {
+  const enabled = cfg?.selfOptimization?.enabled !== false;
+  if (!enabled) return { ok: true, skipped: true, reason: "disabled" };
+  if (cfg?.offline?.enabled === true) return { ok: true, skipped: true, reason: "offline" };
+  const nowMs = Date.now();
+  const lastAt = Number(state.lastFusionAt ?? 0) || 0;
+  const intervalMs = Number(cfg?.selfOptimization?.intervalMs ?? 900000) || 900000;
+  if (nowMs - lastAt < intervalMs) {
+    return { ok: true, skipped: true, reason: "interval", nextInMs: Math.max(0, intervalMs - (nowMs - lastAt)) };
+  }
+  if (state.optimizing === true) return { ok: true, skipped: true, reason: "busy" };
+  state.optimizing = true;
+  try {
+    const upgrader = new AutonomousAgentUpgrader();
+    const fusion = await upgrader.runLazyArkFusion();
+    state.lastFusionAt = nowMs;
+    return { ok: true, fusion };
+  } catch (e) {
+    return { ok: false, error: e?.message ?? String(e) };
+  } finally {
+    state.optimizing = false;
+  }
+}
+
 async function withTempEnv(pairs, fn) {
   const prev = {};
   for (const [k, v] of Object.entries(pairs ?? {})) {
@@ -287,6 +312,182 @@ function parseJsonMaybe(value) {
   }
 }
 
+function getKnowledgeGraphFromEnv() {
+  const graph = parseJsonMaybe(process.env.KNOWLEDGE_GRAPH) ?? {
+    nodes: [
+      { id: "policy:payout_route", type: "policy", value: "DIRECT_TO_OWNER" },
+      { id: "policy:recipient_allowlist", type: "policy", value: "OWNER_ONLY" },
+      { id: "consensus:roles", type: "consensus", value: ["finance", "compliance"] }
+    ],
+    edges: [],
+    constraints: [
+      { field: "payout_route", operator: "equals", value: "DIRECT_TO_OWNER" },
+      { field: "recipient_policy", operator: "equals", value: "OWNER_ONLY" }
+    ],
+    consensus: { rolesRequired: ["finance", "compliance"], minApprovals: 2, timeoutMs: 300000 }
+  };
+  return graph;
+}
+
+function getPolicyConfigFromEnv() {
+  const authz = parseJsonMaybe(process.env.AUTHORIZATION_POLICY) ?? {};
+  const oblig = parseJsonMaybe(process.env.OBLIGATION_POLICY) ?? {};
+  return { authz, oblig };
+}
+
+function getConsensusSignalsFromEnv() {
+  const signals = parseJsonMaybe(process.env.CONSENSUS_SIGNALS) ?? { approvals: [] };
+  return signals;
+}
+
+function constraintSatisfied(graph, assertion) {
+  const list = Array.isArray(graph?.constraints) ? graph.constraints : [];
+  for (const c of list) {
+    if (c?.field && c?.operator && c?.value != null) {
+      const v = assertion?.[c.field];
+      if (c.operator === "equals" && v !== c.value) return false;
+      if (c.operator === "not_equals" && v === c.value) return false;
+      if (c.operator === "in" && Array.isArray(c.value) && !c.value.includes(v)) return false;
+      if (c.operator === "not_in" && Array.isArray(c.value) && c.value.includes(v)) return false;
+    }
+  }
+  return true;
+}
+
+function evaluatePolicies(action, context, policies) {
+  const authz = policies?.authz ?? {};
+  const oblig = policies?.oblig ?? {};
+  const role = String(context?.role ?? "").toLowerCase();
+  const actionKey = String(action?.type ?? "").toLowerCase();
+  const authzRules = authz[actionKey] ?? authz["*"] ?? {};
+  if (authzRules?.deny === true) return { ok: false, reason: "denied" };
+  if (Array.isArray(authzRules?.allowRoles) && authzRules.allowRoles.length > 0 && !authzRules.allowRoles.includes(role)) {
+    return { ok: false, reason: "role_not_allowed" };
+  }
+  const obligations = oblig[actionKey] ?? [];
+  return { ok: true, obligations };
+}
+
+async function queueApproval(base44, change) {
+  const txCfg = getTransactionLogConfigFromEnv();
+  const txEntity = base44.asServiceRole.entities[txCfg.entityName];
+  const created = await txEntity.create({
+    [txCfg.fieldMap.transactionType]: "APPROVAL_REQUEST",
+    [txCfg.fieldMap.amount]: 0,
+    [txCfg.fieldMap.description]: change?.description ?? "change",
+    [txCfg.fieldMap.transactionDate]: nowIso(),
+    [txCfg.fieldMap.category]: "approval",
+    [txCfg.fieldMap.paymentMethod]: "system",
+    [txCfg.fieldMap.referenceId]: `approval:${Date.now()}`,
+    [txCfg.fieldMap.status]: "pending",
+    change
+  });
+  const filePath = path.resolve(process.cwd(), "exports", "approvals", `approval_${Date.now()}.json`);
+  await atomicWriteJson(filePath, { at: nowIso(), change, id: created?.id ?? null }).catch(() => {});
+  return { id: created?.id ?? null, filePath };
+}
+
+function assertPayoutRoutingConstraints(cfg, graph) {
+  const mustRoute = graph?.constraints?.find((c) => c.field === "payout_route")?.value ?? "DIRECT_TO_OWNER";
+  const routeOk = String(mustRoute) === "DIRECT_TO_OWNER";
+  const noPlatformWallet = envIsTrue(process.env.NO_PLATFORM_WALLET, "false") === true;
+  const ownerPaypal = process.env.OWNER_PAYPAL_EMAIL;
+  const ownerBank = process.env.OWNER_BANK_IBAN ?? process.env.OWNER_BANK_ACCOUNT ?? null;
+  const ownerSinkConfigured = !isPlaceholderValue(ownerPaypal) || !isPlaceholderValue(ownerBank);
+  const allowlistOk = hasAllowedPayPalRecipientsConfigured();
+  if (!routeOk || !noPlatformWallet || !ownerSinkConfigured || !allowlistOk) {
+    const reason = !routeOk
+      ? "route_policy_invalid"
+      : !noPlatformWallet
+      ? "NO_PLATFORM_WALLET_false"
+      : !ownerSinkConfigured
+      ? "owner_sink_missing"
+      : "recipient_allowlist_missing";
+    return { ok: false, reason };
+  }
+  return { ok: true };
+}
+
+function assertRecipientValidationConstraints(cfg, graph) {
+  const policy = graph?.constraints?.find((c) => c.field === "recipient_policy")?.value ?? "OWNER_ONLY";
+  const ownerOnly = String(policy) === "OWNER_ONLY";
+  const allowlistOk = hasAllowedPayPalRecipientsConfigured();
+  if (!ownerOnly || !allowlistOk) {
+    return { ok: false, reason: !ownerOnly ? "recipient_policy_invalid" : "recipient_allowlist_missing" };
+  }
+  return { ok: true };
+}
+
+function assertMultiAgentConsensusGuard(cfg, graph) {
+  const rolesRequired = Array.isArray(graph?.consensus?.rolesRequired) ? graph.consensus.rolesRequired : ["finance", "compliance"];
+  const minApprovals = Number(graph?.consensus?.minApprovals ?? 2);
+  const signals = getConsensusSignalsFromEnv();
+  const approvals = Array.isArray(signals?.approvals) ? signals.approvals : [];
+  const hasAllRoles = rolesRequired.every((r) => approvals.includes(r));
+  const countOk = approvals.length >= minApprovals;
+  if (!hasAllRoles || !countOk) {
+    return { ok: false, reason: !hasAllRoles ? "consensus_roles_missing" : "consensus_count_insufficient", required: rolesRequired, approvals };
+  }
+  return { ok: true };
+}
+
+async function runNeuroSymbolicCycle(cfg, state) {
+  const graph = getKnowledgeGraphFromEnv();
+  const policies = getPolicyConfigFromEnv();
+  const perception = { health: await checkHealthOnce(cfg), regulatory: await regulatoryMonitor.scanForThreats(), freeze: isFreezeActive(state) };
+  const action = { type: "execute_tick" };
+  const context = { role: "system" };
+  const pol = evaluatePolicies(action, context, policies);
+  if (!pol.ok) return { ok: false, policyDenied: pol.reason };
+  const payoutOk = assertPayoutRoutingConstraints(cfg, graph);
+  if (payoutOk.ok !== true) {
+    try {
+      const base44 = buildBase44ServiceClient({ mode: cfg.offline.enabled ? "offline" : "auto" });
+      await queueApproval(base44, { description: "Payout routing constraint violation", detail: payoutOk });
+    } catch {}
+    return { ok: false, constraintViolation: true, detail: payoutOk };
+  }
+  const recipientOk = assertRecipientValidationConstraints(cfg, graph);
+  if (recipientOk.ok !== true) {
+    try {
+      const base44 = buildBase44ServiceClient({ mode: cfg.offline.enabled ? "offline" : "auto" });
+      await queueApproval(base44, { description: "Recipient validation constraint violation", detail: recipientOk });
+    } catch {}
+    return { ok: false, constraintViolation: true, detail: recipientOk };
+  }
+  const consensusOk = assertMultiAgentConsensusGuard(cfg, graph);
+  if (consensusOk.ok !== true) {
+    try {
+      const base44 = buildBase44ServiceClient({ mode: cfg.offline.enabled ? "offline" : "auto" });
+      await queueApproval(base44, { description: "Consensus guard not satisfied", detail: consensusOk });
+    } catch {}
+    return { ok: false, consensusViolation: true, detail: consensusOk };
+  }
+  const assertion = { environment: envIsTrue(process.env.SWARM_LIVE, "false") ? "live" : "not_live" };
+  const ok = constraintSatisfied(graph, assertion);
+  if (!ok) {
+    try {
+      const base44 = buildBase44ServiceClient({ mode: cfg.offline.enabled ? "offline" : "auto" });
+      await queueApproval(base44, { description: "Constraint violation on execute_tick", assertion });
+    } catch {}
+    return { ok: false, constraintViolation: true };
+  }
+  return { ok: true, perception, obligations: pol.obligations };
+}
+
+async function runPDCAOnce(cfg, state) {
+  const plan = { goals: ["produce_real_value", "enforce_policies", "avoid_freeze"] };
+  const ns = await runNeuroSymbolicCycle(cfg, state);
+  if (ns.ok !== true) return { ok: false, at: nowIso(), pdca: { plan, result: ns } };
+  const out = await runTick(cfg, state);
+  const check = { ok: out.ok, failures: Array.isArray(out.summary?.failures) ? out.summary.failures : [] };
+  const act = {};
+  if (!check.ok) {
+    if (check.failures.includes("mission_health")) act.missionHealthEnforce = true;
+    if (check.failures.includes("deadman")) act.backoffIncrease = true;
+  }
+  return { ok: out.ok, at: out.at, out, pdca: { plan, check, act } };
+}
 function getTransactionLogConfigFromEnv() {
   const entityName = process.env.BASE44_LEDGER_TRANSACTION_LOG_ENTITY ?? "TransactionLog";
   const mapFromEnv = parseJsonMaybe(process.env.BASE44_LEDGER_TRANSACTION_LOG_FIELD_MAP);
@@ -305,6 +506,285 @@ function getTransactionLogConfigFromEnv() {
   return { entityName, fieldMap };
 }
 
+function parseJsonSafe(value, fallback) {
+  try {
+    const v = JSON.parse(String(value ?? ""));
+    return v && typeof v === "object" ? v : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+function getPhilanthropyMissionConfigFromEnv() {
+  const entityName = process.env.BASE44_MISSION_ENTITY ?? "Mission";
+  const mapFromEnv = parseJsonSafe(process.env.BASE44_PHILANTHROPY_MISSION_FIELD_MAP, null);
+  const fieldMap = mapFromEnv ?? {
+    status: "status",
+    category: "category",
+    metadata: "metadata",
+    tags: "tags",
+    realTimeMetrics: "real_time_metrics"
+  };
+  return { entityName, fieldMap };
+}
+
+function getPhilanthropyImpactConfigFromEnv() {
+  const entityName = process.env.BASE44_PHILANTHROPY_IMPACT_ENTITY ?? "PhilanthropyImpact";
+  const mapFromEnv = parseJsonSafe(process.env.BASE44_PHILANTHROPY_IMPACT_FIELD_MAP, null);
+  const fieldMap = mapFromEnv ?? {
+    missionId: "mission_id",
+    at: "at",
+    beneficiaries: "beneficiaries",
+    impactScore: "impact_score",
+    targetGroup: "target_group",
+    location: "location",
+    notes: "notes"
+  };
+  return { entityName, fieldMap };
+}
+
+function getPhilanthropyAuditConfigFromEnv() {
+  const entityName = process.env.BASE44_PHILANTHROPY_AUDIT_ENTITY ?? "PhilanthropyAudit";
+  const mapFromEnv = parseJsonSafe(process.env.BASE44_PHILANTHROPY_AUDIT_FIELD_MAP, null);
+  const fieldMap = mapFromEnv ?? {
+    at: "at",
+    kpis: "kpis",
+    status: "status",
+    summary: "summary",
+    lastImpactAt: "last_impact_at",
+    silenceHours: "silence_hours"
+  };
+  return { entityName, fieldMap };
+}
+
+function toNumberSafe(v) {
+  const n = Number(v);
+  return Number.isFinite(n) ? n : 0;
+}
+
+function pick(obj, keys) {
+  const out = {};
+  for (const k of keys) {
+    if (obj && Object.prototype.hasOwnProperty.call(obj, k)) out[k] = obj[k];
+  }
+  return out;
+}
+
+function latestIso(values) {
+  let best = null;
+  for (const v of Array.isArray(values) ? values : []) {
+    const ms = Date.parse(String(v ?? ""));
+    if (Number.isNaN(ms)) continue;
+    if (best == null || ms > best) best = ms;
+  }
+  return best == null ? null : new Date(best).toISOString();
+}
+
+async function runPhilanthropyAuditOnce(cfg) {
+  const mode = cfg.offline.enabled ? "offline" : "auto";
+  let base44 = null;
+  try {
+    base44 = buildBase44ServiceClient({ mode });
+  } catch (e) {
+    return { ok: false, error: e?.message ?? String(e) };
+  }
+
+  const missionCfg = getPhilanthropyMissionConfigFromEnv();
+  const auditCfg = getPhilanthropyAuditConfigFromEnv();
+  const impactCfg = getPhilanthropyImpactConfigFromEnv();
+  const revenueEntityName = process.env.BASE44_REVENUE_ENTITY ?? "RevenueEvent";
+
+  const missionEntity = base44.asServiceRole.entities[missionCfg.entityName];
+  const fields = [missionCfg.fieldMap.status, missionCfg.fieldMap.category, missionCfg.fieldMap.metadata, missionCfg.fieldMap.tags, missionCfg.fieldMap.realTimeMetrics];
+  let missions = [];
+  try {
+    missions = await missionEntity.filter({ [missionCfg.fieldMap.category]: "philanthropy" }, "-created_date", 1000, 0, fields);
+  } catch (e) {
+    return { ok: false, error: e?.message ?? String(e) };
+  }
+
+  const needyKeywords = ["orphans", "refugees", "oppressed", "extreme_poverty", "war_victims"];
+  let total = 0;
+  let active = 0;
+  let beneficiaries = 0;
+  let impactScores = [];
+  const targeted = {};
+  for (const key of needyKeywords) targeted[key] = 0;
+  const impactTimes = [];
+  const philanthropyMissionIds = [];
+  let violations = [];
+  let donationTotal = 0;
+
+  for (const m of Array.isArray(missions) ? missions : []) {
+    total += 1;
+    const status = m?.[missionCfg.fieldMap.status];
+    if (String(status ?? "").toLowerCase().includes("active")) active += 1;
+    const meta = m?.[missionCfg.fieldMap.metadata] ?? {};
+    const rtm = m?.[missionCfg.fieldMap.realTimeMetrics] ?? {};
+    beneficiaries += toNumberSafe(meta?.beneficiaries_count ?? rtm?.beneficiaries_count);
+    const score = toNumberSafe(rtm?.social_impact_score ?? meta?.social_impact_score);
+    if (score > 0) impactScores.push(score);
+    const tg = (meta?.target_group ?? "").toString().toLowerCase();
+    for (const k of needyKeywords) {
+      if (tg.includes(k)) targeted[k] += 1;
+    }
+    const lastImpactAt = meta?.last_impact_at ?? rtm?.last_impact_at ?? null;
+    if (lastImpactAt) impactTimes.push(lastImpactAt);
+    if (m?.id) philanthropyMissionIds.push(String(m.id));
+    const paymentCfg = (m?.workflow_config ?? {}).payment_processing;
+    if (paymentCfg && paymentCfg.enabled === true) {
+      violations.push({ type: "payment_processing_enabled_on_philanthropy", missionId: m?.id ?? null });
+    }
+  }
+
+  const avgImpact = impactScores.length ? Number((impactScores.reduce((a, b) => a + b, 0) / impactScores.length).toFixed(3)) : 0;
+  const lastImpactAt = latestIso(impactTimes);
+  const silenceHours =
+    lastImpactAt != null ? Number(((Date.now() - Date.parse(lastImpactAt)) / (1000 * 60 * 60)).toFixed(3)) : null;
+
+  let recentImpacts = [];
+  try {
+    const impactEntity = base44.asServiceRole.entities[impactCfg.entityName];
+    recentImpacts = await impactEntity.filter({}, "-created_date", 100, 0, [
+      impactCfg.fieldMap.at,
+      impactCfg.fieldMap.beneficiaries,
+      impactCfg.fieldMap.impactScore,
+      impactCfg.fieldMap.targetGroup
+    ]);
+  } catch {}
+
+  try {
+    const impactEntity = base44.asServiceRole.entities[impactCfg.entityName];
+    const donationEvents = await impactEntity.filter({}, "-created_date", 1000, 0, [impactCfg.fieldMap.impactScore, impactCfg.fieldMap.beneficiaries]);
+    for (const ev of Array.isArray(donationEvents) ? donationEvents : []) {
+      const score = toNumberSafe(ev?.[impactCfg.fieldMap.impactScore]);
+      if (Number.isFinite(score) && score > 0) donationTotal += score;
+    }
+  } catch {}
+
+  if (philanthropyMissionIds.length > 0) {
+    try {
+      const revEntity = base44.asServiceRole.entities[revenueEntityName];
+      const found = await revEntity.filter(
+        { mission_id: { $in: philanthropyMissionIds } },
+        "-created_date",
+        10,
+        0,
+        ["id", "amount", "mission_id"]
+      );
+      if (Array.isArray(found) && found.length > 0) {
+        violations.push({
+          type: "philanthropy_has_revenue_events",
+          count: found.length,
+          sample: found.slice(0, 5).map((r) => pick(r, ["id", "amount", "mission_id"]))
+        });
+      }
+    } catch {}
+  }
+
+  const kpis = {
+    totalMissions: total,
+    activeMissions: active,
+    beneficiariesTotal: beneficiaries,
+    impactScoreAvg: avgImpact,
+    targetedCounts: targeted,
+    recentImpactEvents: recentImpacts.length,
+    donationsAggregateScore: Number(donationTotal.toFixed(2))
+  };
+
+  const summary = {
+    priorityFocus: needyKeywords.sort((a, b) => (targeted[b] - targeted[a])).slice(0, 3),
+    readiness: active > 0 && beneficiaries > 0,
+    lastImpactAt,
+    violations
+  };
+
+  let auditRecord = null;
+  try {
+    const auditEntity = base44.asServiceRole.entities[auditCfg.entityName];
+    auditRecord = await auditEntity.create({
+      [auditCfg.fieldMap.at]: nowIso(),
+      [auditCfg.fieldMap.kpis]: kpis,
+      [auditCfg.fieldMap.status]: violations.length > 0 ? "needs_attention" : "ok",
+      [auditCfg.fieldMap.summary]: summary,
+      [auditCfg.fieldMap.lastImpactAt]: lastImpactAt,
+      [auditCfg.fieldMap.silenceHours]: silenceHours
+    });
+  } catch {}
+
+  const exportPath = path.resolve(process.cwd(), "exports", "philanthropy", `audit_${Date.now()}.json`);
+  await atomicWriteJson(exportPath, { at: nowIso(), kpis, summary, lastImpactAt, silenceHours, auditId: auditRecord?.id ?? null }).catch(() => {});
+
+  const threshold = Number(process.env.PHILANTHROPY_IMPACT_SILENCE_HOURS ?? "72");
+  if (Number.isFinite(threshold) && silenceHours != null && silenceHours > threshold && cfg.alerts.enabled) {
+    try {
+      await maybeSendAlert(base44, {
+        subject: "Philanthropy Impact Silence",
+        body: JSON.stringify({ at: nowIso(), silenceHours, threshold, kpis, summary }, null, 2)
+      });
+    } catch {}
+  }
+
+  return { ok: true, at: nowIso(), kpis, summary, lastImpactAt, silenceHours, auditId: auditRecord?.id ?? null };
+}
+
+async function remediatePhilanthropyFromAudit(cfg, audit) {
+  if (!audit || !audit.summary || !Array.isArray(audit.summary.violations)) return { ok: true, skipped: true };
+  const mode = cfg.offline.enabled ? "offline" : "auto";
+  let base44 = null;
+  try {
+    base44 = buildBase44ServiceClient({ mode });
+  } catch (e) {
+    return { ok: false, error: e?.message ?? String(e) };
+  }
+  const missionCfg = getPhilanthropyMissionConfigFromEnv();
+  const missionEntity = base44.asServiceRole.entities[missionCfg.entityName];
+  const txCfg = getTransactionLogConfigFromEnv();
+  const txEntity = base44.asServiceRole.entities[txCfg.entityName];
+
+  const violations = audit.summary.violations;
+  const updates = [];
+  const logs = [];
+
+  for (const v of violations) {
+    if (v.type === "payment_processing_enabled_on_philanthropy" && v.missionId) {
+      try {
+        const patch = {
+          workflow_config: {
+            payment_processing: { enabled: false, donation_links_enabled: true }
+          },
+          metadata: {
+            separation_enforced_at: nowIso()
+          }
+        };
+        await missionEntity.update(String(v.missionId), patch);
+        updates.push({ missionId: String(v.missionId), action: "disable_payment_processing" });
+      } catch (e) {
+        logs.push({ missionId: String(v.missionId), error: e?.message ?? String(e) });
+      }
+    } else if (v.type === "philanthropy_has_revenue_events") {
+      try {
+        const created = await txEntity.create({
+          [txCfg.fieldMap.transactionType]: "BOOKKEEPING_ALERT",
+          [txCfg.fieldMap.amount]: 0,
+          [txCfg.fieldMap.description]: "Revenue events found under philanthropy branch",
+          [txCfg.fieldMap.transactionDate]: nowIso(),
+          [txCfg.fieldMap.category]: "philanthropy_misrouting",
+          [txCfg.fieldMap.paymentMethod]: "system",
+          [txCfg.fieldMap.referenceId]: `audit:${audit.auditId ?? Date.now()}`,
+          [txCfg.fieldMap.status]: "needs_review",
+          sample: v.sample ?? [],
+          count: v.count ?? 0
+        });
+        logs.push({ txId: created?.id ?? null, noted: true });
+      } catch (e) {
+        logs.push({ txId: null, error: e?.message ?? String(e) });
+      }
+    }
+  }
+
+  return { ok: true, updates, logs };
+}
 async function runNodeScript(scriptRelPath, scriptArgs, { env }) {
   return new Promise((resolve) => {
     const child = spawn(process.execPath, [scriptRelPath, ...scriptArgs], {
@@ -1135,6 +1615,13 @@ async function runTick(cfg, state) {
     out.meta.freeze = state.freeze ?? out.meta.freeze;
   }
 
+  if (cfg.tasks.philanthropyAudit) {
+    out.results.philanthropyAudit = await runPhilanthropyAuditOnce(cfg);
+    if (out.results.philanthropyAudit?.summary?.violations?.length > 0) {
+      out.results.philanthropyRemediation = await remediatePhilanthropyFromAudit(cfg, out.results.philanthropyAudit);
+    }
+  }
+
   // --- INTEGRATION: REAL EXECUTION LOOP (REVENUE GENERATION) ---
   if (cfg.real?.executionLoop) {
           if (isFreezeActive(state)) {
@@ -1719,10 +2206,16 @@ async function main() {
           // (Simulated check here, would connect to liquidity provider in real scenario)
       }
 
-      const out = await runTick(cfg, state);
+      await maybeRunAutonomousOptimization(cfg, state);
+      const pdca = await runPDCAOnce(cfg, state);
+      const out = pdca?.out ?? pdca;
       
       // Sync state to swarm memory (best effort)
       swarmMemory.update("daemon-state", { ...state, lastTick: out }, "autonomous-daemon", "tick-update").catch(() => {});
+
+      if (out?.results?.philanthropyAudit?.summary?.violations?.length > 0) {
+        swarmMemory.update("policy:philanthropy:strict_separation", { active: true, at: nowIso() }, "autonomous-daemon", "policy-update").catch(() => {});
+      }
 
       // Feed feedback to RailOptimizer and persist stats
       if (out.results?.autoSubmitPayPal) {

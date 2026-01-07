@@ -4,6 +4,7 @@ import { buildBase44Client } from '../src/base44-client.mjs';
 import { getRevenueConfigFromEnv } from '../src/base44-revenue.mjs';
 import fs from 'fs';
 import path from 'path';
+import { PrivacyMasker } from '../src/util/privacy-masker.mjs';
 
 function getPayoutBatchConfig() {
   return {
@@ -142,7 +143,9 @@ export async function createMigrationBatches() {
       [itemCfg.fieldMap.notes]: {
         migration_batch: true,
         destination: 'owner_account',
-        original_events_count: events.length
+        original_events_count: events.length,
+        masked_recipient: PrivacyMasker.maskByType(ownerDestination, recipientValue),
+        reassurance: PrivacyMasker.reassurance(ownerDestination)
       }
     };
     

@@ -97,7 +97,8 @@ export function defaultConfig() {
       autoSubmitPayPalPayoutBatches: false,
       syncPayPalLedgerBatches: false,
       autoExportPayoneerPayoutBatches: false,
-      revenueSwarm: false
+      revenueSwarm: false,
+      philanthropyAudit: true
     },
     alerts: {
       enabled: false,
@@ -310,6 +311,11 @@ export function resolveRuntimeConfig(args, fileCfg) {
     args.revenueSwarm === true ||
     getEnvBool("AUTONOMOUS_REVENUE_SWARM", false) ||
     cfg.tasks?.revenueSwarm === true;
+  
+  const philanthropyAuditEnabled =
+    args["philanthropy-audit"] === true ||
+    getEnvBool("AUTONOMOUS_PHILANTHROPY_AUDIT", false) ||
+    cfg.tasks?.philanthropyAudit === true;
 
   return {
     intervalMs,
@@ -352,7 +358,8 @@ export function resolveRuntimeConfig(args, fileCfg) {
       syncPayPalLedgerBatches: syncPayPalLedgerEnabled === true,
       autoExportPayoneerPayoutBatches: autoExportPayoneerPayoutBatchesEnabled === true,
       autoExportBankWirePayoutBatches: autoExportBankWirePayoutBatchesEnabled === true,
-      revenueSwarm: revenueSwarmEnabled === true
+      revenueSwarm: revenueSwarmEnabled === true,
+      philanthropyAudit: philanthropyAuditEnabled === true
     },
     alerts: { enabled: alertsEnabled, cooldownMs: alertCooldownMs },
     missionHealth: {

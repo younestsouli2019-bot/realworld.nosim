@@ -45323,5 +45323,59 @@
     "idea_id": "68bc38085f02369b6679e083",
     "status": "PENDING",
     "timestamp": "2026-01-06T11:53:12.608Z"
+  },
+  {
+    "idea_id": "68c86749eb4bd073412b0b02",
+    "status": "CHARITY_CONVERSION",
+    "reason": "Failed Harvest -> Pro-Bono Fallback (fetch failed)",
+    "timestamp": "2026-01-07T17:06:49.115Z"
+  },
+  {
+    "idea_id": "694e8df4abcae56ac4c02903",
+    "status": "CHARITY_CONVERSION",
+    "reason": "Failed Harvest -> Pro-Bono Fallback (fetch failed)",
+    "timestamp": "2026-01-07T17:08:44.107Z"
+  },
+  {
+    "idea_id": "68c86761eb4bd073412b143a",
+    "status": "CHARITY_CONVERSION",
+    "reason": "Failed Harvest -> Pro-Bono Fallback (Update failed: 429)",
+    "timestamp": "2026-01-07T17:30:07.088Z"
+  },
+  {
+    "idea_id": "68c86761eb4bd073412b1436",
+    "status": "CHARITY_CONVERSION",
+    "reason": "Failed Harvest -> Pro-Bono Fallback (Update failed: 429)",
+    "timestamp": "2026-01-07T17:30:12.634Z"
+  },
+  {
+    "idea_id": "68c86761eb4bd073412b1435",
+    "status": "CHARITY_CONVERSION",
+    "reason": "Failed Harvest -> Pro-Bono Fallback (Update failed: 429)",
+    "timestamp": "2026-01-07T17:30:17.022Z"
+  },
+  {
+    "idea_id": "68c86761eb4bd073412b1425",
+    "status": "CHARITY_CONVERSION",
+    "reason": "Failed Harvest -> Pro-Bono Fallback (Update failed: 429)",
+    "timestamp": "2026-01-07T17:30:28.382Z"
+  },
+  {
+    "idea_id": "68c86761eb4bd073412b1423",
+    "status": "CHARITY_CONVERSION",
+    "reason": "Failed Harvest -> Pro-Bono Fallback (Update failed: 429)",
+    "timestamp": "2026-01-07T17:30:29.797Z"
+  },
+  {
+    "idea_id": "68c86761eb4bd073412b1422",
+    "status": "CHARITY_CONVERSION",
+    "reason": "Failed Harvest -> Pro-Bono Fallback (Update failed: 429)",
+    "timestamp": "2026-01-07T17:30:30.606Z"
+  },
+  {
+    "idea_id": "68c86761eb4bd073412b141b",
+    "status": "CHARITY_CONVERSION",
+    "reason": "Failed Harvest -> Pro-Bono Fallback (Update failed: 429)",
+    "timestamp": "2026-01-07T17:30:35.653Z"
   }
 ]
