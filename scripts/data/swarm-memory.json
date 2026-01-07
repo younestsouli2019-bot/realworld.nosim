@@ -1,0 +1,29 @@
+[
+  [
+    "network-status",
+    {
+      "ts": "2026-01-07T21:25:30.175Z",
+      "results": [
+        {
+          "id": "payoneer",
+          "host": "www.payoneer.com",
+          "dnsOk": true,
+          "httpsOk": true
+        },
+        {
+          "id": "paypal",
+          "host": "api.paypal.com",
+          "dnsOk": true,
+          "httpsOk": true
+        },
+        {
+          "id": "paypal_web",
+          "host": "www.paypal.com",
+          "dnsOk": true,
+          "httpsOk": true
+        }
+      ],
+      "degraded": []
+    }
+  ]
+]

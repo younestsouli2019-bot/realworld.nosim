@@ -21,6 +21,7 @@ import { runFullBackup } from "./backup-runner.mjs";
 import { runSystemIntegritySync } from "./system-integrity.mjs";
 import { threatMonitor } from "./security/threat-monitor.mjs";
 import { regulatoryMonitor } from "./contingency/regulatory-monitor.mjs";
+import { NetworkGuard } from "./security/NetworkGuard.mjs";
 import { runDoomsdayExport } from "./real/ledger/doomsday-export.mjs";
 import { enforceOwnerDirective } from "./owner-directive.mjs";
 import { AutonomousAgentUpgrader } from "./agents/autonomous-upgrader.mjs";
@@ -327,6 +328,13 @@ function getKnowledgeGraphFromEnv() {
     consensus: { rolesRequired: ["finance", "compliance"], minApprovals: 2, timeoutMs: 300000 }
   };
   return graph;
+}
+
+async function startNetworkGuardIfLive() {
+  if (String(process.env.SWARM_LIVE || 'false').toLowerCase() !== 'true') return { started: false };
+  const guard = new NetworkGuard({ intervalMs: Number(process.env.NETWORK_GUARD_INTERVAL_MS || 30000) || 30000 });
+  await guard.start();
+  return { started: true };
 }
 
 function getPolicyConfigFromEnv() {
