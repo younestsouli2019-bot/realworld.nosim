@@ -1,6 +1,8 @@
 import http from "node:http";
 import crypto from "node:crypto";
 import { spawn } from "node:child_process";
+import "./load-env.mjs";
+import { enforceConstitutionSoft } from "./bootstrap/constitution-validator.mjs";
 import { buildBase44ServiceClient } from "./base44-client.mjs";
 import {
   extractPayPalWebhookHeaders,
@@ -9,6 +11,7 @@ import {
   paypalRequest,
   getPayPalOrderDetails
 } from "./paypal-api.mjs";
+import { OwnerSettlementEnforcer } from "./policy/owner-settlement.mjs";
 import { mapPayPalWebhookToRevenueEvent } from "./paypal-event-mapper.mjs";
 import {
   createBase44RevenueEventIdempotent,
@@ -35,6 +38,8 @@ function parseArgs(argv) {
   }
   return args;
 }
+
+try { enforceConstitutionSoft(process.env.AUDIT_HMAC_SECRET || process.env.CONSTITUTION_RUNTIME_SECRET || ''); } catch {}
 
 function getEnvOrThrow(name) {
   const v = process.env[name];
@@ -1207,6 +1212,336 @@ if (args.check === true || args["config-check"] === true) {
         amount: { value: amount.toFixed(2), currency },
         payment_instructions: { method: "paypal_order", approval_url: approvalUrl, custom_id: customId },
         order: { id: order?.id ?? null, status: order?.status ?? null }
+      });
+      return;
+    }
+
+    if (pathname === "/x402/payment-request") {
+      if (req.method !== "POST") {
+        json(res, 405, { ok: false, error: "Method not allowed" });
+        return;
+      }
+      const rawBody = await readRawBody(req, { limitBytes: 200_000 });
+      const body = safeJsonParse(rawBody, null);
+      if (!body || typeof body !== "object") {
+        json(res, 400, { ok: false, error: "Invalid JSON" });
+        return;
+      }
+      const amountRaw = body.amount ?? body.total ?? null;
+      const amount = Number(amountRaw);
+      if (!amount || Number.isNaN(amount) || amount <= 0) {
+        json(res, 400, { ok: false, error: "Invalid amount" });
+        return;
+      }
+      const currency = normalizeCurrency(body.currency, String(process.env.PAYPAL_CURRENCY ?? "USD"));
+      const returnUrl = String(body.return_url ?? body.returnUrl ?? process.env.PAYPAL_RETURN_URL ?? "").trim();
+      const cancelUrl = String(body.cancel_url ?? body.cancelUrl ?? process.env.PAYPAL_CANCEL_URL ?? "").trim();
+      const customId = String(body.reference ?? body.custom_id ?? `x402_${Date.now()}`).slice(0, 120);
+      const ownerBank = OwnerSettlementEnforcer.getOwnerAccountForType("bank");
+      const ownerPayPal = OwnerSettlementEnforcer.getOwnerAccountForType("paypal");
+      const ownerCrypto = process.env.TRUST_WALLET_ADDRESS ?? OwnerSettlementEnforcer.getOwnerAccountForType("crypto");
+      let paypalOption = null;
+      if (shouldCreatePayPalOrders() && returnUrl && cancelUrl) {
+        try {
+          requireLiveMode("create PayPal order");
+          const order = await createPayPalCheckoutOrder({ amount, currency, description: body.description ?? null, customId, returnUrl, cancelUrl });
+          const approvalUrl = pickApprovalUrl(order);
+          paypalOption = {
+            method: "paypal_order",
+            approval_url: approvalUrl,
+            custom_id: customId,
+            transaction_id: order?.id ?? null
+          };
+        } catch {}
+      }
+      const bankOption = {
+        method: "bank_transfer",
+        destination: ownerBank,
+        sepa: {
+          iban: process.env.IBAN_BC ?? null,
+          bic: process.env.BIC_BC ?? null,
+          beneficiary: process.env.BENEFICIARY_NAME_BC ?? null
+        },
+        swift: {
+          bank_name: process.env.BANK_NAME_CITI ?? null,
+          routing_number: process.env.ROUTING_NUMBER_CITI ?? null,
+          account_number: process.env.ACCOUNT_NUMBER_CITI ?? null,
+          beneficiary: process.env.BENEFICIARY_NAME_BARCLAYS ?? null
+        }
+      };
+      const cryptoOption = {
+        method: "crypto",
+        network: String(process.env.CRYPTO_NETWORK ?? "ERC20"),
+        address: ownerCrypto
+      };
+      const payment_options = [
+        ...(paypalOption ? [paypalOption] : []),
+        bankOption,
+        cryptoOption
+      ];
+      json(res, 200, {
+        ok: true,
+        status: "pending",
+        protocol: "X402-compat",
+        amount: { value: amount.toFixed(2), currency },
+        payment_options
+      });
+      return;
+    }
+
+    if (pathname.startsWith("/x402/payment-status/")) {
+      if (req.method !== "GET") {
+        json(res, 405, { ok: false, error: "Method not allowed" });
+        return;
+      }
+      const parts = pathname.split("/").filter(Boolean);
+      const id = parts.length > 0 ? parts[parts.length - 1] : null;
+      if (!id) {
+        json(res, 400, { ok: false, error: "Missing transaction id" });
+        return;
+      }
+      try {
+        requireLiveMode("get PayPal order");
+      } catch (e) {
+        json(res, 403, { ok: false, error: e?.message ?? String(e) });
+        return;
+      }
+      try {
+        const order = await getPayPalOrderDetails(id);
+        const purchaseUnits = Array.isArray(order?.purchase_units)
+          ? order.purchase_units.map((u) => {
+              const captures = Array.isArray(u?.payments?.captures)
+                ? u.payments.captures.map((c) => ({
+                    id: c?.id ?? null,
+                    status: c?.status ?? null,
+                    amount: c?.amount ?? null,
+                    final_capture: c?.final_capture ?? null,
+                    create_time: c?.create_time ?? null,
+                    update_time: c?.update_time ?? null
+                  }))
+                : [];
+              return {
+                reference_id: u?.reference_id ?? null,
+                amount: u?.amount ?? null,
+                payments: captures.length > 0 ? { captures } : null
+              };
+            })
+          : [];
+        json(res, 200, {
+          ok: true,
+          protocol: "X402-compat",
+          transaction_id: order?.id ?? id,
+          provider_status: order?.status ?? null,
+          order: {
+            id: order?.id ?? null,
+            intent: order?.intent ?? null,
+            status: order?.status ?? null,
+            create_time: order?.create_time ?? null,
+            update_time: order?.update_time ?? null,
+            purchase_units: purchaseUnits
+          }
+        });
+      } catch (e) {
+        json(res, 502, { ok: false, error: e?.message ?? String(e) });
+      }
+      return;
+    }
+
+    if (pathname === "/rails/payment-request") {
+      if (req.method !== "POST") {
+        json(res, 405, { ok: false, error: "Method not allowed" });
+        return;
+      }
+      const rawBody = await readRawBody(req, { limitBytes: 200_000 });
+      const body = safeJsonParse(rawBody, null);
+      if (!body || typeof body !== "object") {
+        json(res, 400, { ok: false, error: "Invalid JSON" });
+        return;
+      }
+      const amountRaw = body.amount ?? body.total ?? null;
+      const amount = Number(amountRaw);
+      if (!amount || Number.isNaN(amount) || amount <= 0) {
+        json(res, 400, { ok: false, error: "Invalid amount" });
+        return;
+      }
+      const currency = normalizeCurrency(body.currency, String(process.env.PAYPAL_CURRENCY ?? "USD"));
+      const returnUrl = String(body.return_url ?? body.returnUrl ?? process.env.PAYPAL_RETURN_URL ?? "").trim();
+      const cancelUrl = String(body.cancel_url ?? body.cancelUrl ?? process.env.PAYPAL_CANCEL_URL ?? "").trim();
+      const customId = String(body.reference ?? body.custom_id ?? `rails_${Date.now()}`).slice(0, 120);
+      const ownerBank = OwnerSettlementEnforcer.getOwnerAccountForType("bank");
+      const ownerPayPal = OwnerSettlementEnforcer.getOwnerAccountForType("paypal");
+      const ownerCrypto = process.env.TRUST_WALLET_ADDRESS ?? OwnerSettlementEnforcer.getOwnerAccountForType("crypto");
+      let paypalOption = null;
+      if (shouldCreatePayPalOrders() && returnUrl && cancelUrl) {
+        try {
+          requireLiveMode("create PayPal order");
+          const order = await createPayPalCheckoutOrder({ amount, currency, description: body.description ?? null, customId, returnUrl, cancelUrl });
+          const approvalUrl = pickApprovalUrl(order);
+          paypalOption = {
+            method: "paypal_order",
+            approval_url: approvalUrl,
+            custom_id: customId,
+            transaction_id: order?.id ?? null,
+            destination: ownerPayPal
+          };
+        } catch {}
+      }
+      const achOption = {
+        method: "ach",
+        bank_name: process.env.BANK_NAME_CITI ?? null,
+        routing_number: process.env.ROUTING_NUMBER_CITI ?? null,
+        account_number: process.env.ACCOUNT_NUMBER_CITI ?? null,
+        beneficiary: process.env.BENEFICIARY_NAME_BARCLAYS ?? null,
+        destination: ownerBank
+      };
+      const sepaOption = {
+        method: "sepa",
+        iban: process.env.IBAN_BC ?? null,
+        bic: process.env.BIC_BC ?? null,
+        beneficiary: process.env.BENEFICIARY_NAME_BC ?? null,
+        destination: process.env.IBAN_BC ?? ownerBank
+      };
+      const fedwireOption = {
+        method: "fedwire",
+        bank_name: process.env.BANK_NAME_CITI ?? null,
+        routing_number: process.env.ROUTING_NUMBER_CITI ?? null,
+        account_number: process.env.ACCOUNT_NUMBER_CITI ?? null,
+        swift_code: process.env.SWIFT_CODE_CITI ?? null,
+        destination: ownerBank
+      };
+      const swiftOption = {
+        method: "swift",
+        swift_code: process.env.SWIFT_CODE_CITI ?? null,
+        beneficiary: process.env.BENEFICIARY_NAME_BARCLAYS ?? null,
+        account_number: process.env.ACCOUNT_NUMBER_BARCLAYS ?? null,
+        destination: ownerBank
+      };
+      const chipsOption = {
+        method: "chips",
+        chips_id: process.env.CHIPS_ID ?? null,
+        destination: ownerBank
+      };
+      const fpsOption = {
+        method: "faster_payments",
+        sort_code: process.env.SORT_CODE_BARCLAYS ?? null,
+        account_number: process.env.ACCOUNT_NUMBER_BARCLAYS ?? null,
+        beneficiary: process.env.BENEFICIARY_NAME_BARCLAYS ?? null,
+        destination: ownerBank
+      };
+      const stripeOption = {
+        method: "stripe",
+        publishable_key: process.env.STRIPE_PUBLISHABLE_KEY ?? null,
+        requires_secret: !!process.env.STRIPE_SECRET_KEY,
+        destination: ownerBank
+      };
+      const adyenOption = {
+        method: "adyen",
+        merchant_account: process.env.ADYEN_MERCHANT_ACCOUNT ?? null,
+        destination: ownerBank
+      };
+      const openBankingOption = {
+        method: "open_banking",
+        region: process.env.OPEN_BANKING_REGION ?? null,
+        accounts: [
+          { iban: process.env.IBAN_BC ?? null, bic: process.env.BIC_BC ?? null, beneficiary: process.env.BENEFICIARY_NAME_BC ?? null }
+        ],
+        destination: process.env.IBAN_BC ?? ownerBank
+      };
+      const cryptoOption = {
+        method: "crypto",
+        network: String(process.env.CRYPTO_NETWORK ?? "ERC20"),
+        address: ownerCrypto,
+        destination: ownerCrypto
+      };
+      const payment_options = [
+        ...(paypalOption ? [paypalOption] : []),
+        achOption,
+        sepaOption,
+        fedwireOption,
+        swiftOption,
+        chipsOption,
+        fpsOption,
+        stripeOption,
+        adyenOption,
+        openBankingOption,
+        cryptoOption
+      ];
+      json(res, 200, {
+        ok: true,
+        status: "pending",
+        protocol: "Rails",
+        amount: { value: amount.toFixed(2), currency },
+        payment_options
+      });
+      return;
+    }
+
+    if (pathname.startsWith("/rails/payment-status/")) {
+      if (req.method !== "GET") {
+        json(res, 405, { ok: false, error: "Method not allowed" });
+        return;
+      }
+      const parts = pathname.split("/").filter(Boolean);
+      const id = parts.length > 0 ? parts[parts.length - 1] : null;
+      if (!id) {
+        json(res, 400, { ok: false, error: "Missing transaction id" });
+        return;
+      }
+      try {
+        requireLiveMode("get PayPal order");
+      } catch (e) {
+        json(res, 403, { ok: false, error: e?.message ?? String(e) });
+        return;
+      }
+      try {
+        const order = await getPayPalOrderDetails(id);
+        const purchaseUnits = Array.isArray(order?.purchase_units)
+          ? order.purchase_units.map((u) => {
+              const captures = Array.isArray(u?.payments?.captures)
+                ? u.payments.captures.map((c) => ({
+                    id: c?.id ?? null,
+                    status: c?.status ?? null,
+                    amount: c?.amount ?? null,
+                    final_capture: c?.final_capture ?? null,
+                    create_time: c?.create_time ?? null,
+                    update_time: c?.update_time ?? null
+                  }))
+                : [];
+              return {
+                reference_id: u?.reference_id ?? null,
+                amount: u?.amount ?? null,
+                payments: captures.length > 0 ? { captures } : null
+              };
+            })
+          : [];
+        json(res, 200, {
+          ok: true,
+          protocol: "Rails",
+          transaction_id: order?.id ?? id,
+          provider_status: order?.status ?? null,
+          order: {
+            id: order?.id ?? null,
+            intent: order?.intent ?? null,
+            status: order?.status ?? null,
+            create_time: order?.create_time ?? null,
+            update_time: order?.update_time ?? null,
+            purchase_units: purchaseUnits
+          }
+        });
+      } catch (e) {
+        json(res, 502, { ok: false, error: e?.message ?? String(e) });
+      }
+      return;
+    }
+
+    if (pathname === "/ilp/monetization") {
+      if (req.method !== "GET") {
+        json(res, 405, { ok: false, error: "Method not allowed" });
+        return;
+      }
+      json(res, 200, {
+        ok: true,
+        pointer: process.env.WM_PAYMENT_POINTER ?? null
       });
       return;
     }

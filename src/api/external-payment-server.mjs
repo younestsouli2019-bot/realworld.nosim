@@ -2,6 +2,7 @@ import http from 'node:http';
 import { ExternalPaymentAPI } from './external-payment-api.mjs';
 import { addSecurityHeaders, validateRequest, validateAuth } from '../security-middleware.mjs';
 import { handlePayoneerWebhook } from '../real/psp/webhook-handlers.mjs';
+import '../load-env.mjs';
 
 function getTokens() {
   const v = process.env.SWARM_INTERNAL_TOKENS || process.env.AGENT_API_TOKENS || '';

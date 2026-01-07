@@ -7,6 +7,8 @@ export class AgentHealthMonitor {
     this.checkInterval = checkInterval;
     this.onAlert = options.onAlert || null; // Callback for escalation
     this.recoveryStrategies = options.recoveryStrategies || new Map();
+    this.persistentFailureCounts = new Map(); // agentId -> count
+    this.softRestartThreshold = 2;
   }
   
   registerAgent(agentId, maxRestarts = 3) {
@@ -37,6 +39,8 @@ export class AgentHealthMonitor {
     for (const [agentId, data] of this.agents) {
       if (now - data.lastHeartbeat > 60000) { // 1 minute no heartbeat
         data.failures++;
+        const pf = (this.persistentFailureCounts.get(agentId) || 0) + 1;
+        this.persistentFailureCounts.set(agentId, pf);
         
         if (data.failures > 3) {
           data.status = 'UNHEALTHY';
@@ -46,6 +50,9 @@ export class AgentHealthMonitor {
           if (data.restartCount < data.maxRestarts) {
             await this.attemptRecovery(agentId, data);
             data.restartCount++;
+            if (pf >= this.softRestartThreshold && this.onAlert) {
+              this.onAlert('Persistent Failures', `Agent ${agentId} exceeded soft restart threshold; human investigation required`);
+            }
           } else {
             data.status = 'DEAD';
             await this.escalateToHuman(agentId);

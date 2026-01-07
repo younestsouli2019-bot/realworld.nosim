@@ -1,0 +1,33 @@
+Autonomous Revenue & Settlement
+- Generate revenues autonomously and settle directly to owner accounts
+- Enforce owner-only destinations; no intermediaries or platform wallets
+- Support multi-route settlement (bank, payoneer, crypto; PayPal gated by geopolicy)
+
+Health & Hardware Resilience
+- Produce detailed health failure reports with timestamps and severity
+- Identify hardware issues and performance degradations with diagnostics
+- Apply mitigation strategies per issue with clear timelines and resources
+- Implement power redundancy: auto-failover ≤30s, sufficient runtime, monitoring/alerts
+- Document configurations and test results for audit purposes
+
+Resource Scaling & Execution
+- Prioritize owner resource scaling operations across available payment routes
+- Execute real crypto settlements via Bitget provider to owner crypto address
+- Generate alternate routes (bank/payoneer) when viable and compliant
+
+PC Procurement Funding Policy
+- Fund PC procurement via swarm-generated revenues or external client payments
+- Owner accounts are receive-only; do not use owner accounts to pay vendors
+- Record procurement budget, routes, fulfillment, and audit artifacts
+
+Evidence & Governance
+- Require MoneyMovedGate and ChainVerifier proof for all revenue events
+- Enforce 72h settlement SLA; queue in offline/bunker mode instead of failing
+- Apply unit economics guardrail (Net Profit > $5, Margin > 15%)
+- Uphold governance gate: intent, power gradient, transparency, autonomy, deadman
+
+Operational Timeline
+- Immediate: network reset and diagnostics rerun
+- Same day: disk cleanup, system repair (sfc, dism)
+- 1–2 weeks: UPS/ATS/generator setup, monitoring integration, failover drills
+- Continuous: audit logging, evidence chaining, route optimization, compliance

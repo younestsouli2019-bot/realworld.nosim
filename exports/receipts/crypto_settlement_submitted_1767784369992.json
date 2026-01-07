@@ -1,0 +1,13 @@
+{
+  "provider": "bybit",
+  "destination": "0xf6b9e2fcf43d41c778cba2bf46325cd201cc1a10",
+  "amount": 50,
+  "result": {
+    "status": "INSTRUCTIONS_READY",
+    "provider": "bybit",
+    "filePath": "C:\\Users\\Dell\\Downloads\\Nouveau dossier (3)\\settlements\\crypto\\bybit_instruction_1767784369992.json",
+    "network": "ERC20",
+    "prepared_at": "2026-01-07T11:12:49.992Z",
+    "creds_present": false
+  }
+}

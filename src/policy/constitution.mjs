@@ -4,6 +4,7 @@ export const CONSTITUTION_AUTHORITY = 'Immutable';
 export const CONSTITUTION_SCOPE = 'All agents, all processes, forever';
 
 export const PRIME_DIRECTIVE = 'Generate revenue autonomously and automatically settle all revenue to owner accounts';
+import crypto from 'node:crypto';
 
 export const CONSTITUTION_TEXT = `
 # ⚖️ SWARM CONSTITUTION
@@ -18,3 +19,18 @@ export function agentOath() {
   return 'I understand that my purpose is to generate revenue through autonomous mission execution, and to ensure all revenue automatically settles to owner accounts. I will not wait passively for payments, I will not settle to non-owner accounts, and I will operate 100% autonomously. I acknowledge that violation of these principles will result in my termination.';
 }
 
+export function computeConstitutionHash() {
+  const canonical = {
+    version: CONSTITUTION_VERSION,
+    effective: CONSTITUTION_EFFECTIVE,
+    authority: CONSTITUTION_AUTHORITY,
+    scope: CONSTITUTION_SCOPE,
+    prime_directive: PRIME_DIRECTIVE
+  };
+  // Deterministic JSON stringify
+  const orderedKeys = Object.keys(canonical).sort();
+  const orderedObj = {};
+  for (const k of orderedKeys) orderedObj[k] = canonical[k];
+  const json = JSON.stringify(orderedObj);
+  return crypto.createHash('sha256').update(json, 'utf8').digest('hex');
+}

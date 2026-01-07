@@ -1,4 +1,6 @@
 import crypto from "node:crypto";
+import { computeConstitutionHash } from "./policy/constitution.mjs";
+import { getConstitutionState, computeConstitutionHashFromFile } from "./bootstrap/constitution-validator.mjs";
 
 function safeJsonParse(maybeJson, fallback) {
   if (!maybeJson) return fallback;
@@ -82,6 +84,13 @@ function buildRevenueData(cfg, event) {
   data[fieldMap.source] = event.source;
   data[fieldMap.externalId] = event.externalId;
   data[fieldMap.metadata] = event.metadata ?? {};
+  try {
+    const state = getConstitutionState();
+    const ch = state?.lastValidHash
+      || computeConstitutionHashFromFile(process.env.CONSTITUTION_JSON_FILE || './swarm.constitution.json')
+      || computeConstitutionHash();
+    if (ch) data[fieldMap.metadata].constitution_hash = ch;
+  } catch {}
 
   if (fieldMap.status && event.status != null) data[fieldMap.status] = event.status;
   if (fieldMap.payoutBatchId && event.payoutBatchId != null) data[fieldMap.payoutBatchId] = event.payoutBatchId;

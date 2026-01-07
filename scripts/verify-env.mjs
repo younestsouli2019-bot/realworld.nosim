@@ -1,8 +1,5 @@
 #!/usr/bin/env node
-// scripts/verify-env.mjs
-// Environment verification script for production deployment
-
-import './src/load-env.mjs';
+import '../src/load-env.mjs';
 
 const required = [
   'BASE44_APP_ID',

@@ -192,6 +192,112 @@
         "creds_present": false,
         "destination": "0xf6b9e2fcf43d41c778cba2bf46325cd201cc1a10"
       }
+    },
+    {
+      "id": "tx_1767723007590_zp5p049hw",
+      "timestamp": "2026-01-06T18:10:07.590Z",
+      "channel": "BITGET_API",
+      "amount": 50,
+      "status": "INSTRUCTIONS_READY",
+      "details": {
+        "status": "INSTRUCTIONS_READY",
+        "provider": "bitget",
+        "filePath": "C:\\Users\\Dell\\Downloads\\Nouveau dossier (3)\\settlements\\crypto\\bitget_instruction_1767723007585.json",
+        "network": "BEP20",
+        "prepared_at": "2026-01-06T18:10:05.160Z",
+        "creds_present": true,
+        "destination": "0xA46225a984E2B2B5E5082E52AE8d8915A09fEfe7"
+      }
+    },
+    {
+      "id": "tx_1767730130595_2v0fdns2o",
+      "timestamp": "2026-01-06T20:08:50.595Z",
+      "channel": "BITGET_API",
+      "amount": 25,
+      "status": "INSTRUCTIONS_READY",
+      "details": {
+        "status": "INSTRUCTIONS_READY",
+        "provider": "bitget",
+        "filePath": "C:\\Users\\Dell\\Downloads\\Nouveau dossier (3)\\settlements\\crypto\\bitget_instruction_1767730130590.json",
+        "network": "BEP20",
+        "prepared_at": "2026-01-06T20:08:48.052Z",
+        "creds_present": true,
+        "destination": "0xA46225a984E2B2B5E5082E52AE8d8915A09fEfe7",
+        "constitution_hash": "62632be56c4828c9b995ec2ec3afa71087e8ebc21ec298e9edd587b81a73f24c",
+        "kind": "in_house"
+      }
+    },
+    {
+      "id": "tx_1767779040947_mg5ikgvtp",
+      "timestamp": "2026-01-07T09:44:00.947Z",
+      "channel": "BITGET_API",
+      "amount": 25,
+      "status": "INSTRUCTIONS_READY",
+      "details": {
+        "status": "INSTRUCTIONS_READY",
+        "provider": "bitget",
+        "filePath": "C:\\Users\\Dell\\Downloads\\Nouveau dossier (3)\\settlements\\crypto\\bitget_instruction_1767779040941.json",
+        "network": "BEP20",
+        "prepared_at": "2026-01-07T09:43:58.563Z",
+        "creds_present": true,
+        "destination": "0xA46225a984E2B2B5E5082E52AE8d8915A09fEfe7",
+        "constitution_hash": "62632be56c4828c9b995ec2ec3afa71087e8ebc21ec298e9edd587b81a73f24c",
+        "kind": "in_house"
+      }
+    },
+    {
+      "id": "tx_1767779040961_aoree5frt",
+      "timestamp": "2026-01-07T09:44:00.961Z",
+      "channel": "BITGET_API",
+      "amount": 25,
+      "status": "INSTRUCTIONS_READY",
+      "details": {
+        "status": "INSTRUCTIONS_READY",
+        "provider": "bitget",
+        "filePath": "C:\\Users\\Dell\\Downloads\\Nouveau dossier (3)\\settlements\\crypto\\bitget_instruction_1767779040959.json",
+        "network": "BEP20",
+        "prepared_at": "2026-01-07T09:43:58.704Z",
+        "creds_present": true,
+        "destination": "0xA46225a984E2B2B5E5082E52AE8d8915A09fEfe7",
+        "constitution_hash": "62632be56c4828c9b995ec2ec3afa71087e8ebc21ec298e9edd587b81a73f24c",
+        "kind": "in_house"
+      }
+    },
+    {
+      "id": "tx_1767781852651_b08cjlk18",
+      "timestamp": "2026-01-07T10:30:52.651Z",
+      "channel": "BITGET_API",
+      "amount": 25,
+      "status": "INSTRUCTIONS_READY",
+      "details": {
+        "status": "INSTRUCTIONS_READY",
+        "provider": "bitget",
+        "filePath": "C:\\Users\\Dell\\Downloads\\Nouveau dossier (3)\\settlements\\crypto\\bitget_instruction_1767781852645.json",
+        "network": "BEP20",
+        "prepared_at": "2026-01-07T10:30:50.389Z",
+        "creds_present": true,
+        "destination": "0xA46225a984E2B2B5E5082E52AE8d8915A09fEfe7",
+        "constitution_hash": "62632be56c4828c9b995ec2ec3afa71087e8ebc21ec298e9edd587b81a73f24c",
+        "kind": "in_house"
+      }
+    },
+    {
+      "id": "tx_1767781852659_tsolodgcu",
+      "timestamp": "2026-01-07T10:30:52.659Z",
+      "channel": "BITGET_API",
+      "amount": 25,
+      "status": "INSTRUCTIONS_READY",
+      "details": {
+        "status": "INSTRUCTIONS_READY",
+        "provider": "bitget",
+        "filePath": "C:\\Users\\Dell\\Downloads\\Nouveau dossier (3)\\settlements\\crypto\\bitget_instruction_1767781852657.json",
+        "network": "BEP20",
+        "prepared_at": "2026-01-07T10:30:50.326Z",
+        "creds_present": true,
+        "destination": "0xA46225a984E2B2B5E5082E52AE8d8915A09fEfe7",
+        "constitution_hash": "62632be56c4828c9b995ec2ec3afa71087e8ebc21ec298e9edd587b81a73f24c",
+        "kind": "in_house"
+      }
     }
   ],
   "queued": [

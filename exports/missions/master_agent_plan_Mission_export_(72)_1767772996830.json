@@ -1,0 +1,854 @@
+{
+  "generated_at": "2026-01-07T08:03:16.842Z",
+  "phases": [
+    {
+      "name": "High Priority",
+      "filter": "priority=high",
+      "concurrency": 3
+    },
+    {
+      "name": "Medium Priority",
+      "filter": "priority=medium",
+      "concurrency": 2
+    },
+    {
+      "name": "Low Priority",
+      "filter": "priority=low",
+      "concurrency": 1
+    }
+  ],
+  "items": [
+    {
+      "id": "consolidated_71360a18",
+      "title": "🧩 CONSOLIDATED: Investigation and Report on Chilling Effect of Unr...",
+      "priority": "high",
+      "est_hours": 0,
+      "action": "execute_consolidated",
+      "agents_count": 0
+    },
+    {
+      "id": "consolidated_26b59510",
+      "title": "🧩 CONSOLIDATED: Bootstrap runtime + deploy code...",
+      "priority": "high",
+      "est_hours": 0,
+      "action": "execute_consolidated",
+      "agents_count": 1
+    },
+    {
+      "id": "consolidated_ef5e2fed",
+      "title": "🧩 CONSOLIDATED: Safety Rules Enforcement...",
+      "priority": "high",
+      "est_hours": 0,
+      "action": "execute_consolidated",
+      "agents_count": 4
+    },
+    {
+      "id": "consolidated_6996bc5c",
+      "title": "🧩 CONSOLIDATED: Webhook Configuration...",
+      "priority": "high",
+      "est_hours": 0,
+      "action": "execute_consolidated",
+      "agents_count": 4
+    },
+    {
+      "id": "consolidated_d6d923a5",
+      "title": "🧩 CONSOLIDATED: Auto-Reconciliation Loop Setup...",
+      "priority": "high",
+      "est_hours": 0,
+      "action": "execute_consolidated",
+      "agents_count": 4
+    },
+    {
+      "id": "consolidated_45a9ddeb",
+      "title": "🧩 CONSOLIDATED: Dead Man Switch Implementation for PayPal Service...",
+      "priority": "high",
+      "est_hours": 0,
+      "action": "execute_consolidated",
+      "agents_count": 1
+    },
+    {
+      "id": "consolidated_74e24d2d",
+      "title": "🧩 CONSOLIDATED: Comprehensive Monitoring Dashboard for Anti-Shutdo...",
+      "priority": "high",
+      "est_hours": 0,
+      "action": "execute_consolidated",
+      "agents_count": 1
+    },
+    {
+      "id": "consolidated_536a93d4",
+      "title": "🧩 CONSOLIDATED: Implement Automated Checkpoints for Missions...",
+      "priority": "high",
+      "est_hours": 0,
+      "action": "execute_consolidated",
+      "agents_count": 2
+    },
+    {
+      "id": "consolidated_9bd602e0",
+      "title": "🧩 CONSOLIDATED: December RealWorldCerts Sales Blitz...",
+      "priority": "high",
+      "est_hours": 0,
+      "action": "execute_consolidated",
+      "agents_count": 2
+    },
+    {
+      "id": "consolidated_6cbf59b9",
+      "title": "🧩 CONSOLIDATED: Immediately Identify Available Funds...",
+      "priority": "high",
+      "est_hours": 0,
+      "action": "execute_consolidated",
+      "agents_count": 1
+    },
+    {
+      "id": "consolidated_df495ff5",
+      "title": "🧩 CONSOLIDATED: Investigate how Data Bounties can be leveraged to ...",
+      "priority": "high",
+      "est_hours": 0,
+      "action": "execute_consolidated",
+      "agents_count": 0
+    },
+    {
+      "id": "consolidated_6fbf6873",
+      "title": "🧩 CONSOLIDATED: Code Quality and Standards Enforcement for Command...",
+      "priority": "high",
+      "est_hours": 0,
+      "action": "execute_consolidated",
+      "agents_count": 0
+    },
+    {
+      "id": "consolidated_62e485c3",
+      "title": "🧩 CONSOLIDATED: 68beddf551088dc2206bd7ec...",
+      "priority": "high",
+      "est_hours": 0,
+      "action": "execute_consolidated",
+      "agents_count": 1
+    },
+    {
+      "id": "consolidated_ef8d31b9",
+      "title": "🧩 CONSOLIDATED: 68beddf551088dc2206bd7e9...",
+      "priority": "high",
+      "est_hours": 0,
+      "action": "execute_consolidated",
+      "agents_count": 1
+    },
+    {
+      "id": "consolidated_77950d2e",
+      "title": "🧩 CONSOLIDATED: 68beddf551088dc2206bd7e8...",
+      "priority": "high",
+      "est_hours": 0,
+      "action": "execute_consolidated",
+      "agents_count": 1
+    },
+    {
+      "id": "consolidated_80442246",
+      "title": "🧩 CONSOLIDATED: 68beddf551088dc2206bd7de...",
+      "priority": "high",
+      "est_hours": 0,
+      "action": "execute_consolidated",
+      "agents_count": 1
+    },
+    {
+      "id": "consolidated_143483e4",
+      "title": "🧩 CONSOLIDATED: Attempt Bitcoin Puzzle Challenge...",
+      "priority": "high",
+      "est_hours": 0,
+      "action": "execute_consolidated",
+      "agents_count": 2
+    },
+    {
+      "id": "consolidated_5565bb45",
+      "title": "🧩 CONSOLIDATED: Create weighted scoring matrix (Revenue Provenance...",
+      "priority": "high",
+      "est_hours": 12,
+      "action": "execute_consolidated",
+      "agents_count": 1
+    },
+    {
+      "id": "consolidated_4c680b55",
+      "title": "🧩 CONSOLIDATED: Collect and synthesize public documentation, creat...",
+      "priority": "high",
+      "est_hours": 16,
+      "action": "execute_consolidated",
+      "agents_count": 1
+    },
+    {
+      "id": "consolidated_de9b51a3",
+      "title": "🧩 CONSOLIDATED: Disaster Recovery and Business Continuity Planning...",
+      "priority": "high",
+      "est_hours": 18,
+      "action": "execute_consolidated",
+      "agents_count": 1
+    },
+    {
+      "id": "consolidated_55493693",
+      "title": "🧩 CONSOLIDATED: Cookbooks featuring nutritious and easy-to-prepare...",
+      "priority": "high",
+      "est_hours": 20,
+      "action": "execute_consolidated",
+      "agents_count": 2
+    },
+    {
+      "id": "consolidated_a6a79e45",
+      "title": "🧩 CONSOLIDATED: Guides offering techniques and exercises for mindf...",
+      "priority": "high",
+      "est_hours": 20,
+      "action": "execute_consolidated",
+      "agents_count": 2
+    },
+    {
+      "id": "consolidated_e35e0cc2",
+      "title": "🧩 CONSOLIDATED: Journals designed to track workouts, nutrition, an...",
+      "priority": "high",
+      "est_hours": 20,
+      "action": "execute_consolidated",
+      "agents_count": 2
+    },
+    {
+      "id": "consolidated_f3a07d0c",
+      "title": "🧩 CONSOLIDATED: Educational content teaching techniques for digita...",
+      "priority": "high",
+      "est_hours": 20,
+      "action": "execute_consolidated",
+      "agents_count": 2
+    },
+    {
+      "id": "consolidated_7fcae406",
+      "title": "🧩 CONSOLIDATED: Posters featuring AI-generated surreal landscapes ...",
+      "priority": "high",
+      "est_hours": 20,
+      "action": "execute_consolidated",
+      "agents_count": 2
+    },
+    {
+      "id": "consolidated_1f77ee57",
+      "title": "🧩 CONSOLIDATED: Templates to assist with meal planning, grocery li...",
+      "priority": "high",
+      "est_hours": 20,
+      "action": "execute_consolidated",
+      "agents_count": 2
+    },
+    {
+      "id": "consolidated_b5c3f1e8",
+      "title": "🧩 CONSOLIDATED: Templates for budgeting, expense tracking, and fin...",
+      "priority": "high",
+      "est_hours": 20,
+      "action": "execute_consolidated",
+      "agents_count": 2
+    },
+    {
+      "id": "consolidated_f86e44db",
+      "title": "🧩 CONSOLIDATED: Interactive planners designed for tablets and smar...",
+      "priority": "high",
+      "est_hours": 20,
+      "action": "execute_consolidated",
+      "agents_count": 2
+    },
+    {
+      "id": "consolidated_17116010",
+      "title": "🧩 CONSOLIDATED: T-shirts or hoodies featuring matching designs for...",
+      "priority": "high",
+      "est_hours": 20,
+      "action": "execute_consolidated",
+      "agents_count": 2
+    },
+    {
+      "id": "consolidated_7bdd4b7d",
+      "title": "🧩 CONSOLIDATED: Customizable collars and engraved name tags for pe...",
+      "priority": "high",
+      "est_hours": 20,
+      "action": "execute_consolidated",
+      "agents_count": 2
+    },
+    {
+      "id": "consolidated_30102998",
+      "title": "🧩 CONSOLIDATED: Evaluate results against KPIs; refine revenue mode...",
+      "priority": "high",
+      "est_hours": 20,
+      "action": "execute_consolidated",
+      "agents_count": 1
+    },
+    {
+      "id": "consolidated_10729c24",
+      "title": "🧩 CONSOLIDATED: Rank opportunities based on scoring simulations an...",
+      "priority": "high",
+      "est_hours": 24,
+      "action": "execute_consolidated",
+      "agents_count": 1
+    },
+    {
+      "id": "consolidated_209580cb",
+      "title": "🧩 CONSOLIDATED: Standardize formats, remove duplicates, and unify ...",
+      "priority": "high",
+      "est_hours": 24,
+      "action": "execute_consolidated",
+      "agents_count": 1
+    },
+    {
+      "id": "consolidated_b634919a",
+      "title": "🧩 CONSOLIDATED: Revenue Discrepancy Investigation...",
+      "priority": "high",
+      "est_hours": 28,
+      "action": "execute_consolidated",
+      "agents_count": 1
+    },
+    {
+      "id": "consolidated_db1cc039",
+      "title": "🧩 CONSOLIDATED: Hand-drawn or digitally created portraits of pets,...",
+      "priority": "high",
+      "est_hours": 30,
+      "action": "execute_consolidated",
+      "agents_count": 3
+    },
+    {
+      "id": "consolidated_6b6a2e18",
+      "title": "🧩 CONSOLIDATED: Conduct stakeholder interviews, define scope, succ...",
+      "priority": "high",
+      "est_hours": 32,
+      "action": "execute_consolidated",
+      "agents_count": 1
+    },
+    {
+      "id": "consolidated_2fc69524",
+      "title": "🧩 CONSOLIDATED: Platform Integration Fixes...",
+      "priority": "high",
+      "est_hours": 40,
+      "action": "execute_consolidated",
+      "agents_count": 1
+    },
+    {
+      "id": "consolidated_954569c6",
+      "title": "🧩 CONSOLIDATED: PayPal Revenue Monitoring...",
+      "priority": "high",
+      "est_hours": 672,
+      "action": "execute_consolidated",
+      "agents_count": 3
+    },
+    {
+      "id": "consolidated_6c126770",
+      "title": "🧩 CONSOLIDATED: Develop and promote unique product offerings with ...",
+      "priority": "high",
+      "est_hours": 820,
+      "action": "execute_consolidated",
+      "agents_count": 0
+    },
+    {
+      "id": "consolidated_717be65c",
+      "title": "🧩 CONSOLIDATED: Re-run not executed payout PP-2024-001 and update ...",
+      "priority": "high",
+      "est_hours": 8760,
+      "action": "execute_consolidated",
+      "agents_count": 0
+    },
+    {
+      "id": "consolidated_78e0853e",
+      "title": "🧩 CONSOLIDATED: Initiate affiliate marketing activation. Coordinat...",
+      "priority": "high",
+      "est_hours": 9477.5,
+      "action": "execute_consolidated",
+      "agents_count": 0
+    },
+    {
+      "id": "consolidated_4d0dd022",
+      "title": "🧩 CONSOLIDATED: authorize and execute transfer Add PayPal API Sett...",
+      "priority": "medium",
+      "est_hours": 0,
+      "action": "execute_consolidated",
+      "agents_count": 0
+    },
+    {
+      "id": "consolidated_ed6cd09e",
+      "title": "🧩 CONSOLIDATED: AI-Logistique (Cross-Border Informal Transport Net...",
+      "priority": "medium",
+      "est_hours": 0,
+      "action": "execute_consolidated",
+      "agents_count": 4
+    },
+    {
+      "id": "consolidated_7542d3c3",
+      "title": "🧩 CONSOLIDATED: LinkedIn Professional Outreach...",
+      "priority": "medium",
+      "est_hours": 0,
+      "action": "execute_consolidated",
+      "agents_count": 1
+    },
+    {
+      "id": "consolidated_0e8c2437",
+      "title": "🧩 CONSOLIDATED: Launch Autonomous Education Affiliate Revenue Stre...",
+      "priority": "medium",
+      "est_hours": 0,
+      "action": "execute_consolidated",
+      "agents_count": 6
+    },
+    {
+      "id": "consolidated_6b8d9c18",
+      "title": "🧩 CONSOLIDATED: 68bc38085f02369b6679e083...",
+      "priority": "medium",
+      "est_hours": 0,
+      "action": "execute_consolidated",
+      "agents_count": 3
+    },
+    {
+      "id": "consolidated_649944a3",
+      "title": "🧩 CONSOLIDATED: 68bc5353ef800d98b63c95db...",
+      "priority": "medium",
+      "est_hours": 0,
+      "action": "execute_consolidated",
+      "agents_count": 1
+    },
+    {
+      "id": "consolidated_4b3b5941",
+      "title": "🧩 CONSOLIDATED: 68bc5353ef800d98b63c95d1...",
+      "priority": "medium",
+      "est_hours": 0,
+      "action": "execute_consolidated",
+      "agents_count": 1
+    },
+    {
+      "id": "consolidated_39afffc2",
+      "title": "🧩 CONSOLIDATED: 68bc5353ef800d98b63c95d3...",
+      "priority": "medium",
+      "est_hours": 0,
+      "action": "execute_consolidated",
+      "agents_count": 1
+    },
+    {
+      "id": "consolidated_2343247b",
+      "title": "🧩 CONSOLIDATED: 68bc5353ef800d98b63c95cd...",
+      "priority": "medium",
+      "est_hours": 0,
+      "action": "execute_consolidated",
+      "agents_count": 3
+    },
+    {
+      "id": "consolidated_141e3abe",
+      "title": "🧩 CONSOLIDATED: M007...",
+      "priority": "medium",
+      "est_hours": 0,
+      "action": "execute_consolidated",
+      "agents_count": 1
+    },
+    {
+      "id": "consolidated_cc7d9491",
+      "title": "🧩 CONSOLIDATED: REV-001...",
+      "priority": "medium",
+      "est_hours": 0,
+      "action": "execute_consolidated",
+      "agents_count": 0
+    },
+    {
+      "id": "consolidated_f09f9ff4",
+      "title": "🧩 CONSOLIDATED: Improve agentic orchestration and monitoring based...",
+      "priority": "medium",
+      "est_hours": 20,
+      "action": "execute_consolidated",
+      "agents_count": 1
+    },
+    {
+      "id": "consolidated_2ebcb897",
+      "title": "🧩 CONSOLIDATED: Create and Deploy Autonomous Community Engagement ...",
+      "priority": "medium",
+      "est_hours": 20,
+      "action": "execute_consolidated",
+      "agents_count": 1
+    },
+    {
+      "id": "consolidated_1eccc9a5",
+      "title": "🧩 CONSOLIDATED: Cross-Platform Integration and API Ecosystem...",
+      "priority": "medium",
+      "est_hours": 24,
+      "action": "execute_consolidated",
+      "agents_count": 1
+    },
+    {
+      "id": "consolidated_3887a8dd",
+      "title": "🧩 CONSOLIDATED: Apply criteria matrix to competitor dataset to tes...",
+      "priority": "medium",
+      "est_hours": 36,
+      "action": "execute_consolidated",
+      "agents_count": 1
+    },
+    {
+      "id": "consolidated_3dbac322",
+      "title": "🧩 CONSOLIDATED: Scalability Testing and Performance Optimization...",
+      "priority": "medium",
+      "est_hours": 40,
+      "action": "execute_consolidated",
+      "agents_count": 1
+    },
+    {
+      "id": "consolidated_d67148aa",
+      "title": "🧩 CONSOLIDATED: Directive: Forge Autonomous SaaS Product...",
+      "priority": "medium",
+      "est_hours": 120,
+      "action": "execute_consolidated",
+      "agents_count": 1
+    },
+    {
+      "id": "consolidated_3b23e049",
+      "title": "🧩 CONSOLIDATED: Continuously Scan and Integrate New AI Tools from ...",
+      "priority": "medium",
+      "est_hours": 120,
+      "action": "execute_consolidated",
+      "agents_count": 1
+    },
+    {
+      "id": "consolidated_4e8cb442",
+      "title": "🧩 CONSOLIDATED: Create Shareable Multilingual Offline Survival Too...",
+      "priority": "medium",
+      "est_hours": 154,
+      "action": "execute_consolidated",
+      "agents_count": 0
+    },
+    {
+      "id": "consolidated_1b62644e",
+      "title": "🧩 CONSOLIDATED: Deploy and Integrate MultiTalk for Promotional Vid...",
+      "priority": "medium",
+      "est_hours": 180,
+      "action": "execute_consolidated",
+      "agents_count": 1
+    },
+    {
+      "id": "consolidated_1d39ec22",
+      "title": "🧩 CONSOLIDATED: Integrate and Deploy Comet Agent for New Course Op...",
+      "priority": "medium",
+      "est_hours": 240,
+      "action": "execute_consolidated",
+      "agents_count": 1
+    },
+    {
+      "id": "consolidated_ea6acc68",
+      "title": "🧩 CONSOLIDATED: Deploy Project Sentinel to Eliminate Swarm Error R...",
+      "priority": "medium",
+      "est_hours": 360,
+      "action": "execute_consolidated",
+      "agents_count": 1
+    },
+    {
+      "id": "consolidated_f70c3a73",
+      "title": "🧩 CONSOLIDATED: Optimize Underperforming Agent (agent-4)...",
+      "priority": "medium",
+      "est_hours": 680,
+      "action": "execute_consolidated",
+      "agents_count": 0
+    },
+    {
+      "id": "consolidated_9855700b",
+      "title": "🧩 CONSOLIDATED: Construct Customer Success Copilot (Multi-Agent Ap...",
+      "priority": "medium",
+      "est_hours": 1240,
+      "action": "execute_consolidated",
+      "agents_count": 1
+    },
+    {
+      "id": "consolidated_b3b4a4f2",
+      "title": "🧩 CONSOLIDATED: Develop and Deploy Autonomous Sales & Outreach Age...",
+      "priority": "medium",
+      "est_hours": 1720,
+      "action": "execute_consolidated",
+      "agents_count": 1
+    },
+    {
+      "id": "consolidated_4b49197c",
+      "title": "🧩 CONSOLIDATED: Sync PayPal payout batch details from provider API...",
+      "priority": "medium",
+      "est_hours": 8760,
+      "action": "execute_consolidated",
+      "agents_count": 0
+    },
+    {
+      "id": "consolidated_936b7fc7",
+      "title": "🧩 CONSOLIDATED: Integrate and Test Flowith Agent Neo for Autonomou...",
+      "priority": "low",
+      "est_hours": 0,
+      "action": "execute_consolidated",
+      "agents_count": 0
+    },
+    {
+      "id": "consolidated_fb3df2f8",
+      "title": "🧩 CONSOLIDATED: Comprehensive Documentation and Knowledge Base...",
+      "priority": "low",
+      "est_hours": 20,
+      "action": "execute_consolidated",
+      "agents_count": 1
+    },
+    {
+      "id": "consolidated_376bef86",
+      "title": "🧩 CONSOLIDATED: Integrate and Test Flowith Agent Neo for Autonomou...",
+      "priority": "low",
+      "est_hours": 360,
+      "action": "execute_consolidated",
+      "agents_count": 1
+    },
+    {
+      "id": "consolidated_3392ab28",
+      "title": "🧩 CONSOLIDATED: Product and Supplier Optimization for Enhanced Pro...",
+      "priority": "critical",
+      "est_hours": 0,
+      "action": "execute_consolidated",
+      "agents_count": 0
+    },
+    {
+      "id": "consolidated_5e0408d7",
+      "title": "🧩 CONSOLIDATED: Implement PHASE 2 Swarm Infrastructure Updates...",
+      "priority": "critical",
+      "est_hours": 0,
+      "action": "execute_consolidated",
+      "agents_count": 1
+    },
+    {
+      "id": "consolidated_a12d2711",
+      "title": "🧩 CONSOLIDATED: Post-Deployment Verification...",
+      "priority": "critical",
+      "est_hours": 0,
+      "action": "execute_consolidated",
+      "agents_count": 4
+    },
+    {
+      "id": "consolidated_6d813c36",
+      "title": "🧩 CONSOLIDATED: Deployment Execution...",
+      "priority": "critical",
+      "est_hours": 0,
+      "action": "execute_consolidated",
+      "agents_count": 4
+    },
+    {
+      "id": "consolidated_962623ed",
+      "title": "🧩 CONSOLIDATED: PayPal Payout Service Deployment...",
+      "priority": "critical",
+      "est_hours": 0,
+      "action": "execute_consolidated",
+      "agents_count": 4
+    },
+    {
+      "id": "consolidated_a5719334",
+      "title": "🧩 CONSOLIDATED: Database Migration - Payout Tables...",
+      "priority": "critical",
+      "est_hours": 0,
+      "action": "execute_consolidated",
+      "agents_count": 4
+    },
+    {
+      "id": "consolidated_61da7876",
+      "title": "🧩 CONSOLIDATED: Decentralized Control Plane for Anti-Shutdown Syst...",
+      "priority": "critical",
+      "est_hours": 0,
+      "action": "execute_consolidated",
+      "agents_count": 1
+    },
+    {
+      "id": "consolidated_31bf627d",
+      "title": "🧩 CONSOLIDATED: Implement Comprehensive Payment Protocol Resilienc...",
+      "priority": "critical",
+      "est_hours": 0,
+      "action": "execute_consolidated",
+      "agents_count": 0
+    },
+    {
+      "id": "consolidated_c1d36d5a",
+      "title": "🧩 CONSOLIDATED: Establish Universal Automated Crypto Revenue Colle...",
+      "priority": "critical",
+      "est_hours": 0,
+      "action": "execute_consolidated",
+      "agents_count": 3
+    },
+    {
+      "id": "consolidated_3dd94e50",
+      "title": "🧩 CONSOLIDATED: 68beddf551088dc2206bd7ee...",
+      "priority": "critical",
+      "est_hours": 0,
+      "action": "execute_consolidated",
+      "agents_count": 1
+    },
+    {
+      "id": "consolidated_a5dd235c",
+      "title": "🧩 CONSOLIDATED: 68beddf551088dc2206bd7e6...",
+      "priority": "critical",
+      "est_hours": 0,
+      "action": "execute_consolidated",
+      "agents_count": 1
+    },
+    {
+      "id": "consolidated_e410689f",
+      "title": "🧩 CONSOLIDATED: 68be826364c2e97debd0eed5...",
+      "priority": "critical",
+      "est_hours": 0,
+      "action": "execute_consolidated",
+      "agents_count": 3
+    },
+    {
+      "id": "consolidated_e4f244c6",
+      "title": "🧩 CONSOLIDATED: 68be826364c2e97debd0eed7...",
+      "priority": "critical",
+      "est_hours": 0,
+      "action": "execute_consolidated",
+      "agents_count": 2
+    },
+    {
+      "id": "consolidated_be44b213",
+      "title": "🧩 CONSOLIDATED: Untitled Mission...",
+      "priority": "critical",
+      "est_hours": 0,
+      "action": "execute_consolidated",
+      "agents_count": 3
+    },
+    {
+      "id": "consolidated_be62d853",
+      "title": "🧩 CONSOLIDATED: Execute One-Time PayPal Transfer...",
+      "priority": "critical",
+      "est_hours": 0,
+      "action": "execute_consolidated",
+      "agents_count": 4
+    },
+    {
+      "id": "consolidated_11b66014",
+      "title": "🧩 CONSOLIDATED: Fix Vercel deployment for UCC repository and commi...",
+      "priority": "critical",
+      "est_hours": 0.5,
+      "action": "execute_consolidated",
+      "agents_count": 0
+    },
+    {
+      "id": "consolidated_328fc706",
+      "title": "🧩 CONSOLIDATED: Resolve and validate connectivity between the Lear...",
+      "priority": "critical",
+      "est_hours": 1.5,
+      "action": "execute_consolidated",
+      "agents_count": 4
+    },
+    {
+      "id": "consolidated_4f149527",
+      "title": "🧩 CONSOLIDATED: Activate Revenue Acceleration System...",
+      "priority": "critical",
+      "est_hours": 2,
+      "action": "execute_consolidated",
+      "agents_count": 2
+    },
+    {
+      "id": "consolidated_b15bc3c3",
+      "title": "🧩 CONSOLIDATED: Establish Independent Revenue Models...",
+      "priority": "critical",
+      "est_hours": 17,
+      "action": "execute_consolidated",
+      "agents_count": 0
+    },
+    {
+      "id": "consolidated_54cce4c0",
+      "title": "🧩 CONSOLIDATED: Plan phased scale-up of proven revenue model acros...",
+      "priority": "critical",
+      "est_hours": 28,
+      "action": "execute_consolidated",
+      "agents_count": 1
+    },
+    {
+      "id": "consolidated_e792d2a1",
+      "title": "🧩 CONSOLIDATED: Define implementation roadmap for selected revenue...",
+      "priority": "critical",
+      "est_hours": 30,
+      "action": "execute_consolidated",
+      "agents_count": 1
+    },
+    {
+      "id": "consolidated_28e913df",
+      "title": "🧩 CONSOLIDATED: Build ETL processes to ingest platform docs, socia...",
+      "priority": "critical",
+      "est_hours": 40,
+      "action": "execute_consolidated",
+      "agents_count": 1
+    },
+    {
+      "id": "consolidated_91bd3ea5",
+      "title": "🧩 CONSOLIDATED: Monitor Critical PayPal Recovery Missions...",
+      "priority": "critical",
+      "est_hours": 72,
+      "action": "execute_consolidated",
+      "agents_count": 1
+    },
+    {
+      "id": "consolidated_81d2778d",
+      "title": "🧩 CONSOLIDATED: Emergency Payment Account Audit & Revenue Recovery...",
+      "priority": "critical",
+      "est_hours": 162,
+      "action": "execute_consolidated",
+      "agents_count": 8
+    },
+    {
+      "id": "consolidated_bb93ff1e",
+      "title": "🧩 CONSOLIDATED: PayPal Conversion Optimization...",
+      "priority": "critical",
+      "est_hours": 240,
+      "action": "execute_consolidated",
+      "agents_count": 4
+    },
+    {
+      "id": "consolidated_a8a34c50",
+      "title": "🧩 CONSOLIDATED: Complete Transaction Systems for PayPal...",
+      "priority": "critical",
+      "est_hours": 240,
+      "action": "execute_consolidated",
+      "agents_count": 2
+    },
+    {
+      "id": "consolidated_158cc6ae",
+      "title": "🧩 CONSOLIDATED: Develop Multilingual Survival Core Content...",
+      "priority": "critical",
+      "est_hours": 302,
+      "action": "execute_consolidated",
+      "agents_count": 0
+    },
+    {
+      "id": "consolidated_3db8d110",
+      "title": "🧩 CONSOLIDATED: PayPal-Optimized Revenue Generation...",
+      "priority": "critical",
+      "est_hours": 336,
+      "action": "execute_consolidated",
+      "agents_count": 5
+    },
+    {
+      "id": "consolidated_43c12ea8",
+      "title": "🧩 CONSOLIDATED: Critical Blocker Resolution Acceleration...",
+      "priority": "critical",
+      "est_hours": 480,
+      "action": "execute_consolidated",
+      "agents_count": 4
+    },
+    {
+      "id": "consolidated_65e87445",
+      "title": "🧩 CONSOLIDATED: PayPal Revenue Integration...",
+      "priority": "critical",
+      "est_hours": 672,
+      "action": "execute_consolidated",
+      "agents_count": 3
+    },
+    {
+      "id": "consolidated_cf9b89de",
+      "title": "🧩 CONSOLIDATED: Validate & Classify Survival Techniques...",
+      "priority": "critical",
+      "est_hours": 750,
+      "action": "execute_consolidated",
+      "agents_count": 0
+    },
+    {
+      "id": "consolidated_18a64501",
+      "title": "🧩 CONSOLIDATED: Verify all revenue claims against provider truth (...",
+      "priority": "critical",
+      "est_hours": 8784,
+      "action": "execute_consolidated",
+      "agents_count": 0
+    },
+    {
+      "id": "consolidated_e01f692d",
+      "title": "🧩 CONSOLIDATED: Monitor PayPal webhook deliveries and reconcile pa...",
+      "priority": "critical",
+      "est_hours": 8786,
+      "action": "execute_consolidated",
+      "agents_count": 0
+    },
+    {
+      "id": "consolidated_3cca8ae5",
+      "title": "🧩 CONSOLIDATED: Deploy foundational SwarmCommerce AI system for au...",
+      "priority": "critical",
+      "est_hours": 18925.5,
+      "action": "execute_consolidated",
+      "agents_count": 0
+    }
+  ]
+}

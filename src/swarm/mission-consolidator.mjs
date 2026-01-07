@@ -30,7 +30,7 @@ export class IntelligentMissionConsolidator {
       type: mission.type || '',
       priority: mission.priority || '',
       objectiveKeywords: this._extractKeywords(mission),
-      assignedAgents: new Set(this._parseJsonSafe(mission.assigned_agent_ids || '[]')),
+      assignedAgents: new Set(Array.isArray(this._parseJsonSafe(mission.assigned_agent_ids || '[]')) ? this._parseJsonSafe(mission.assigned_agent_ids || '[]') : []),
       resourceSignature: this._extractResourceSignature(mission),
       progressState: mission.progress_data || {},
       createdDate: mission.created_date || '',
@@ -88,7 +88,8 @@ export class IntelligentMissionConsolidator {
     const signatureParts = [];
 
     // Agents assigned
-    const agents = this._parseJsonSafe(mission.assigned_agent_ids || '[]');
+    const parsedAgents = this._parseJsonSafe(mission.assigned_agent_ids || '[]');
+    const agents = Array.isArray(parsedAgents) ? parsedAgents : [];
     agents.sort();
     signatureParts.push(`agents:${JSON.stringify(agents)}`);
 
@@ -199,7 +200,8 @@ export class IntelligentMissionConsolidator {
         // Find overlapping agents
         const allAgents = [];
         clusterMissionsData.forEach(m => {
-            const agents = this._parseJsonSafe(m.assigned_agent_ids || '[]');
+            const parsed = this._parseJsonSafe(m.assigned_agent_ids || '[]');
+            const agents = Array.isArray(parsed) ? parsed : [];
             allAgents.push(...agents);
         });
         
@@ -266,7 +268,8 @@ export class IntelligentMissionConsolidator {
     // Merge agents
     const allAgents = new Set();
     clusterMissions.forEach(m => {
-        const agents = this._parseJsonSafe(m.assigned_agent_ids || '[]');
+        const parsed = this._parseJsonSafe(m.assigned_agent_ids || '[]');
+        const agents = Array.isArray(parsed) ? parsed : [];
         agents.forEach(a => allAgents.add(a));
     });
 
@@ -377,10 +380,11 @@ export class IntelligentMissionConsolidator {
         const clusterMissions = this.missions.filter(m => cluster.missionIds.includes(m.id));
         
         const allAgents = [];
-        clusterMissions.forEach(m => {
-            const agents = this._parseJsonSafe(m.assigned_agent_ids || '[]');
-            allAgents.push(...agents);
-        });
+    clusterMissions.forEach(m => {
+        const parsed = this._parseJsonSafe(m.assigned_agent_ids || '[]');
+        const agents = Array.isArray(parsed) ? parsed : [];
+        allAgents.push(...agents);
+    });
 
         const agentCounts = {};
         allAgents.forEach(a => { agentCounts[a] = (agentCounts[a] || 0) + 1; });

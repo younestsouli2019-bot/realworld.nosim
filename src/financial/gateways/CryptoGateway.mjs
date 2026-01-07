@@ -84,14 +84,63 @@ export class CryptoGateway {
     const enabled = String(process.env.CRYPTO_WITHDRAW_ENABLE || '').toLowerCase() === 'true';
     const network = 'BEP20';
     const prepared_at = new Date().toISOString();
-    if (!enabled) return { status: 'prepared', network, prepared_at, provider, transactions };
     const dest = transactions[0]?.destination;
     const amount = transactions[0]?.amount;
     if (!dest || !amount) return { status: 'invalid', reason: 'missing_destination_or_amount' };
     const bitgetCreds = { apiKey: process.env.BITGET_API_KEY, secret: process.env.BITGET_API_SECRET, passphrase: process.env.BITGET_PASSPHRASE };
     const bybitCreds = { apiKey: process.env.BYBIT_API_KEY, secret: process.env.BYBIT_API_SECRET };
 
+    function mapBitgetChain(raw) {
+      const v = String(raw || '').trim().toLowerCase();
+      if (v === 'bep20' || v === 'bsc') return 'BSC';
+      if (v === 'erc20' || v === 'eth') return 'ETH';
+      if (v === 'trc20' || v === 'tron') return 'TRON';
+      return raw || 'bep20';
+    }
+
+    async function bitgetRequest(method, requestPath, bodyObj, creds) {
+      const base = 'api.bitget.com';
+      const ts = String(Date.now());
+      const body = bodyObj ? JSON.stringify(bodyObj) : '';
+      const prehash = ts + method.toUpperCase() + requestPath + body;
+      const sig = crypto.createHmac('sha256', String(creds.secret || '')).update(prehash).digest('base64');
+      const options = {
+        hostname: base,
+        port: 443,
+        path: requestPath,
+        method,
+        headers: {
+          'ACCESS-KEY': String(creds.apiKey || ''),
+          'ACCESS-SIGN': sig,
+          'ACCESS-PASSPHRASE': String(creds.passphrase || ''),
+          'ACCESS-TIMESTAMP': ts,
+          'locale': 'en-US',
+          'Content-Type': 'application/json'
+        }
+      };
+      return new Promise((resolve, reject) => {
+        const req = https.request(options, (res) => {
+          let data = '';
+          res.on('data', (c) => (data += c));
+          res.on('end', () => {
+            try {
+              const j = JSON.parse(String(data || '{}'));
+              resolve(j);
+            } catch (e) {
+              reject(e);
+            }
+          });
+        });
+        req.on('error', reject);
+        if (body) req.write(body);
+        req.end();
+      });
+    }
+
     if (provider === 'binance') {
+      if (!enabled) {
+        return { status: 'prepared', provider, network, prepared_at, transactions };
+      }
       const r = await withdrawUSDTBEP20(dest, amount);
       const applyId = r.id || r.applyId || null;
       let txId = null;
@@ -117,21 +166,45 @@ export class CryptoGateway {
       fs.mkdirSync(path.dirname(filePath), { recursive: true });
       fs.writeFileSync(
         filePath,
-        JSON.stringify({ provider: 'bybit', action: 'withdraw', coin: 'USDT', network: 'ERC20', address: dest, amount, status: 'WAITING_MANUAL_EXECUTION', creds_present: !!(bybitCreds.apiKey && bybitCreds.secret) }, null, 2)
+        JSON.stringify({ provider: 'bybit', action: 'withdraw', coin: 'USDT', network: 'ERC20', address: dest, amount, status: 'WAITING_MANUAL_EXECUTION', creds_present: !!(bybitCreds.apiKey && bybitCreds.secret), origin: 'in_house' }, null, 2)
       );
       return { status: 'INSTRUCTIONS_READY', provider: 'bybit', filePath, network: 'ERC20', prepared_at, creds_present: !!(bybitCreds.apiKey && bybitCreds.secret) };
     }
 
     if (provider === 'bitget') {
+      const hasCreds = !!(bitgetCreds.apiKey && bitgetCreds.secret && bitgetCreds.passphrase);
+      const preferredRaw = String(process.env.BITGET_CHAIN || 'bep20');
+      const preferredChainApi = mapBitgetChain(preferredRaw);
+      const preferredNetworkLabel = (preferredChainApi === 'BSC' ? 'BEP20' : preferredChainApi).toUpperCase();
+      if (enabled && hasCreds) {
+        const tryChains = Array.from(new Set([preferredChainApi, 'BSC', 'ETH', 'TRON']));
+        for (const chain of tryChains) {
+          const label = (chain === 'BSC' ? 'BEP20' : chain).toUpperCase();
+          const payloadV2 = { coin: 'USDT', transferType: 'on_chain', address: dest, chain, size: String(amount) };
+          try {
+            const r2 = await bitgetRequest('POST', '/api/v2/spot/wallet/withdrawal', payloadV2, bitgetCreds);
+            if (r2 && r2.code === '00000') {
+              return { status: 'submitted', provider: 'bitget', network: label, prepared_at, applyId: r2?.data?.orderId || null };
+            }
+          } catch {}
+          const payloadV1 = { coin: 'USDT', address: dest, chain, amount: String(amount) };
+          try {
+            const r1 = await bitgetRequest('POST', '/api/spot/v1/wallet/withdrawal', payloadV1, bitgetCreds);
+            if (r1 && r1.code === '00000') {
+              return { status: 'submitted', provider: 'bitget', network: label, prepared_at, applyId: r1?.data?.orderId || null };
+            }
+          } catch {}
+        }
+      }
       const outDir = 'settlements/crypto';
       const filename = `bitget_instruction_${Date.now()}.json`;
       const filePath = path.join(process.cwd(), outDir, filename);
       fs.mkdirSync(path.dirname(filePath), { recursive: true });
       fs.writeFileSync(
         filePath,
-        JSON.stringify({ provider: 'bitget', action: 'withdraw', coin: 'USDT', network: 'BEP20', address: dest, amount, status: 'WAITING_MANUAL_EXECUTION', creds_present: !!(bitgetCreds.apiKey && bitgetCreds.secret && bitgetCreds.passphrase) }, null, 2)
+        JSON.stringify({ provider: 'bitget', action: 'withdraw', coin: 'USDT', network: preferredNetworkLabel, address: dest, amount, status: 'WAITING_MANUAL_EXECUTION', creds_present: hasCreds, origin: 'in_house' }, null, 2)
       );
-      return { status: 'INSTRUCTIONS_READY', provider: 'bitget', filePath, network: 'BEP20', prepared_at, creds_present: !!(bitgetCreds.apiKey && bitgetCreds.secret && bitgetCreds.passphrase) };
+      return { status: 'INSTRUCTIONS_READY', provider: 'bitget', filePath, network: preferredNetworkLabel, prepared_at, creds_present: hasCreds };
     }
 
     if (provider === 'trust') {

@@ -1,2 +1,37 @@
 OWNER bitget wallet private key (bnb chain):
 0x67e694f7b4ce878d664c4b18e22c55c02667a10f86f8cc2faecdc77bff37d54ad
+OWNER bitget app 
+new API key
+ Note
+younes
+ BITGET_PASSPHRASE= (API token) 
+0x67e694f7b4ce878d664c4b18e22c55
+ Permissions
+ 
+Permission type
+Futures
+Spot
+Margin
+Copy trading
+Taxation
+P2P
+Crypto Loans
+Sub-accounts
+Wallet
+Bind IP addresses (optional, up to 30 per key)
+Seperate multiple IP addresses with commas.
+View
+BITGET_API_KEY=bg_f8b755e5a11606a812b4111b7bebcb19
+BITGET_API_SECRET=57e5532fb7d0a535c8d85588ec04be9d02632c3ec3a24b039528140dae3e7467
+
+Bind IP addresses
+No record
+Privilege
+Futures|OrdersFutures|HoldingsSpot|TradeMargin|TradeCopy trading|TradeTaxation|SearchP2P|SearchCrypto Loans|LoansSub-accounts|ManageWallet|Transfer
+QR Code image available
+
+
+BITGET_API_KEY=bg_f8b755e5a11606a812b4111b7bebcb19
+BITGET_API_SECRET=57e5532fb7d0a535c8d85588ec04be9d02632c3ec3a24b039528140dae3e7467
+BITGET_PASSPHRASE=0x67e694f7b4ce878d664c4b18e22c55
+CRYPTO_WITHDRAW_ENABLE=true

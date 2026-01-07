@@ -1,0 +1,20 @@
+{
+  "ok": true,
+  "planPath": "exports\\missions\\master_agent_plan_Mission_export_(72)_1767772996830.json",
+  "missionsPath": "exports\\missions\\consolidated_missions_Mission_export_(72)_1767772996830.json",
+  "phases": [
+    {
+      "phase": "High Priority",
+      "count": 41
+    },
+    {
+      "phase": "Medium Priority",
+      "count": 26
+    },
+    {
+      "phase": "Low Priority",
+      "count": 3
+    }
+  ],
+  "finished_at": "2026-01-07T08:28:19.832Z"
+}

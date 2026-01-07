@@ -1,0 +1,29 @@
+{
+  "kind": "payoneer_reconciliation",
+  "batch_id": "BATCH_PAYONEER_X_1767529200",
+  "amount": 1200,
+  "currency": "USD",
+  "rail": "payoneer",
+  "previous_status": "awaiting_bank_confirmation",
+  "current_status": "awaiting_bank_confirmation",
+  "created_at": "2026-01-07T07:40:28.049Z",
+  "next_check_at": "2026-01-08T07:40:28.046Z",
+  "metadata": {
+    "documentation": "exports\\payoneer\\PAYONEER_REMITTANCE_BATCH_PAYONEER_X_1767529200.txt",
+    "note": "User requested details for email to Payoneer"
+  },
+  "owner_accounts": {
+    "bank_rib": "007810000448500030594182",
+    "payoneer_id": "younestsouli2019@gmail.com"
+  },
+  "actions": [
+    "monitor auto-withdrawal from Payoneer receiving account",
+    "verify bank credit via statement import or provider API",
+    "attach bank reference ID to batch",
+    "mark settled when bank confirmation present"
+  ],
+  "sla": {
+    "verification_window_hours": 72,
+    "escalation": "agent_audit_if_exceeded"
+  }
+}

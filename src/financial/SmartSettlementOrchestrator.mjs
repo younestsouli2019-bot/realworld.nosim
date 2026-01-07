@@ -9,6 +9,7 @@ import { BankGateway } from './gateways/BankGateway.mjs';
 import { CryptoGateway } from './gateways/CryptoGateway.mjs';
 import { PayPalGateway } from './gateways/PayPalGateway.mjs';
 import { recordProgress } from '../ops/AutoCommitChangelog.mjs';
+import { computeConstitutionHash } from '../policy/constitution.mjs';
 import { SwarmMemory } from '../swarm/shared-memory.mjs';
 import { globalRecorder } from '../swarm/flight-recorder.mjs';
 
@@ -113,7 +114,7 @@ export class SmartSettlementOrchestrator {
     // In a real system, this would check dynamic availability.
     // For now, we list our preferred priorities based on constraints.
     if (currency === 'USDT' || currency === 'USDC') {
-      return ['BYBIT_API', 'BITGET_API', 'BINANCE_API', 'TRUST_WALLET_DIRECT']; 
+      return ['BITGET_API', 'BYBIT_API', 'BINANCE_API', 'TRUST_WALLET_DIRECT']; 
     }
     return ['BANK_WIRE', 'PAYONEER', 'PAYPAL'];
   }
@@ -250,7 +251,8 @@ export class SmartSettlementOrchestrator {
         if (result.filePath) console.log(`      📄 Output: ${result.filePath}`);
         if (result.txHash) console.log(`      🔗 TxHash: ${result.txHash}`);
         
-        await this.ledger.recordTransaction(channel, amount, status, null, { ...result, destination });
+        const constitution_hash = (() => { try { return computeConstitutionHash(); } catch { return undefined; } })();
+        await this.ledger.recordTransaction(channel, amount, status, null, { ...result, destination, constitution_hash, kind: 'in_house' });
         try { recordProgress(`progress: ${channel} -> ${destination} ${status}`, { amount, currency, destination, status }); } catch {}
         if (status && String(status).toLowerCase().includes('queued')) {
           try { await this.memory.addLesson(`queued: ${channel} ${amount} ${currency} -> ${destination}`); } catch {}

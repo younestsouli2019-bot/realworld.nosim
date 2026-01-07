@@ -33,6 +33,7 @@ export function mapPayPalWebhookToRevenueEvent(evt, { defaultCurrency = "USD" } 
     source: "paypal",
     externalId,
     metadata: {
+      kind: "client_to_owner",
       paypal_event_type: evt.event_type ?? null,
       paypal_capture_id: resource?.id ?? null,
       paypal_status: resource?.status ?? null,
@@ -41,4 +42,3 @@ export function mapPayPalWebhookToRevenueEvent(evt, { defaultCurrency = "USD" } 
     }
   };
 }
-
