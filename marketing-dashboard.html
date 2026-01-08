@@ -40,25 +40,29 @@
                 }
 
                 queue.reverse().forEach(post => {
+                    const normalize = (s) => typeof s === 'string' ? s.replace(/base44\.app/g, 'www.realworldcerts.com') : s;
+                    const normalizedText = normalize(post.text);
+                    const normalizedLink = normalize(post.link);
+                    const normalizedLinks = Array.isArray(post.links) ? post.links.map(normalize) : [];
                     const card = document.createElement('div');
                     card.className = 'card';
                     
-                    const twitterText = encodeURIComponent(post.text);
-                    const linkedinUrl = encodeURIComponent(post.link);
+                    const twitterText = encodeURIComponent(normalizedText);
+                    const linkedinUrl = encodeURIComponent(normalizedLink);
 
                     card.innerHTML = `
                         <h3>${post.title}</h3>
                         <div class="price">$${post.price}</div>
-                        <p>${post.text}</p>
+                        <p>${normalizedText}</p>
                         <div class="timestamp">Generated: ${new Date(post.created_at).toLocaleString()}</div>
                         <div class="actions">
                             <a href="https://twitter.com/intent/tweet?text=${twitterText}" target="_blank" class="btn btn-twitter">🐦 Post to X</a>
                             <a href="https://www.linkedin.com/sharing/share-offsite/?url=${linkedinUrl}" target="_blank" class="btn btn-linkedin">💼 Post to LinkedIn</a>
-                            <button onclick="navigator.clipboard.writeText('${post.text.replace(/'/g, "\\'")}')" class="btn btn-copy">📋 Copy Text</button>
+                            <button onclick="navigator.clipboard.writeText('${normalizedText.replace(/'/g, "\\'")}')" class="btn btn-copy">📋 Copy Text</button>
                         </div>
-                        ${Array.isArray(post.links) && post.links.length ? `
+                        ${Array.isArray(normalizedLinks) && normalizedLinks.length ? `
                         <div class="actions">
-                            ${post.links.map((l, idx) => `<a href="${l}" target="_blank" class="btn btn-copy">🔗 Link ${idx+1}</a>`).join('')}
+                            ${normalizedLinks.map((l, idx) => `<a href="${l}" target="_blank" class="btn btn-copy">🔗 Link ${idx+1}</a>`).join('')}
                         </div>` : ''}
                     `;
                     feed.appendChild(card);

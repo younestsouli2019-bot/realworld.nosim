@@ -55,8 +55,8 @@ export async function buildOffer(idea) {
             amount: price.toFixed(2),
             item_name: title,
             custom: offerId,
-            return: 'https://base44.app/payment-success',
-            cancel_return: 'https://base44.app/payment-cancel'
+            return: 'https://www.realworldcerts.com/payment-success',
+            cancel_return: 'https://www.realworldcerts.com/payment-cancel'
         });
         paypalUrl = `https://www.paypal.com/cgi-bin/webscr?${params.toString()}`;
     }

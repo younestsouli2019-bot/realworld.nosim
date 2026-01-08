@@ -74,6 +74,406 @@
     "alerts",
     [
       {
+        "message": "Network degraded: paypal",
+        "agentId": "network-guard",
+        "timestamp": 1767856723807
+      },
+      {
+        "message": "Network degraded: paypal",
+        "agentId": "network-guard",
+        "timestamp": 1767856682022
+      },
+      {
+        "message": "Network degraded: payoneer",
+        "agentId": "network-guard",
+        "timestamp": 1767856397938
+      },
+      {
+        "message": "Network degraded: paypal",
+        "agentId": "network-guard",
+        "timestamp": 1767856363599
+      },
+      {
+        "message": "Network degraded: payoneer",
+        "agentId": "network-guard",
+        "timestamp": 1767855490879
+      },
+      {
+        "message": "Network degraded: payoneer",
+        "agentId": "network-guard",
+        "timestamp": 1767855458865
+      },
+      {
+        "message": "Network degraded: paypal",
+        "agentId": "network-guard",
+        "timestamp": 1767855427621
+      },
+      {
+        "message": "Network degraded: paypal",
+        "agentId": "network-guard",
+        "timestamp": 1767854710390
+      },
+      {
+        "message": "Network degraded: paypal",
+        "agentId": "network-guard",
+        "timestamp": 1767854603469
+      },
+      {
+        "message": "Network degraded: paypal",
+        "agentId": "network-guard",
+        "timestamp": 1767854328505
+      },
+      {
+        "message": "Network degraded: payoneer",
+        "agentId": "network-guard",
+        "timestamp": 1767854018758
+      },
+      {
+        "message": "Network degraded: payoneer, paypal, paypal_web",
+        "agentId": "network-guard",
+        "timestamp": 1767853977880
+      },
+      {
+        "message": "Network degraded: payoneer, paypal, paypal_web",
+        "agentId": "network-guard",
+        "timestamp": 1767853932783
+      },
+      {
+        "message": "Network degraded: payoneer, paypal, paypal_web",
+        "agentId": "network-guard",
+        "timestamp": 1767853887706
+      },
+      {
+        "message": "Network degraded: payoneer, paypal, paypal_web",
+        "agentId": "network-guard",
+        "timestamp": 1767853842641
+      },
+      {
+        "message": "Network degraded: paypal",
+        "agentId": "network-guard",
+        "timestamp": 1767853691276
+      },
+      {
+        "message": "Network degraded: payoneer",
+        "agentId": "network-guard",
+        "timestamp": 1767853512619
+      },
+      {
+        "message": "Network degraded: paypal",
+        "agentId": "network-guard",
+        "timestamp": 1767853479999
+      },
+      {
+        "message": "Network degraded: paypal",
+        "agentId": "network-guard",
+        "timestamp": 1767853110325
+      },
+      {
+        "message": "Network degraded: payoneer, paypal, paypal_web",
+        "agentId": "network-guard",
+        "timestamp": 1767852496892
+      },
+      {
+        "message": "Network degraded: payoneer, paypal, paypal_web",
+        "agentId": "network-guard",
+        "timestamp": 1767852466886
+      },
+      {
+        "message": "Network degraded: payoneer, paypal, paypal_web",
+        "agentId": "network-guard",
+        "timestamp": 1767852372275
+      },
+      {
+        "message": "Network degraded: paypal",
+        "agentId": "network-guard",
+        "timestamp": 1767852309435
+      },
+      {
+        "message": "Network degraded: paypal",
+        "agentId": "network-guard",
+        "timestamp": 1767852268510
+      },
+      {
+        "message": "Network degraded: payoneer",
+        "agentId": "network-guard",
+        "timestamp": 1767852018130
+      },
+      {
+        "message": "Network degraded: payoneer",
+        "agentId": "network-guard",
+        "timestamp": 1767851984329
+      },
+      {
+        "message": "Network degraded: payoneer",
+        "agentId": "network-guard",
+        "timestamp": 1767851951448
+      },
+      {
+        "message": "Network degraded: paypal",
+        "agentId": "network-guard",
+        "timestamp": 1767851810453
+      },
+      {
+        "message": "Network degraded: paypal",
+        "agentId": "network-guard",
+        "timestamp": 1767851703651
+      },
+      {
+        "message": "Network degraded: paypal",
+        "agentId": "network-guard",
+        "timestamp": 1767851495809
+      },
+      {
+        "message": "Network degraded: paypal",
+        "agentId": "network-guard",
+        "timestamp": 1767851361038
+      },
+      {
+        "message": "Network degraded: paypal",
+        "agentId": "network-guard",
+        "timestamp": 1767851286492
+      },
+      {
+        "message": "Network degraded: paypal",
+        "agentId": "network-guard",
+        "timestamp": 1767850892917
+      },
+      {
+        "message": "Network degraded: payoneer, paypal, paypal_web",
+        "agentId": "network-guard",
+        "timestamp": 1767850721034
+      },
+      {
+        "message": "Network degraded: payoneer, paypal, paypal_web",
+        "agentId": "network-guard",
+        "timestamp": 1767850675941
+      },
+      {
+        "message": "Network degraded: payoneer, paypal, paypal_web",
+        "agentId": "network-guard",
+        "timestamp": 1767850630845
+      },
+      {
+        "message": "Network degraded: payoneer, paypal, paypal_web",
+        "agentId": "network-guard",
+        "timestamp": 1767850585755
+      },
+      {
+        "message": "Network degraded: paypal",
+        "agentId": "network-guard",
+        "timestamp": 1767850540652
+      },
+      {
+        "message": "Network degraded: paypal",
+        "agentId": "network-guard",
+        "timestamp": 1767850016952
+      },
+      {
+        "message": "Network degraded: paypal_web",
+        "agentId": "network-guard",
+        "timestamp": 1767849765788
+      },
+      {
+        "message": "Network degraded: payoneer",
+        "agentId": "network-guard",
+        "timestamp": 1767849615556
+      },
+      {
+        "message": "Network degraded: payoneer",
+        "agentId": "network-guard",
+        "timestamp": 1767849583185
+      },
+      {
+        "message": "Network degraded: paypal",
+        "agentId": "network-guard",
+        "timestamp": 1767849515842
+      },
+      {
+        "message": "Network degraded: paypal",
+        "agentId": "network-guard",
+        "timestamp": 1767849270287
+      },
+      {
+        "message": "Network degraded: paypal",
+        "agentId": "network-guard",
+        "timestamp": 1767849228583
+      },
+      {
+        "message": "Network degraded: payoneer",
+        "agentId": "network-guard",
+        "timestamp": 1767849008485
+      },
+      {
+        "message": "Network degraded: payoneer",
+        "agentId": "network-guard",
+        "timestamp": 1767848976210
+      },
+      {
+        "message": "Network degraded: payoneer",
+        "agentId": "network-guard",
+        "timestamp": 1767848944606
+      },
+      {
+        "message": "Network degraded: payoneer",
+        "agentId": "network-guard",
+        "timestamp": 1767848912037
+      },
+      {
+        "message": "Network degraded: payoneer, paypal, paypal_web",
+        "agentId": "network-guard",
+        "timestamp": 1767848138443
+      },
+      {
+        "message": "Network degraded: payoneer, paypal, paypal_web",
+        "agentId": "network-guard",
+        "timestamp": 1767848093361
+      },
+      {
+        "message": "Network degraded: payoneer, paypal, paypal_web",
+        "agentId": "network-guard",
+        "timestamp": 1767848048278
+      },
+      {
+        "message": "Network degraded: payoneer, paypal, paypal_web",
+        "agentId": "network-guard",
+        "timestamp": 1767848003206
+      },
+      {
+        "message": "Network degraded: paypal, paypal_web",
+        "agentId": "network-guard",
+        "timestamp": 1767847543958
+      },
+      {
+        "message": "Network degraded: payoneer",
+        "agentId": "network-guard",
+        "timestamp": 1767847289580
+      },
+      {
+        "message": "Network degraded: paypal",
+        "agentId": "network-guard",
+        "timestamp": 1767847038125
+      },
+      {
+        "message": "Network degraded: paypal",
+        "agentId": "network-guard",
+        "timestamp": 1767846899256
+      },
+      {
+        "message": "Network degraded: payoneer, paypal, paypal_web",
+        "agentId": "network-guard",
+        "timestamp": 1767846613578
+      },
+      {
+        "message": "Network degraded: payoneer, paypal, paypal_web",
+        "agentId": "network-guard",
+        "timestamp": 1767846568501
+      },
+      {
+        "message": "Network degraded: payoneer, paypal, paypal_web",
+        "agentId": "network-guard",
+        "timestamp": 1767846523420
+      },
+      {
+        "message": "Network degraded: payoneer, paypal, paypal_web",
+        "agentId": "network-guard",
+        "timestamp": 1767846478334
+      },
+      {
+        "message": "Network degraded: paypal",
+        "agentId": "network-guard",
+        "timestamp": 1767846433234
+      },
+      {
+        "message": "Network degraded: paypal",
+        "agentId": "network-guard",
+        "timestamp": 1767846327638
+      },
+      {
+        "message": "Network degraded: paypal",
+        "agentId": "network-guard",
+        "timestamp": 1767846294463
+      },
+      {
+        "message": "Network degraded: paypal",
+        "agentId": "network-guard",
+        "timestamp": 1767846260189
+      },
+      {
+        "message": "Network degraded: paypal",
+        "agentId": "network-guard",
+        "timestamp": 1767846229119
+      },
+      {
+        "message": "Network degraded: paypal",
+        "agentId": "network-guard",
+        "timestamp": 1767846197869
+      },
+      {
+        "message": "Network degraded: paypal",
+        "agentId": "network-guard",
+        "timestamp": 1767846132289
+      },
+      {
+        "message": "Network degraded: paypal",
+        "agentId": "network-guard",
+        "timestamp": 1767846058720
+      },
+      {
+        "message": "Network degraded: paypal",
+        "agentId": "network-guard",
+        "timestamp": 1767845697475
+      },
+      {
+        "message": "Network degraded: paypal",
+        "agentId": "network-guard",
+        "timestamp": 1767845298376
+      },
+      {
+        "message": "Network degraded: paypal",
+        "agentId": "network-guard",
+        "timestamp": 1767844747787
+      },
+      {
+        "message": "Network degraded: payoneer",
+        "agentId": "network-guard",
+        "timestamp": 1767844603846
+      },
+      {
+        "message": "Network degraded: paypal",
+        "agentId": "network-guard",
+        "timestamp": 1767843832989
+      },
+      {
+        "message": "Network degraded: paypal_web",
+        "agentId": "network-guard",
+        "timestamp": 1767841843569
+      },
+      {
+        "message": "Network degraded: payoneer, paypal",
+        "agentId": "network-guard",
+        "timestamp": 1767841802953
+      },
+      {
+        "message": "Network degraded: payoneer, paypal",
+        "agentId": "network-guard",
+        "timestamp": 1767841771342
+      },
+      {
+        "message": "Network degraded: paypal",
+        "agentId": "network-guard",
+        "timestamp": 1767841630195
+      },
+      {
+        "message": "Network degraded: paypal",
+        "agentId": "network-guard",
+        "timestamp": 1767841193406
+      },
+      {
+        "message": "Network degraded: paypal, paypal_web",
+        "agentId": "network-guard",
+        "timestamp": 1767841087220
+      },
+      {
         "message": "Owner permissions fix in progress. Resume operations and route revenue; queue settlements if required. Respect owner; no mocking.",
         "agentId": "system",
         "timestamp": 1767820204038
@@ -98,5 +498,32 @@
   [
     "policy:global:safe_mode",
     false
+  ],
+  [
+    "network-status",
+    {
+      "ts": "2026-01-08T07:20:22.180Z",
+      "results": [
+        {
+          "id": "payoneer",
+          "host": "www.payoneer.com",
+          "dnsOk": true,
+          "httpsOk": true
+        },
+        {
+          "id": "paypal",
+          "host": "api.paypal.com",
+          "dnsOk": true,
+          "httpsOk": true
+        },
+        {
+          "id": "paypal_web",
+          "host": "www.paypal.com",
+          "dnsOk": true,
+          "httpsOk": true
+        }
+      ],
+      "degraded": []
+    }
   ]
 ]

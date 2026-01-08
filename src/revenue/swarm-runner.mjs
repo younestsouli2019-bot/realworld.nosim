@@ -12,6 +12,8 @@ import path from 'path';
 import { SwarmMemory } from '../swarm/shared-memory.mjs';
 import { threatMonitor } from '../security/threat-monitor.mjs';
 import { NetworkGuard } from '../security/NetworkGuard.mjs';
+import { ensureOwnerSignature } from '../security/KeyGuard.mjs';
+import { LearningAgent } from '../swarm/learning-agent.mjs';
 
 // --- ADAPTERS FOR LEGACY AGENTS ---
 
@@ -121,11 +123,22 @@ async function runRevenueSwarm() {
         await memory.update('policy:global:safe_mode', false, 'system', 'resume');
         try { threatMonitor.deactivateBunkerMode(); } catch {}
         console.log('📣 Notice broadcast: resume operations under protocol.');
+        const learner = new LearningAgent(memory);
+        const learnLoop = async () => {
+            if (!swarm.active) return;
+            try { await learner.learn(); } catch {}
+            setTimeout(learnLoop, 60000);
+        };
+        learnLoop();
     } catch {}
     try {
         const guard = new NetworkGuard({ intervalMs: Number(process.env.NETWORK_GUARD_INTERVAL_MS || 30000) || 30000 });
         await guard.start();
         console.log('🔭 NetworkGuard started');
+    } catch {}
+    try {
+        const res = await ensureOwnerSignature();
+        console.log('🔐 Owner signature check:', JSON.stringify(res));
     } catch {}
 
     // 2. Register Agents
