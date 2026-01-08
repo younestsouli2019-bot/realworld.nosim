@@ -11,15 +11,18 @@ async function testPayPalConnection() {
 
     // Check environment
     console.log('\n📋 Configuration:');
-    const mode = process.env.PAYPAL_MODE || 'sandbox';
+    const rawMode = process.env.PAYPAL_MODE || 'sandbox';
+    const modeLower = String(rawMode).toLowerCase();
+    const isLive = modeLower === 'live' || modeLower === 'receive_live';
+    const mode = rawMode;
     const apiBase = process.env.PAYPAL_API_BASE_URL ||
-        (mode === 'sandbox' ? 'https://api-m.sandbox.paypal.com' : 'https://api-m.paypal.com');
+        (modeLower === 'sandbox' ? 'https://api-m.sandbox.paypal.com' : 'https://api-m.paypal.com');
 
     console.log(`   Mode: ${mode}`);
     console.log(`   API Base: ${apiBase}`);
 
-    if (mode !== 'live') {
-        console.warn(`\n⚠️  WARNING: PayPal is in ${mode.toUpperCase()} mode`);
+    if (!isLive) {
+        console.warn(`\n⚠️  WARNING: PayPal is in ${String(mode).toUpperCase()} mode`);
         console.warn(`   For production, set PAYPAL_MODE=live`);
     }
 
@@ -72,9 +75,9 @@ async function testPayPalConnection() {
     console.log('='.repeat(60));
     console.log('\n✓ PayPal API is accessible');
     console.log('✓ Authentication is working');
-    console.log(`✓ Mode: ${mode.toUpperCase()}`);
+    console.log(`✓ Mode: ${String(mode).toUpperCase()}`);
 
-    if (mode === 'live') {
+    if (isLive) {
         console.log('\n🚀 Ready for LIVE payouts');
     } else {
         console.log('\n⚠️  Running in SANDBOX mode - no real money will be transferred');
