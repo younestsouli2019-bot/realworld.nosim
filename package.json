@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "type": "module",
   "dependencies": {
+    "@base44/sdk": "^0.8.13",
     "base64-js": "^1.5.1",
     "body-parser": "^2.2.1",
     "dotenv": "^16.6.1",

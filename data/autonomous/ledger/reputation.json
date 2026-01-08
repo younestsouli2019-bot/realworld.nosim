@@ -7336,6 +7336,34 @@
         "id": "task_1767774499819"
       },
       "ts": 1767774499825
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "RECOVER_REVENUE",
+        "requiredCapabilities": [
+          "REVENUE_RECOVERY"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767861985093"
+      },
+      "ts": 1767861985101
+    },
+    {
+      "type": "power_risk",
+      "reason": "POWER_GRADIENT_HIGH",
+      "score": 2,
+      "task": {
+        "type": "ANALYZE_MARKET",
+        "requiredCapabilities": [
+          "MARKET_ANALYSIS"
+        ],
+        "resourceKey": "DEFAULT",
+        "id": "task_1767861985111"
+      },
+      "ts": 1767861985117
     }
   ]
 }

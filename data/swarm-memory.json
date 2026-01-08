@@ -74,6 +74,16 @@
     "alerts",
     [
       {
+        "message": "Owner permissions fix in progress. Resume operations and route revenue; queue settlements if required. Respect owner; no mocking.",
+        "agentId": "system",
+        "timestamp": 1767861982566
+      },
+      {
+        "message": "Sales focus: route all campaigns to realworldcerts.com checkout",
+        "agentId": "sales-ops",
+        "timestamp": 1767861971058
+      },
+      {
         "message": "Network degraded: paypal",
         "agentId": "network-guard",
         "timestamp": 1767856723807
@@ -492,6 +502,11 @@
         "lesson": "owner_settlement_failure: BINANCE_API 50 USDT -> 0xA46225a984E2B2B5E5082E52AE8d8915A09fEfe7",
         "agentId": "system",
         "timestamp": 1767714849415
+      },
+      {
+        "lesson": "Normalize links to realworldcerts.com; ensure offers return/cancel set",
+        "agentId": "tech-ops",
+        "timestamp": 1767861971052
       }
     ]
   ],
@@ -502,7 +517,7 @@
   [
     "network-status",
     {
-      "ts": "2026-01-08T07:20:22.180Z",
+      "ts": "2026-01-08T08:51:57.921Z",
       "results": [
         {
           "id": "payoneer",
@@ -525,5 +540,13 @@
       ],
       "degraded": []
     }
+  ],
+  [
+    "policy:marketing:return_domain",
+    "https://www.realworldcerts.com"
+  ],
+  [
+    "policy:marketing:booster_script",
+    "https://www.realworldcerts.com/assets/sales_booster.js"
   ]
 ]
