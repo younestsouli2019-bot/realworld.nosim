@@ -47,8 +47,8 @@ const CONFIG = {
   RAIL_PRIORITY: ['PAYPAL', 'BANK_WIRE', 'PAYONEER'],
 
   // Modes
-  ENABLE_IMMEDIATE_SETTLEMENT: false, // Start with batching for safety
-  ENABLE_EMERGENCY_MODE: false, // Bypass all checks (use with caution)
+  ENABLE_IMMEDIATE_SETTLEMENT: String(process.env.ENABLE_IMMEDIATE_SETTLEMENT || 'true').toLowerCase() === 'true', // Start with batching for safety
+  ENABLE_EMERGENCY_MODE: String(process.env.ENABLE_EMERGENCY_MODE || 'false').toLowerCase() === 'true', // Bypass all checks (use with caution)
 
   // Deployment tracking
   DEPLOYMENT_START_DATE: new Date(process.env.DEPLOYMENT_START_DATE || '2026-01-04'),

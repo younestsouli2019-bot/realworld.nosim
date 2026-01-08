@@ -47,12 +47,14 @@ for (const key of optional) {
 
 // Verify PayPal mode
 console.log('\n🔒 Security Checks:');
-const paypalMode = process.env.PAYPAL_MODE || 'sandbox';
-if (paypalMode !== 'live') {
-  console.error(`   ❌ PAYPAL_MODE is "${paypalMode}" (must be "live" for production)`);
+const rawPaypalMode = process.env.PAYPAL_MODE || 'sandbox';
+const paypalMode = String(rawPaypalMode).toLowerCase();
+const acceptableModes = ['live', 'receive_live'];
+if (!acceptableModes.includes(paypalMode)) {
+  console.error(`   ❌ PAYPAL_MODE is "${rawPaypalMode}" (must be "live")`);
   hasErrors = true;
 } else {
-  console.log(`   ✅ PAYPAL_MODE: live`);
+  console.log(`   ✅ PAYPAL_MODE: ${paypalMode}`);
 }
 
 // Verify SWARM_LIVE

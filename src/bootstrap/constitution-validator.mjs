@@ -55,6 +55,12 @@ export function computeConstitutionHashFromFile(jsonPath) {
 export function enforceMultiSigConstitution(runtimeSecret) {
   const enabled = String(process.env.CONSTITUTION_ENFORCE || 'false').toLowerCase() === 'true';
   if (!enabled) return { enforced: false };
+  const signatureOnly = String(process.env.SIGNATURE_ONLY_MODE || process.env.OWNER_SIGNATURE_ONLY || 'false').toLowerCase() === 'true';
+  const signaturePermanent = String(process.env.OWNER_SIGNATURE_PERMANENT || process.env.SIGNATURE_PERMANENT || 'false').toLowerCase() === 'true';
+  const maxAgeHours = Number(process.env.OWNER_SIGNATURE_MAX_AGE_HOURS || 72);
+  const revoked = String(process.env.OWNER_SIGNATURE_REVOKE || 'false').toLowerCase() === 'true' || (() => {
+    try { return fs.existsSync('./owner.signature.revoked'); } catch { return false; }
+  })();
   const ownerPubPath = process.env.OWNER_PUBLIC_KEY_FILE || './owner_public.key';
   const masterPubPath = process.env.MASTER_PUBLIC_KEY_FILE || './masteragent_public.key';
   const ownerSigPath = process.env.OWNER_SIGNATURE_FILE || './owner.signature';
@@ -66,6 +72,19 @@ export function enforceMultiSigConstitution(runtimeSecret) {
   const hash = computeConstitutionHashFromFile(jsonPath);
   if (!expectedHash || !hash || expectedHash !== hash) {
     process.exit(101);
+  }
+  if (signatureOnly || signaturePermanent) {
+    if (revoked) process.exit(107);
+    const sig = readTextOrNull(ownerSigPath);
+    if (!sig || sig.length < 10) process.exit(102);
+    try {
+      if (!signaturePermanent) {
+        const stat = fs.statSync(ownerSigPath);
+        const ageH = (Date.now() - stat.mtimeMs) / (1000 * 60 * 60);
+        if (ageH > maxAgeHours) process.exit(106);
+      }
+    } catch {}
+    return { enforced: true, ok: true, mode: signaturePermanent ? 'signature_permanent' : 'signature_only' };
   }
   const ownerSig = readBufferOrNull(ownerSigPath);
   const masterSig = readBufferOrNull(masterSigPath);
@@ -103,6 +122,12 @@ export async function startAsyncVerification(runtimeSecret) {
   if (__constitution_state.verifying) return getConstitutionState();
   __constitution_state.verifying = true;
   __constitution_state.lastCheckAt = new Date().toISOString();
+  const signatureOnly = String(process.env.SIGNATURE_ONLY_MODE || process.env.OWNER_SIGNATURE_ONLY || 'false').toLowerCase() === 'true';
+  const signaturePermanent = String(process.env.OWNER_SIGNATURE_PERMANENT || process.env.SIGNATURE_PERMANENT || 'false').toLowerCase() === 'true';
+  const maxAgeHours = Number(process.env.OWNER_SIGNATURE_MAX_AGE_HOURS || 72);
+  const revoked = String(process.env.OWNER_SIGNATURE_REVOKE || 'false').toLowerCase() === 'true' || (() => {
+    try { return fs.existsSync('./owner.signature.revoked'); } catch { return false; }
+  })();
   const ownerPubPath = process.env.OWNER_PUBLIC_KEY_FILE || './owner_public.key';
   const masterPubPath = process.env.MASTER_PUBLIC_KEY_FILE || './masteragent_public.key';
   const ownerSigPath = process.env.OWNER_SIGNATURE_FILE || './owner.signature';
@@ -115,6 +140,23 @@ export async function startAsyncVerification(runtimeSecret) {
     const hash = computeConstitutionHashFromFile(jsonPath);
     if (!expectedHash || !hash || expectedHash !== hash) {
       throw new Error('hash_mismatch');
+    }
+    if (signatureOnly || signaturePermanent) {
+      if (revoked) throw new Error('owner_signature_revoked');
+      const sigTxt = readTextOrNull(ownerSigPath);
+      if (!sigTxt || sigTxt.length < 10) throw new Error('owner_signature_missing');
+      try {
+        if (!signaturePermanent) {
+          const stat = fs.statSync(ownerSigPath);
+          const ageH = (Date.now() - stat.mtimeMs) / (1000 * 60 * 60);
+          if (ageH > maxAgeHours) throw new Error('owner_signature_stale');
+        }
+      } catch {}
+      __constitution_state.lastValidHash = hash;
+      __constitution_state.lastVerifiedAt = new Date().toISOString();
+      __constitution_state.lastError = null;
+      try { globalRecorder.info('Constitution verified (signature-only)'); } catch {}
+      return getConstitutionState();
     }
     const ownerSig = readBufferOrNull(ownerSigPath);
     const masterSig = readBufferOrNull(masterSigPath);

@@ -1,0 +1,25 @@
+{
+  "id": "ALERT_1767806734539",
+  "timestamp": "2026-01-07T17:25:34.539Z",
+  "level": "CRITICAL",
+  "agent": "viral_swarm Fusion Unit",
+  "message": "Fused Agent halted due to Critical Resource Gaps",
+  "gaps": [
+    {
+      "resource": "PAYPAL_SECRET",
+      "severity": "CRITICAL",
+      "description": "Missing PayPal Secret in environment"
+    },
+    {
+      "resource": "BINANCE_API_SECRET",
+      "severity": "CRITICAL",
+      "description": "Missing Binance Secret in environment"
+    },
+    {
+      "resource": "PAYONEER_TOKEN",
+      "severity": "HIGH",
+      "description": "Missing Payoneer Token in environment"
+    }
+  ],
+  "action_required": "Provide missing environment variables or credentials."
+}

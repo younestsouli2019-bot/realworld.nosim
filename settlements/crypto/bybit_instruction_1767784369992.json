@@ -5,7 +5,8 @@
   "network": "ERC20",
   "address": "0xf6b9e2fcf43d41c778cba2bf46325cd201cc1a10",
   "amount": 50,
-  "status": "WAITING_MANUAL_EXECUTION",
+  "status": "INSTRUCTIONS_READY",
   "creds_present": false,
-  "origin": "in_house"
+  "origin": "in_house",
+  "executed_at": "2026-01-08T08:46:59.570Z"
 }

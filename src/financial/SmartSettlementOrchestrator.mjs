@@ -10,6 +10,7 @@ import { CryptoGateway } from './gateways/CryptoGateway.mjs';
 import { PayPalGateway } from './gateways/PayPalGateway.mjs';
 import { recordProgress } from '../ops/AutoCommitChangelog.mjs';
 import { computeConstitutionHash } from '../policy/constitution.mjs';
+import { OnChainExecutor } from '../onchain/OnChainExecutor.mjs';
 import { SwarmMemory } from '../swarm/shared-memory.mjs';
 import { globalRecorder } from '../swarm/flight-recorder.mjs';
 
@@ -22,6 +23,7 @@ export class SmartSettlementOrchestrator {
     this.bank = new BankGateway();
     this.crypto = new CryptoGateway();
     this.paypal = new PayPalGateway();
+    this.onChain = new OnChainExecutor();
     this.memory = new SwarmMemory();
   }
 
@@ -114,7 +116,7 @@ export class SmartSettlementOrchestrator {
     // In a real system, this would check dynamic availability.
     // For now, we list our preferred priorities based on constraints.
     if (currency === 'USDT' || currency === 'USDC') {
-      return ['BITGET_API', 'BYBIT_API', 'BINANCE_API', 'TRUST_WALLET_DIRECT']; 
+      return ['ONCHAIN_BSC', 'ONCHAIN_ETH', 'BITGET_API', 'BYBIT_API', 'BINANCE_API']; 
     }
     return ['BANK_WIRE', 'PAYONEER', 'PAYPAL'];
   }
@@ -169,6 +171,8 @@ export class SmartSettlementOrchestrator {
   }
 
   mapChannelToType(channel) {
+    if (channel === 'ONCHAIN_BSC') return 'crypto_bep20';
+    if (channel === 'ONCHAIN_ETH') return 'crypto_erc20';
     if (channel === 'BINANCE_API') return 'crypto_bep20'; // Default to Binance/Trust
     if (channel === 'BYBIT_API') return 'crypto_bybit_erc20';
     if (channel === 'BITGET_API') return 'crypto_bep20';
@@ -198,7 +202,16 @@ export class SmartSettlementOrchestrator {
           throw new Error('VIOLATION: OWNER_LOCK Destination not authorized');
         }
 
-        if (channel === 'PAYONEER') {
+        if (channel.startsWith('ONCHAIN_')) {
+            const chain = channel.split('_')[1];
+            result = await this.onChain.sendTransaction({
+                chain,
+                to: destination,
+                value: amount,
+                currency
+            });
+        }
+        else if (channel === 'PAYONEER') {
             const rawMode = process.env.PAYONEER_MODE || 'RECEIVE';
             const mode = rawMode.trim().toUpperCase();
             result = await this.payoneer.executeTransfer([{
@@ -287,6 +300,9 @@ export class SmartSettlementOrchestrator {
 
   checkCapability(channel) {
     // Real-world check of ENV variables
+    if (channel.startsWith('ONCHAIN_')) {
+        if (!process.env.WALLET_PRIVATE_KEY) return { possible: false, reason: 'NO_PRIVATE_KEY' };
+    }
     if (channel === 'BINANCE_API') {
       if (!process.env.BINANCE_API_KEY) return { possible: false, reason: 'MISSING_API_KEY' };
     }

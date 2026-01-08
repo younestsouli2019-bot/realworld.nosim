@@ -5,7 +5,8 @@
   "network": "BEP20",
   "address": "0xA46225a984E2B2B5E5082E52AE8d8915A09fEfe7",
   "amount": 50,
-  "status": "WAITING_MANUAL_EXECUTION",
+  "status": "INSTRUCTIONS_READY",
   "creds_present": true,
-  "origin": "in_house"
+  "origin": "in_house",
+  "executed_at": "2026-01-08T08:46:33.504Z"
 }
